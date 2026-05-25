@@ -1,0 +1,137 @@
+<ion-content class="driver-bg">
+  <div class="modern-header">
+    <ion-icon name="chatbubbles" class="bg-icon"></ion-icon>
+    <h1>Pesan Masuk</h1>
+    <p>Komunikasi dengan penumpang & CS</p>
+    
+    <ion-segment [(ngModel)]="selectedTab" class="driver-segment" mode="ios">
+      <ion-segment-button value="customer">
+        <ion-label>Penumpang</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="cs">
+        <ion-label>Bantuan (CS)</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+  
+  <div class="chat-container">
+    
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading" style="text-align: center; padding: 30px;">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Memuat kontak...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && selectedTab === 'customer' && customerChats.length === 0" style="text-align: center; padding: 30px; color: #888;">
+      <ion-icon name="chatbubbles-outline" style="font-size: 48px; color: #ccc;"></ion-icon>
+      <p>Belum ada obrolan dengan penumpang hari ini.</p>
+    </div>
+
+    <!-- Customer Tab -->
+    <div *ngIf="!isLoading && selectedTab === 'customer'">
+      <ion-list lines="none" class="chat-list">
+        <ion-item *ngFor="let chat of customerChats" class="chat-item" (click)="openChat(chat)" button>
+          <ion-avatar slot="start">
+            <div class="avatar-placeholder"><ion-icon name="person"></ion-icon></div>
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ chat.name }}</h2>
+            <p>{{ chat.message }}</p>
+          </ion-label>
+          <div class="chat-meta" slot="end">
+            <span>{{ chat.time }}</span>
+            <ion-badge *ngIf="chat.unread > 0" color="danger">{{ chat.unread }}</ion-badge>
+          </div>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- CS Tab -->
+    <div *ngIf="!isLoading && selectedTab === 'cs'">
+      <ion-list lines="none" class="chat-list">
+        <ion-item *ngFor="let chat of csChats" class="chat-item" button>
+          <ion-avatar slot="start">
+            <div class="avatar-placeholder cs"><ion-icon name="headset"></ion-icon></div>
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ chat.name }} <ion-icon name="checkmark-circle" color="success"></ion-icon></h2>
+            <p>{{ chat.message }}</p>
+          </ion-label>
+          <div class="chat-meta" slot="end">
+            <span>{{ chat.time }}</span>
+            <ion-badge *ngIf="chat.unread > 0" color="danger">{{ chat.unread }}</ion-badge>
+          </div>
+        </ion-item>
+      </ion-list>
+    </div>
+
+  </div>
+
+  <!-- Chat Room Modal -->
+  <ion-modal [isOpen]="isChatOpen" (didDismiss)="closeChat()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="primary">
+          <ion-buttons slot="start">
+            <ion-button (click)="closeChat()">
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>{{ activeChatCustomer?.name }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="chat-room-content">
+        <div class="message-list">
+          <div *ngFor="let msg of chatMessages" class="message-wrapper" [class.sent]="msg.sender_type === 'driver'" [class.received]="msg.sender_type === 'customer'">
+            <div class="message-bubble">
+              <p>{{ msg.message }}</p>
+              <span class="message-time">{{ msg.created_at | date:'HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+
+      <ion-footer class="ion-no-border">
+        <ion-toolbar class="chat-toolbar">
+          <div class="chat-input-wrapper">
+            <ion-textarea 
+              [(ngModel)]="newMessage" 
+              placeholder="Ketik pesan..." 
+              auto-grow="true" 
+              rows="1" 
+              max-rows="4">
+            </ion-textarea>
+            <ion-button fill="clear" (click)="sendMessage()" [disabled]="!newMessage.trim()">
+              <ion-icon name="send" slot="icon-only" color="primary"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
+
+<!-- Custom Bottom Navigation for Driver -->
+<ion-footer class="custom-footer driver-footer">
+  <div class="nav-bar">
+    <div class="nav-item" routerLink="/driver-home" routerDirection="root">
+      <ion-icon name="car-outline"></ion-icon>
+      <span>Tugas</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-history" routerDirection="root">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>Riwayat</span>
+    </div>
+    <div class="nav-item active">
+      <ion-icon name="chatbubbles"></ion-icon>
+      <span>Pesan</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-profile" routerDirection="root">
+      <ion-icon name="person-outline"></ion-icon>
+      <span>Akun</span>
+    </div>
+  </div>
+</ion-footer>

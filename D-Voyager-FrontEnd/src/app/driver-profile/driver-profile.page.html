@@ -1,0 +1,110 @@
+<ion-content class="driver-bg">
+  <div class="modern-header">
+    <ion-icon name="person-circle" class="bg-icon"></ion-icon>
+    <h1>Akun Saya</h1>
+    <p>Kelola profil dan pengaturan Anda</p>
+  </div>
+  
+  <div class="profile-container">
+    
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <label class="avatar-lg" for="driverProfilePhotoInput">
+        <img *ngIf="profilePhotoUrl" [src]="profilePhotoUrl" alt="Foto profil driver">
+        <ion-icon *ngIf="!profilePhotoUrl" name="person"></ion-icon>
+        <span class="photo-action" *ngIf="!isUploadingPhoto">
+          <ion-icon name="camera"></ion-icon>
+        </span>
+        <ion-spinner *ngIf="isUploadingPhoto" name="crescent"></ion-spinner>
+      </label>
+      <input
+        id="driverProfilePhotoInput"
+        name="driverProfilePhoto"
+        class="photo-input"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        (change)="uploadProfilePhoto($event)"
+        [disabled]="isUploadingPhoto">
+      <h2>{{ driverName }}</h2>
+      <p>Email: {{ driverEmail || driverId }}</p>
+
+      <div class="error-banner" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+      
+      <div class="stats-row">
+        <div class="stat-box">
+          <ion-icon name="star" color="warning"></ion-icon>
+          <h3>{{ rating }}</h3>
+          <span>Rating</span>
+        </div>
+        <div class="stat-box">
+          <ion-icon name="map" color="success"></ion-icon>
+          <h3>{{ totalTrips }}</h3>
+          <span>Perjalanan</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vehicle Info -->
+    <div class="info-card">
+      <div class="card-title">
+        <ion-icon name="car-outline"></ion-icon>
+        Kendaraan Saat Ini
+      </div>
+      <div class="info-row">
+        <span class="label">Tipe Mobil</span>
+        <span class="value">{{ vehicleType }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Plat Nomor</span>
+        <span class="value badge">{{ vehiclePlate }}</span>
+      </div>
+    </div>
+
+    <!-- Settings List -->
+    <ion-list class="settings-list" lines="full">
+      <ion-item button detail="true">
+        <ion-icon name="document-text-outline" slot="start"></ion-icon>
+        <ion-label>Syarat & Ketentuan</ion-label>
+      </ion-item>
+      <ion-item button detail="true">
+        <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+        <ion-label>Kebijakan Privasi</ion-label>
+      </ion-item>
+      <ion-item button detail="true">
+        <ion-icon name="settings-outline" slot="start"></ion-icon>
+        <ion-label>Pengaturan Aplikasi</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <!-- Logout Button -->
+    <ion-button expand="block" class="logout-btn" (click)="logout()" [disabled]="isLoggingOut">
+      <ion-icon [name]="isLoggingOut ? 'hourglass-outline' : 'log-out-outline'" slot="start"></ion-icon>
+      {{ isLoggingOut ? 'Keluar...' : 'Keluar Akun' }}
+    </ion-button>
+
+  </div>
+</ion-content>
+
+<!-- Custom Bottom Navigation for Driver -->
+<ion-footer class="custom-footer driver-footer">
+  <div class="nav-bar">
+    <div class="nav-item" routerLink="/driver-home" routerDirection="root">
+      <ion-icon name="car-outline"></ion-icon>
+      <span>Tugas</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-history" routerDirection="root">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>Riwayat</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-chat" routerDirection="root">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <span>Pesan</span>
+    </div>
+    <div class="nav-item active">
+      <ion-icon name="person"></ion-icon>
+      <span>Akun</span>
+    </div>
+  </div>
+</ion-footer>

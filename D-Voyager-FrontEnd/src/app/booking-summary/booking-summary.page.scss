@@ -1,0 +1,311 @@
+
+.custom-bg {
+  --background: var(--bg-color);
+}
+
+.custom-header {
+  ion-toolbar {
+    --background: var(--bg-color);
+    --border-color: transparent;
+    --padding-top: 10px;
+    --padding-bottom: 5px;
+  }
+
+  ion-back-button {
+    color: var(--dark-gray);
+  }
+
+  ion-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--dark-gray);
+  }
+}
+
+.summary-container {
+  padding: 16px 24px 40px;
+}
+
+/* Premium Ticket Style */
+.accordion-card {
+  background: var(--white);
+  border-radius: 24px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: visible; /* to allow cutouts */
+  margin-bottom: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+
+  .accordion-divider {
+    height: 2px;
+    background-image: linear-gradient(to right, #E5E7EB 50%, transparent 50%);
+    background-size: 10px 2px;
+    margin: 0;
+    position: relative;
+
+    /* Ticket Cutouts */
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      width: 20px;
+      height: 20px;
+      background: var(--bg-color);
+      border-radius: 50%;
+      z-index: 2;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    &::before { left: -10px; }
+    &::after { right: -10px; }
+  }
+
+  .accordion-section {
+    padding: 24px;
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+
+      .step-circle {
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 193, 7, 0.15);
+        color: var(--primary-dark);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 800;
+        font-size: 14px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--dark-gray);
+      }
+    }
+  }
+}
+
+/* Trip Summary Content */
+.route-timeline {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 24px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--light-gray);
+  }
+
+  .time-point {
+    position: relative;
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -20px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--primary-color);
+      z-index: 1;
+    }
+
+    .time {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--dark-gray);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .location {
+      font-size: 13px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+  }
+}
+
+.operator-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--bg-color);
+  border-radius: 16px;
+
+  .operator-name {
+    display: flex;
+    flex-direction: column;
+
+    span {
+      font-size: 11px;
+      color: #9ca3af;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    strong {
+      font-size: 16px;
+      color: var(--dark-gray);
+      font-weight: 800;
+      margin-top: 2px;
+    }
+  }
+
+  .seat-badge {
+    background: var(--white);
+    color: var(--dark-gray);
+    border: 1px solid var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.15);
+  }
+}
+
+/* Passenger Form Content */
+.passenger-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .input-minimal {
+    .input-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark-gray);
+      margin-bottom: 8px;
+    }
+
+    ion-input {
+      --background: var(--bg-color);
+      --border-radius: 12px;
+      --padding-start: 16px;
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+      font-weight: 600;
+      color: var(--dark-gray);
+      border: 1px solid var(--light-gray);
+      transition: all 0.2s;
+
+      &:focus-within {
+        border-color: var(--primary-color);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
+      }
+    }
+  }
+}
+
+// Sticky Fare Footer
+ion-footer {
+  background: var(--bg-color);
+}
+
+.sticky-fare-footer {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.06);
+  padding: 24px 24px calc(24px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+
+  .fare-breakdown {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-image: linear-gradient(to right, #E5E7EB 50%, transparent 50%);
+      background-size: 8px 2px;
+    }
+
+    .fare-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 600;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .action-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .total-price {
+      display: flex;
+      flex-direction: column;
+
+      span {
+        font-size: 12px;
+        color: #9ca3af;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      strong {
+        font-size: 24px;
+        color: var(--dark-gray);
+        font-weight: 800;
+        margin-top: 2px;
+        letter-spacing: -0.5px;
+      }
+    }
+
+    .pay-btn {
+      margin: 0;
+      --background: var(--primary-color);
+      --color: var(--dark-gray);
+      --border-radius: 16px;
+      --box-shadow: 0 8px 24px rgba(255, 193, 7, 0.3);
+      font-weight: 800;
+      font-size: 16px;
+      width: 150px;
+      height: 56px;
+      transition: all 0.2s;
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+  }
+}

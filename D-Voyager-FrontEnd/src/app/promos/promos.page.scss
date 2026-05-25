@@ -1,0 +1,90 @@
+.custom-bg {
+  --background: var(--bg-color);
+}
+
+.custom-header {
+  ion-toolbar {
+    --background: var(--bg-color);
+    --padding-top: 10px;
+  }
+
+  ion-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--dark-gray);
+  }
+}
+
+.promos-container {
+  padding: 16px 24px;
+
+  .promo-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+
+    .promo-image {
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      ion-icon {
+        font-size: 48px;
+        color: var(--white);
+      }
+
+      &.bg-yellow {
+        background: var(--primary-color);
+      }
+
+      &.bg-blue {
+        background: #3B82F6;
+      }
+    }
+
+    .promo-content {
+      padding: 20px;
+
+      .promo-badge {
+        display: inline-block;
+        background: rgba(30, 30, 30, 0.05);
+        color: var(--dark-gray);
+        font-size: 11px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 8px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--dark-gray);
+      }
+
+      p {
+        margin: 0 0 16px;
+        font-size: 14px;
+        color: #6b7280;
+        line-height: 1.5;
+
+        strong {
+          color: var(--dark-gray);
+        }
+      }
+
+      .expiry {
+        display: block;
+        font-size: 12px;
+        color: #9ca3af;
+        font-weight: 600;
+      }
+    }
+  }
+}

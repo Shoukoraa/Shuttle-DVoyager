@@ -1,0 +1,491 @@
+<?php
+
+namespace App\Http\Controllers\Web;
+
+use App\Exports\MonthlyReportExport;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\{Location, Vehicle, Route as RouteModel, Schedule, Driver, Customer, Booking, User, Role};
+use App\Models\Seat;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+
+class AdminWebController extends Controller
+{
+    public function dashboard(Request $request) {
+        return view('admin.dashboard', $this->buildMonthlyReportData($request));
+    }
+
+    public function exportMonthlyReportExcel(Request $request)
+    {
+        $reportData = $this->buildMonthlyReportData($request);
+
+        return Excel::download(
+            new MonthlyReportExport($reportData),
+            sprintf('laporan-bulanan-%04d-%02d.xlsx', $reportData['selected_year'], $reportData['selected_month'])
+        );
+    }
+
+    public function exportMonthlyReportPdf(Request $request)
+    {
+        $reportData = $this->buildMonthlyReportData($request);
+
+        $pdf = Pdf::loadView('admin.reports.monthly', $reportData)
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download(sprintf('laporan-bulanan-%04d-%02d.pdf', $reportData['selected_year'], $reportData['selected_month']));
+    }
+
+    private function buildMonthlyReportData(Request $request): array
+    {
+        $validated = $request->validate([
+            'year' => ['nullable', 'integer', 'min:2000', 'max:' . now()->year],
+            'month' => ['nullable', 'integer', 'between:1,12'],
+        ]);
+
+        $selectedYear = (int) ($validated['year'] ?? now()->year);
+        $selectedMonth = (int) ($validated['month'] ?? now()->month);
+
+        $bookingMonthlyRows = Booking::query()
+            ->selectRaw('YEAR(booking_time) as report_year, MONTH(booking_time) as report_month, COUNT(*) as booking_count, COALESCE(SUM(CASE WHEN status = "paid" THEN total_price ELSE 0 END), 0) as revenue')
+            ->groupByRaw('YEAR(booking_time), MONTH(booking_time)')
+            ->get()
+            ->keyBy(fn ($row) => $this->monthlyKey((int) $row->report_year, (int) $row->report_month));
+
+        $scheduleMonthlyRows = Schedule::query()
+            ->selectRaw('YEAR(departure_time) as report_year, MONTH(departure_time) as report_month, COUNT(*) as schedule_count')
+            ->groupByRaw('YEAR(departure_time), MONTH(departure_time)')
+            ->get()
+            ->keyBy(fn ($row) => $this->monthlyKey((int) $row->report_year, (int) $row->report_month));
+
+        $firstActivity = collect([
+            Booking::min('booking_time'),
+            Schedule::min('departure_time'),
+        ])->filter()->min();
+
+        $periodStart = $firstActivity ? Carbon::parse($firstActivity)->startOfMonth() : now()->startOfMonth();
+        $periodEnd = now()->startOfMonth();
+
+        if ($periodStart->greaterThan($periodEnd)) {
+            $periodStart = $periodEnd->copy();
+        }
+
+        $monthlyArchives = collect(CarbonPeriod::create($periodStart, '1 month', $periodEnd))
+            ->map(function (Carbon $date) use ($bookingMonthlyRows, $scheduleMonthlyRows) {
+                $year = (int) $date->year;
+                $month = (int) $date->month;
+                $key = $this->monthlyKey($year, $month);
+                $bookingRow = $bookingMonthlyRows->get($key);
+                $scheduleRow = $scheduleMonthlyRows->get($key);
+
+                return [
+                    'year' => $year,
+                    'month' => $month,
+                    'label' => $this->monthName($month) . ' ' . $year,
+                    'booking_count' => (int) ($bookingRow->booking_count ?? 0),
+                    'revenue' => (int) ($bookingRow->revenue ?? 0),
+                    'schedule_count' => (int) ($scheduleRow->schedule_count ?? 0),
+                ];
+            })
+            ->values();
+
+        $selectedArchive = $monthlyArchives->first(function (array $row) use ($selectedYear, $selectedMonth) {
+            return $row['year'] === $selectedYear && $row['month'] === $selectedMonth;
+        });
+
+        if (! $selectedArchive) {
+            $selectedArchive = [
+                'year' => $selectedYear,
+                'month' => $selectedMonth,
+                'label' => $this->monthName($selectedMonth) . ' ' . $selectedYear,
+                'booking_count' => 0,
+                'revenue' => 0,
+                'schedule_count' => 0,
+            ];
+        }
+
+        $bookings = Booking::with(['customer.user', 'schedule.route.origin', 'schedule.route.destination'])
+            ->whereYear('booking_time', $selectedYear)
+            ->whereMonth('booking_time', $selectedMonth)
+            ->orderByDesc('booking_time')
+            ->get();
+
+        $availableYears = $monthlyArchives
+            ->pluck('year')
+            ->push($selectedYear)
+            ->unique()
+            ->sortDesc()
+            ->values();
+
+        return [
+            'selected_year' => $selectedYear,
+            'selected_month' => $selectedMonth,
+            'selected_label' => $this->monthName($selectedMonth) . ' ' . $selectedYear,
+            'monthly_booking_count' => (int) ($selectedArchive['booking_count'] ?? 0),
+            'monthly_revenue' => (int) ($selectedArchive['revenue'] ?? 0),
+            'monthly_schedules' => (int) ($selectedArchive['schedule_count'] ?? 0),
+            'schedules_today' => Schedule::whereDate('departure_time', today())->count(),
+            'bookings' => $bookings,
+            'monthly_archives' => $monthlyArchives,
+            'available_years' => $availableYears,
+            'available_months' => collect(range(1, 12))->map(fn (int $month) => [
+                'value' => $month,
+                'label' => $this->monthName($month),
+            ])->all(),
+        ];
+    }
+
+    private function monthlyKey(int $year, int $month): string
+    {
+        return sprintf('%04d-%02d', $year, $month);
+    }
+
+    private function monthName(int $month): string
+    {
+        return [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ][$month] ?? 'Bulan Tidak Dikenal';
+    }
+
+    // LOCATIONS
+    public function locations() { return view('admin.locations', ['locations' => Location::all()]); }
+    public function storeLocation(Request $request) {
+        $validated = $request->validate(['name' => 'required|string|max:255', 'latitude' => 'required|numeric', 'longitude' => 'required|numeric']);
+        Location::create($validated);
+        return back()->with('success', 'Lokasi berhasil ditambahkan!');
+    }
+    public function editLocation(Location $location) { return view('admin.locations_edit', compact('location')); }
+    public function updateLocation(Request $request, Location $location) {
+        $validated = $request->validate(['name' => 'required|string|max:255', 'latitude' => 'required|numeric', 'longitude' => 'required|numeric']);
+        $location->update($validated);
+        return redirect()->route('admin.locations')->with('success', 'Lokasi berhasil diperbarui!');
+    }
+    public function deleteLocation(Location $location) {
+        try { $location->delete(); return back()->with('success', 'Lokasi berhasil dihapus!'); }
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus lokasi karena sedang digunakan oleh rute.'); }
+    }
+
+    // VEHICLES
+    public function vehicles() { return view('admin.vehicles', ['vehicles' => Vehicle::all()]); }
+    public function storeVehicle(Request $request) {
+        $validated = $request->validate([
+            'plate_number' => 'required|string|max:20',
+            'vehicle_type' => 'required|string|max:50',
+            'vehicle_category' => 'required|in:family_car,mini_bus,bus',
+            'capacity' => 'required|integer|min:1'
+        ]);
+
+        $existingVehicle = Vehicle::withTrashed()
+            ->where('plate_number', $validated['plate_number'])
+            ->first();
+
+        if ($existingVehicle) {
+            if ($existingVehicle->trashed()) {
+                $existingVehicle->restore();
+                $existingVehicle->update([
+                    'vehicle_type' => $validated['vehicle_type'],
+                    'vehicle_category' => $validated['vehicle_category'],
+                    'capacity' => $validated['capacity'],
+                    'status' => 'active',
+                ]);
+
+                return back()->with('success', 'Kendaraan lama dengan plat yang sama berhasil dipulihkan!');
+            }
+
+            return back()
+                ->withErrors(['plate_number' => 'Plat nomor sudah digunakan oleh kendaraan aktif.'])
+                ->withInput();
+        }
+
+        Vehicle::create($validated);
+        return back()->with('success', 'Kendaraan berhasil ditambahkan!');
+    }
+    public function editVehicle(Vehicle $vehicle) { return view('admin.vehicles_edit', compact('vehicle')); }
+    public function updateVehicle(Request $request, Vehicle $vehicle) {
+        $validated = $request->validate([
+            'plate_number' => ['required', 'string', 'max:20', Rule::unique('vehicles', 'plate_number')->ignore($vehicle->id)],
+            'vehicle_type' => 'required|string|max:50',
+            'vehicle_category' => 'required|in:family_car,mini_bus,bus',
+            'capacity' => 'required|integer|min:1',
+            'status' => 'required|string'
+        ]);
+        $vehicle->update($validated);
+        return redirect()->route('admin.vehicles')->with('success', 'Kendaraan berhasil diperbarui!');
+    }
+    public function deleteVehicle(Vehicle $vehicle) {
+        try { $vehicle->delete(); return back()->with('success', 'Kendaraan berhasil dihapus!'); }
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus kendaraan karena sedang digunakan di jadwal.'); }
+    }
+
+    // ROUTES
+    public function routes() { return view('admin.routes', ['routes' => RouteModel::with(['origin', 'destination'])->get(), 'locations' => Location::all()]); }
+    public function storeRoute(Request $request) {
+        $validated = $request->validate(['origin_location_id' => 'required|exists:locations,id', 'destination_location_id' => 'required|exists:locations,id|different:origin_location_id', 'distance_km' => 'required|numeric|min:0.1', 'price' => 'required|integer|min:0']);
+        RouteModel::create($validated);
+        return back()->with('success', 'Rute berhasil ditambahkan!');
+    }
+    public function editRoute(RouteModel $route) { return view('admin.routes_edit', ['route' => $route, 'locations' => Location::all()]); }
+    public function updateRoute(Request $request, RouteModel $route) {
+        $validated = $request->validate(['origin_location_id' => 'required|exists:locations,id', 'destination_location_id' => 'required|exists:locations,id|different:origin_location_id', 'distance_km' => 'required|numeric|min:0.1', 'price' => 'required|integer|min:0']);
+        $route->update($validated);
+        return redirect()->route('admin.routes')->with('success', 'Rute berhasil diperbarui!');
+    }
+    public function deleteRoute(RouteModel $route) {
+        try { $route->delete(); return back()->with('success', 'Rute berhasil dihapus!'); }
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus rute karena ada jadwal terkait.'); }
+    }
+
+    // SCHEDULES
+    public function schedules() { return view('admin.schedules', ['schedules' => Schedule::with(['route.origin', 'route.destination', 'vehicle', 'driver.user'])->get(), 'routes' => RouteModel::with(['origin', 'destination'])->get(), 'vehicles' => Vehicle::all(), 'drivers' => Driver::with('user')->get()]); }
+    public function storeSchedule(Request $request) {
+        $validated = $request->validate(['route_id' => 'required|exists:routes,id', 'vehicle_id' => 'required|exists:vehicles,id', 'driver_id' => 'required|exists:drivers,id', 'departure_time' => 'required|date', 'arrival_time' => 'required|date|after:departure_time', 'capacity' => 'required|integer|min:1', 'price' => 'required|numeric|min:0']);
+        $validated['status'] = 'scheduled';
+
+        DB::transaction(function () use ($validated) {
+            $schedule = Schedule::create($validated);
+
+            for ($i = 1; $i <= (int) $schedule->capacity; $i++) {
+                Seat::firstOrCreate(
+                    [
+                        'schedule_id' => $schedule->id,
+                        'seat_number' => (string) $i,
+                    ],
+                    ['status' => 'available']
+                );
+            }
+        });
+
+        return back()->with('success', 'Jadwal berhasil ditambahkan!');
+    }
+    public function editSchedule(Schedule $schedule) { return view('admin.schedules_edit', ['schedule' => $schedule, 'routes' => RouteModel::with(['origin', 'destination'])->get(), 'vehicles' => Vehicle::all(), 'drivers' => Driver::with('user')->get()]); }
+    public function updateSchedule(Request $request, Schedule $schedule) {
+        $validated = $request->validate(['route_id' => 'required|exists:routes,id', 'vehicle_id' => 'required|exists:vehicles,id', 'driver_id' => 'required|exists:drivers,id', 'departure_time' => 'required|date', 'arrival_time' => 'required|date|after:departure_time', 'capacity' => 'required|integer|min:1', 'price' => 'required|numeric|min:0', 'status' => 'required|string']);
+        $schedule->update($validated);
+        return redirect()->route('admin.schedules')->with('success', 'Jadwal berhasil diperbarui!');
+    }
+    public function deleteSchedule(Schedule $schedule) {
+        try { $schedule->delete(); return back()->with('success', 'Jadwal berhasil dihapus!'); }
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus jadwal.'); }
+    }
+
+    public function bulkDeleteSchedules(Request $request) {
+        $validated = $request->validate([
+            'schedule_ids' => 'required|array|min:1',
+            'schedule_ids.*' => 'integer|exists:schedules,id',
+        ]);
+
+        try {
+            $count = Schedule::whereIn('id', $validated['schedule_ids'])->delete();
+            return back()->with('success', $count . ' jadwal berhasil dihapus.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus jadwal terpilih.');
+        }
+    }
+
+    public function deleteAllSchedules() {
+        try {
+            $count = Schedule::query()->delete();
+            return back()->with('success', $count . ' jadwal berhasil dihapus semua.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus semua jadwal.');
+        }
+    }
+
+    // DRIVERS
+    public function drivers() { 
+        $drivers = Driver::with(['user', 'vehicle'])->get();
+        $vehicles = Vehicle::all();
+        return view('admin.drivers', compact('drivers', 'vehicles')); 
+    }
+    public function storeDriver(Request $request) {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+            'phone' => 'nullable|string',
+            'license_number' => 'required|string',
+            'vehicle_id' => 'nullable|integer|exists:vehicles,id'
+        ]);
+
+        $driverRoleId = Role::where('name', 'driver')->value('id');
+        if (!$driverRoleId) {
+            return back()->with('error', 'Role driver tidak ditemukan.');
+        }
+
+        $existingUser = User::withTrashed()->where('email', $validated['email'])->first();
+
+        if ($existingUser) {
+            if (!$existingUser->trashed()) {
+                return back()->withErrors(['email' => 'Email sudah digunakan akun aktif.'])->withInput();
+            }
+
+            if ((int) $existingUser->role_id !== (int) $driverRoleId) {
+                return back()->withErrors(['email' => 'Email ini milik role lain dan tidak bisa dipakai untuk driver.'])->withInput();
+            }
+
+            $existingUser->restore();
+            $existingUser->update([
+                'name' => $validated['name'],
+                'phone' => $validated['phone'] ?? null,
+                'password' => Hash::make($validated['password']),
+                'role_id' => $driverRoleId,
+            ]);
+
+            $driver = Driver::withTrashed()->where('user_id', $existingUser->id)->first();
+
+            if ($driver) {
+                if ($driver->trashed()) {
+                    $driver->restore();
+                }
+
+                $driver->update([
+                    'license_number' => $validated['license_number'],
+                    'status' => 'active',
+                ]);
+            } else {
+                Driver::create([
+                    'user_id' => $existingUser->id,
+                    'license_number' => $validated['license_number'],
+                    'status' => 'active'
+                ]);
+            }
+
+            // Assign vehicle jika ada
+            if ($validated['vehicle_id'] ?? null) {
+                Vehicle::where('driver_id', '!=', null)->where('id', $validated['vehicle_id'])->update(['driver_id' => null]);
+                Vehicle::find($validated['vehicle_id'])->update(['driver_id' => $driver->id]);
+            }
+
+            return back()->with('success', 'Akun driver lama berhasil dipulihkan!');
+        }
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'] ?? null,
+            'role_id' => $driverRoleId
+        ]);
+        
+        $driver = Driver::create(['user_id' => $user->id, 'license_number' => $validated['license_number'], 'status' => 'active']);
+        
+        // Assign vehicle jika ada
+        if ($validated['vehicle_id'] ?? null) {
+            Vehicle::where('driver_id', '!=', null)->where('id', $validated['vehicle_id'])->update(['driver_id' => null]);
+            Vehicle::find($validated['vehicle_id'])->update(['driver_id' => $driver->id]);
+        }
+        
+        return back()->with('success', 'Supir berhasil ditambahkan!');
+    }
+    public function editDriver(Driver $driver) { 
+        $vehicles = Vehicle::all();
+        return view('admin.drivers_edit', compact('driver', 'vehicles')); 
+    }
+    public function updateDriver(Request $request, Driver $driver) {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($driver->user_id)],
+            'password' => 'nullable|min:6',
+            'phone' => 'nullable|string',
+            'license_number' => 'required|string',
+            'status' => 'required|string',
+            'vehicle_id' => 'nullable|integer|exists:vehicles,id'
+        ]);
+        $driver->user->update(['name' => $validated['name'], 'email' => $validated['email'], 'phone' => $validated['phone'] ?? null]);
+        if (!empty($validated['password'])) { $driver->user->update(['password' => Hash::make($validated['password'])]); }
+        $driver->update(['license_number' => $validated['license_number'], 'status' => $validated['status']]);
+        
+        // Handle vehicle assignment
+        if ($validated['vehicle_id'] ?? null) {
+            // Clear vehicle dari driver lain jika vehicle dipilih
+            Vehicle::where('driver_id', '!=', null)->where('id', $validated['vehicle_id'])->update(['driver_id' => null]);
+            Vehicle::find($validated['vehicle_id'])->update(['driver_id' => $driver->id]);
+        } elseif ($driver->vehicle) {
+            // Jika vehicle_id null, unassign vehicle dari driver ini
+            $driver->vehicle->update(['driver_id' => null]);
+        }
+        
+        return redirect()->route('admin.drivers')->with('success', 'Data supir berhasil diperbarui!');
+    }
+    public function deleteDriver(Driver $driver) {
+        try { $user = $driver->user; $driver->delete(); if($user) $user->delete(); return back()->with('success', 'Supir berhasil dihapus!'); }
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus supir.'); }
+    }
+
+    // CUSTOMERS
+    public function customers() {
+        // Backfill safety: ensure every user with customer role has a customer profile row
+        $customerRoleId = Role::where('name', 'customer')->value('id');
+
+        if ($customerRoleId) {
+            $existingUserIds = Customer::pluck('user_id');
+
+            User::where('role_id', $customerRoleId)
+                ->whereNotIn('id', $existingUserIds)
+                ->select('id')
+                ->get()
+                ->each(function ($user) {
+                    Customer::create(['user_id' => $user->id]);
+                });
+        }
+
+        return view('admin.customers', ['customers' => Customer::with('user')->get()]);
+    }
+    public function editCustomer(Customer $customer) { return view('admin.customers_edit', compact('customer')); }
+    public function updateCustomer(Request $request, Customer $customer) {
+        $request->validate(['name' => 'required|string', 'email' => 'required|email|unique:users,email,'.$customer->user_id, 'password' => 'nullable|min:6', 'phone' => 'nullable|string']);
+        $customer->user->update(['name' => $request->name, 'email' => $request->email, 'phone' => $request->phone]);
+        if ($request->password) { $customer->user->update(['password' => Hash::make($request->password)]); }
+        return redirect()->route('admin.customers')->with('success', 'Data pelanggan berhasil diperbarui!');
+    }
+    public function deleteCustomer(Customer $customer) {
+        try { $user = $customer->user; $customer->delete(); if($user) $user->delete(); return back()->with('success', 'Pelanggan berhasil dihapus!'); }
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus pelanggan.'); }
+    }
+
+    // BOOKINGS
+    public function bookings() { return view('admin.bookings', ['bookings' => Booking::with(['customer.user', 'schedule.route'])->get()]); }
+    public function editBooking(Booking $booking) { return view('admin.bookings_edit', compact('booking')); }
+    public function updateBooking(Request $request, Booking $booking) {
+        $validated = $request->validate(['status' => 'required|string']);
+        $oldStatus = $booking->status;
+        $booking->update(['status' => $validated['status']]);
+
+        // Auto release seats if cancelled
+        if ($oldStatus !== 'cancelled' && $validated['status'] === 'cancelled') {
+            foreach ($booking->seats as $seat) {
+                $seat->update(['status' => 'available']);
+            }
+        }
+
+        return redirect()->route('admin.bookings')->with('success', 'Status transaksi berhasil diperbarui!');
+    }
+
+    // TRACKING MAPS
+    public function tracking() { 
+        // Mengambil jadwal yang sedang berjalan beserta lokasinya
+        $activeSchedules = Schedule::where('status', 'on_the_way')
+            ->with(['vehicle', 'driver.user', 'locations' => function($query) {
+                $query->latest('recorded_at'); // Mengurutkan lokasi terbaru
+            }])
+            ->get();
+            
+        return view('admin.tracking', ['activeSchedules' => $activeSchedules]); 
+    }
+}

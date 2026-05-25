@@ -1,0 +1,422 @@
+
+.custom-bg {
+  --background: var(--bg-color);
+}
+
+.custom-header {
+  ion-toolbar {
+    --background: var(--bg-color);
+    --border-color: transparent;
+    --padding-top: 10px;
+    --padding-bottom: 5px;
+  }
+
+  ion-back-button {
+    color: var(--dark-gray);
+  }
+
+  .header-title {
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--dark-gray);
+    }
+
+    .route {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 4px;
+      font-weight: 500;
+
+      ion-icon {
+        font-size: 12px;
+        color: var(--primary-color);
+      }
+    }
+  }
+}
+
+// Legend Section
+.legend-section {
+  padding: 16px 24px 0;
+  margin-bottom: 24px;
+
+  .legend-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--light-gray);
+
+    .legend-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .legend-seat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--dark-gray);
+      font-weight: 700;
+
+      .mock-seat {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        transition: all 0.2s;
+      }
+
+      &.available .mock-seat {
+        border: 2px solid #E5E7EB;
+        background: var(--white);
+      }
+
+      &.unavailable .mock-seat {
+        background: #E5E7EB;
+      }
+
+      &.selected .mock-seat {
+        background: var(--primary-color);
+        box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+      }
+    }
+  }
+}
+
+// Cabin Structure
+.cabin-container {
+  padding: 0 24px;
+  display: flex;
+  justify-content: center;
+}
+
+
+.cabin-seats {
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  background: var(--white);
+  border-radius: 28px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
+
+  /* Subtle indicator for front of vehicle */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 4px;
+    background: #E5E7EB;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+
+  .seat-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .seat-col {
+    width: 40px;
+    height: 46px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.cabin-seats.family_car {
+  padding-left: 18px;
+  padding-right: 18px;
+
+  .seat-row {
+    gap: 8px;
+  }
+
+  .seat-col {
+    width: 42px;
+    height: 46px;
+  }
+}
+
+.cabin-seats.mini_bus {
+  .seat-row {
+    gap: 10px;
+  }
+}
+
+.cabin-seats.bus {
+  padding-left: 16px;
+  padding-right: 16px;
+
+  .seat-row {
+    gap: 6px;
+  }
+
+  .seat-col {
+    width: 34px;
+    height: 42px;
+  }
+
+  .seat,
+  .driver-seat {
+    width: 34px;
+    height: 42px;
+  }
+
+  .seat .seat-number {
+    font-size: 12px;
+  }
+}
+
+.empty-space {
+  width: 100%;
+  height: 100%;
+}
+
+.driver-seat {
+  width: 44px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #9ca3af;
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 2px dashed #D1D5DB;
+
+  ion-icon {
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+
+  span {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* Premium Seat Design */
+.seat {
+  width: 44px;
+  height: 48px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+
+  .seat-number {
+    font-size: 14px;
+    font-weight: 800;
+    z-index: 2;
+  }
+
+  /* Seat Cushion Mimic */
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 0 0 12px 12px;
+  }
+
+  &.available {
+    background: var(--white);
+    border: 2px solid #E5E7EB;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+
+    .seat-number {
+      color: var(--dark-gray);
+    }
+
+    &:active {
+      transform: scale(0.92);
+    }
+  }
+
+  &.unavailable {
+    background: #F3F4F6;
+    border: 2px solid #E5E7EB;
+    opacity: 0.7;
+
+    .seat-number {
+      color: #9ca3af;
+    }
+
+    &::before {
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    cursor: not-allowed;
+  }
+
+  &.selected {
+    background: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+
+    .seat-number {
+      color: var(--dark-gray);
+    }
+
+    &::before {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    &:active {
+      transform: scale(0.92);
+    }
+  }
+}
+
+
+// Bottom Info Section
+.bottom-info-section {
+  padding: 0 24px 32px;
+  margin-top: 10px;
+
+  .shuttle-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+
+    .details-left {
+      h3 {
+        margin: 0 0 4px;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--dark-gray);
+      }
+
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: #6b7280;
+        font-weight: 500;
+      }
+    }
+
+    .details-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+
+      .rating-badge {
+        background: var(--bg-color);
+        border: 1px solid var(--light-gray);
+        color: var(--primary-dark);
+        padding: 4px 8px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        font-weight: 800;
+
+        ion-icon {
+          font-size: 12px;
+        }
+      }
+
+      .reviews-count {
+        font-size: 12px;
+        color: var(--primary-dark);
+        font-weight: 700;
+      }
+    }
+  }
+
+  .shuttle-images-scroller {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .image-card {
+      flex-shrink: 0;
+      width: 200px;
+      height: 120px;
+      border-radius: 16px;
+      overflow: hidden;
+
+      .img-wrapper {
+        width: 100%;
+        height: 100%;
+        background: var(--light-gray);
+
+        ion-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+}
+
+// Action Footer
+.action-footer {
+  padding: 16px 24px;
+  background: var(--white);
+  border-top: 1px solid var(--light-gray);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .selected-info {
+    display: flex;
+    flex-direction: column;
+
+    span {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 2px;
+    }
+
+    strong {
+      font-size: 18px;
+      color: var(--dark-gray);
+      font-weight: 800;
+    }
+  }
+
+  .book-btn {
+    margin: 0;
+    --background: var(--primary-color);
+    --color: var(--dark-gray);
+    --border-radius: 16px;
+    --box-shadow: 0 8px 16px rgba(255, 193, 7, 0.2);
+    font-weight: 800;
+    width: 140px;
+    height: 52px;
+    letter-spacing: 0.5px;
+  }
+}

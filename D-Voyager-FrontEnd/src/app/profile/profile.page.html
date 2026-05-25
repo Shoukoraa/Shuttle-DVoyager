@@ -1,0 +1,122 @@
+<ion-content class="custom-bg">
+  
+  <!-- Top Profile Header -->
+  <div class="profile-header">
+    <div class="header-curve"></div>
+    <div class="profile-info">
+      <div class="avatar-container" routerLink="/edit-profile">
+        <img *ngIf="userData.profile_photo_url" [src]="userData.profile_photo_url" alt="Foto profil">
+        <ion-icon *ngIf="!userData.profile_photo_url" name="person"></ion-icon>
+        <div class="edit-badge">
+          <ion-icon name="camera"></ion-icon>
+        </div>
+      </div>
+      <h2>{{ isLoading ? 'Loading profile...' : (userData.name || 'User') }}</h2>
+      <p>{{ isLoading ? 'Please wait' : (userData.email || 'No email') }}</p>
+      <!-- <div class="member-badge">
+        <ion-icon name="star"></ion-icon>
+        <span>Member Jomok</span>
+      </div> -->
+    </div>
+  </div>
+
+  <!-- Profile Settings Menu -->
+  <div class="profile-container">
+    
+    <div class="settings-group">
+      <h3>Akun</h3>
+      <div class="settings-card">
+        <div class="setting-item" routerLink="/edit-profile">
+          <div class="icon-box primary">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="item-text">
+            <h4>Edit Profil</h4>
+            <p>Ubah nama, nomor telepon</p>
+          </div>
+          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+        </div>
+        
+        <div class="setting-divider"></div>
+        
+        <div class="setting-item">
+          <div class="icon-box warning">
+            <ion-icon name="card-outline"></ion-icon>
+          </div>
+          <div class="item-text">
+            <h4>Metode Pembayaran</h4>
+            <p>Kelola kartu dan e-wallet</p>
+          </div>
+          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3>Lainnya</h3>
+      <div class="settings-card">
+        <div class="setting-item" routerLink="/customer-service">
+          <div class="icon-box info">
+            <ion-icon name="help-circle-outline"></ion-icon>
+          </div>
+          <div class="item-text">
+            <h4>Pusat Bantuan</h4>
+            <p>FAQ & Kontak CS</p>
+          </div>
+          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+        </div>
+        
+        <div class="setting-divider"></div>
+        
+        <div class="setting-item">
+          <div class="icon-box success">
+            <ion-icon name="document-text-outline"></ion-icon>
+          </div>
+          <div class="item-text">
+            <h4>Syarat & Ketentuan</h4>
+            <p>Kebijakan aplikasi</p>
+          </div>
+          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Out Button -->
+    <button class="logout-btn" (click)="logout()" [disabled]="isLoggingOut">
+      <ion-icon [name]="isLoggingOut ? 'hourglass-outline' : 'log-out-outline'"></ion-icon>
+      {{ isLoggingOut ? 'Keluar...' : 'Keluar Akun' }}
+    </button>
+
+  </div>
+
+</ion-content>
+
+<!-- Custom Bottom Navigation -->
+<ion-footer class="custom-footer ion-no-border">
+  <div class="nav-bar material-nav">
+    <div class="nav-item" routerLink="/home">
+      <div class="icon-container">
+        <ion-icon name="home-outline"></ion-icon>
+      </div>
+      <span>Beranda</span>
+    </div>
+    <div class="nav-item" routerLink="/tickets">
+      <div class="icon-container">
+        <ion-icon name="ticket-outline"></ion-icon>
+      </div>
+      <span>Pesanan</span>
+    </div>
+    <div class="nav-item" routerLink="/promos">
+      <div class="icon-container">
+        <ion-icon name="pricetag-outline"></ion-icon>
+      </div>
+      <span>Promo</span>
+    </div>
+    <div class="nav-item active" routerLink="/profile">
+      <div class="icon-container">
+        <ion-icon name="person"></ion-icon>
+      </div>
+      <span>Profil</span>
+    </div>
+  </div>
+</ion-footer>

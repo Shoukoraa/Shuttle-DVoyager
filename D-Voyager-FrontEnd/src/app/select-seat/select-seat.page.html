@@ -1,0 +1,111 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/schedule" icon="arrow-back" text=""></ion-back-button>
+    </ion-buttons>
+    
+    <div class="header-title">
+      <h1>Pilih Kursi</h1>
+      <div class="route">
+        <span>{{ routeOrigin }}</span>
+        <ion-icon name="arrow-forward"></ion-icon>
+        <span>{{ routeDest }}</span>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg">
+
+  <!-- Legend Section moved to top to save space below -->
+  <div class="legend-section">
+    <div class="legend-card">
+      <div class="legend-item">
+        <div class="legend-seat available">
+          <div class="mock-seat"></div>
+          <span>Tersedia</span>
+        </div>
+        <div class="legend-seat unavailable">
+          <div class="mock-seat"></div>
+          <span>Terisi</span>
+        </div>
+        <div class="legend-seat selected">
+          <div class="mock-seat"></div>
+          <span>Dipilih</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seats Container -->
+  <div class="cabin-container">
+    <div class="cabin-seats" [ngClass]="vehicleCategory">
+      <div class="seat-row" *ngFor="let row of seatMap">
+        <div class="seat-col" *ngFor="let seat of row">
+          
+          <div *ngIf="seat.status === 'driver'" class="driver-seat">
+            <ion-icon name="person"></ion-icon>
+            <span>Supir</span>
+          </div>
+          <div *ngIf="seat.status === 'empty'" class="empty-space"></div>
+
+          <div *ngIf="seat.status === 'available'" class="seat available" (click)="toggleSeat(seat)">
+            <span class="seat-number">{{ seat.id }}</span>
+          </div>
+
+          <div *ngIf="seat.status === 'unavailable'" class="seat unavailable">
+            <span class="seat-number">{{ seat.id }}</span>
+          </div>
+
+          <div *ngIf="seat.status === 'selected'" class="seat selected" (click)="toggleSeat(seat)">
+            <span class="seat-number">{{ seat.id }}</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Bottom Info Section -->
+  <div class="bottom-info-section">
+    <div class="shuttle-details-header">
+      <div class="details-left">
+        <h3>{{ shuttleInfo.operator }}</h3>
+        <p>{{ shuttleInfo.time }}</p>
+      </div>
+      <div class="details-right">
+        <div class="rating-badge">
+          <ion-icon name="star"></ion-icon>
+          <span>{{ shuttleInfo.rating }}</span>
+        </div>
+        <span class="reviews-count">{{ shuttleInfo.type }}</span>
+      </div>
+    </div>
+
+    <!-- Images -->
+    <div class="shuttle-images-scroller">
+      <div class="image-card">
+        <div class="img-wrapper"></div>
+      </div>
+      <div class="image-card">
+        <div class="img-wrapper"></div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>
+
+<!-- Action Footer -->
+<ion-footer class="ion-no-border">
+  <div class="action-footer">
+    <div class="selected-info">
+      <span>Total Harga</span>
+      <strong *ngIf="selectedSeats.length > 0">Rp {{ (selectedSeats.length * shuttleInfo.price) | number:'1.0-0' }}</strong>
+      <strong *ngIf="selectedSeats.length === 0">-</strong>
+    </div>
+    
+    <ion-button expand="block" class="book-btn" [disabled]="selectedSeats.length === 0" (click)="proceedToBooking()">
+      Lanjut
+    </ion-button>
+  </div>
+</ion-footer>

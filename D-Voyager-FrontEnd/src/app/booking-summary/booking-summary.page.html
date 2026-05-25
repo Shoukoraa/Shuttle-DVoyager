@@ -1,0 +1,104 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/select-seat" icon="arrow-back" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detail Pemesanan</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg">
+  <div class="summary-container">
+
+    <!-- Folded Accordion Style Layout -->
+    <div class="accordion-card">
+      
+      <!-- Section 1: Perjalanan -->
+      <div class="accordion-section">
+        <div class="section-header">
+          <div class="step-circle">1</div>
+          <h2>Ringkasan Perjalanan</h2>
+        </div>
+        
+        <div class="section-content">
+          <div class="route-timeline">
+            <div class="time-point">
+              <span class="time">{{ tripDetails.time }}</span>
+              <span class="location">{{ tripDetails.origin }}</span>
+            </div>
+            <div class="time-point">
+              <span class="time">{{ tripDetails.arrivalTime }}</span>
+              <span class="location">{{ tripDetails.destination }}</span>
+            </div>
+          </div>
+
+          <div class="operator-info">
+            <div class="operator-name">
+              <span>Operator</span>
+              <strong>{{ tripDetails.operator }}</strong>
+            </div>
+            <div class="seat-badge">
+              Kursi: {{ tripDetails.seats.join(', ') }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="accordion-divider"></div>
+
+      <!-- Section 2: Penumpang -->
+      <div class="accordion-section">
+        <div class="section-header">
+          <div class="step-circle">2</div>
+          <h2>Detail Penumpang</h2>
+        </div>
+        
+        <div class="section-content">
+          <div class="passenger-form">
+            <div class="input-minimal">
+              <span class="input-label">Nama Lengkap</span>
+              <ion-input type="text" placeholder="Masukkan nama sesuai KTP" [(ngModel)]="contactDetails.name"></ion-input>
+            </div>
+            
+            <div class="input-minimal">
+              <span class="input-label">Nomor Telepon</span>
+              <ion-input type="tel" placeholder="Contoh: 08123456789" [(ngModel)]="contactDetails.phone"></ion-input>
+            </div>
+            
+            <div class="input-minimal">
+              <span class="input-label">Email</span>
+              <ion-input type="email" placeholder="Alamat email aktif" [(ngModel)]="contactDetails.email"></ion-input>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</ion-content>
+
+<!-- Sticky Floating Footer for Price -->
+<ion-footer class="ion-no-border">
+  <div class="sticky-fare-footer">
+    <div class="fare-breakdown">
+      <div class="fare-row">
+        <span>Harga Tiket ({{ tripDetails.seats.length }}x)</span>
+        <span>Rp {{ (tripDetails.seats.length * fareDetails.ticketPrice) | number:'1.0-0' }}</span>
+      </div>
+      <div class="fare-row">
+        <span>Biaya Layanan</span>
+        <span>Rp {{ fareDetails.fee | number:'1.0-0' }}</span>
+      </div>
+    </div>
+    
+    <div class="action-row">
+      <div class="total-price">
+        <span>Total Bayar</span>
+        <strong>Rp {{ totalFare | number:'1.0-0' }}</strong>
+      </div>
+      <ion-button class="pay-btn" (click)="proceedToPayment()">Lanjut Bayar</ion-button>
+    </div>
+  </div>
+</ion-footer>

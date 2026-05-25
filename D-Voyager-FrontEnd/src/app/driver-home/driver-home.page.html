@@ -1,0 +1,204 @@
+<ion-content class="custom-bg">
+  
+  <!-- Curved Header Background -->
+  <div class="header-curve driver-theme"></div>
+
+  <!-- Main Content Wrapper -->
+  <div class="home-container">
+    
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="greeting">
+        <p>Driver Mode</p>
+        <h2>Halo, {{ driverName }} 🚌</h2>
+        <div class="vehicle-badge">{{ vehiclePlate }}</div>
+      </div>
+      <a class="profile-avatar driver-avatar" routerLink="/driver-profile" aria-label="Buka profil pengguna">
+        <img *ngIf="profilePhotoUrl; else avatarFallback" [src]="profilePhotoUrl" alt="Foto profil akun">
+        <ng-template #avatarFallback>
+          <ion-icon name="person"></ion-icon>
+        </ng-template>
+        <div class="online-indicator"></div>
+      </a>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoadingSchedule" style="text-align: center; padding: 30px;">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Memuat jadwal...</p>
+    </div>
+
+    <!-- Active Trip Card -->
+    <div class="booking-card trip-card" *ngIf="!isLoadingSchedule && currentTrip && tripStatus !== 'completed'">
+      <div class="card-header">
+        <h3>Tugas Saat Ini</h3>
+        <span class="trip-id">{{ currentTrip.displayId }}</span>
+      </div>
+      
+      <div class="trip-details">
+        <div class="route-line">
+          <strong>{{ currentTrip.route }}</strong>
+        </div>
+        <div class="time-info">
+          <div class="time-block">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>Berangkat: <b>{{ currentTrip.departureTime }}</b></span>
+          </div>
+          <div class="time-block">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Penumpang: <b>{{ currentTrip.passengers }} Orang</b></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-section">
+        <ion-button expand="block" fill="outline" class="manifest-btn" (click)="openManifest()" style="margin-bottom: 10px;">
+          <ion-icon name="list-outline" slot="start"></ion-icon>
+          Lihat Manifest Penumpang
+        </ion-button>
+
+        <ion-button expand="block" class="start-btn" *ngIf="tripStatus === 'scheduled'" (click)="startTrip()">
+          <ion-icon name="play-circle-outline" slot="start"></ion-icon>
+          Mulai Perjalanan
+        </ion-button>
+
+        <ion-button expand="block" class="finish-btn" *ngIf="tripStatus === 'on_the_way'" (click)="finishTrip()">
+          <ion-icon name="checkmark-done-circle-outline" slot="start"></ion-icon>
+          Selesaikan Perjalanan
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Empty State if Completed or No Schedules -->
+    <div class="completed-state" *ngIf="!isLoadingSchedule && (!currentTrip || tripStatus === 'completed')">
+      <div class="success-icon">
+        <ion-icon name="calendar-outline" *ngIf="!currentTrip"></ion-icon>
+        <ion-icon name="checkmark-circle" *ngIf="currentTrip && tripStatus === 'completed'"></ion-icon>
+      </div>
+      <h3 *ngIf="!currentTrip">Tidak Ada Tugas Untuk Hari Ini, Lanjut Besok</h3>
+      <h3 *ngIf="currentTrip && tripStatus === 'completed'">Tugas Selesai!</h3>
+      <p *ngIf="!currentTrip && nextTripDate">Tugas hari ini sudah selesai. Lanjut Besok.</p>
+      <p *ngIf="!currentTrip && !nextTripDate">Tugas hari ini sudah selesai. Tidak ada tugas untuk hari ini, lanjut Besok.</p>
+      <p *ngIf="currentTrip && tripStatus === 'completed'">Anda telah menyelesaikan perjalanan ini. Lanjutkan tugas berikutnya Besok hari.</p>
+    </div>
+
+    <!-- Upcoming Trip Preview -->
+    <div class="next-trip-card" *ngIf="!isLoadingSchedule && !currentTrip && nextTrip">
+      <div class="next-trip-top">
+        <div>
+          <span class="section-kicker">Tugas Berikutnya</span>
+          <h3>{{ nextTrip.route }}</h3>
+        </div>
+        <span class="trip-id">{{ nextTrip.displayId }}</span>
+      </div>
+
+      <div class="schedule-strip">
+
+        <div class="status-pill">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>{{ nextTrip.statusLabel }}</span>
+        </div>
+      </div>
+
+      <div class="next-trip-grid">
+        <div class="detail-tile">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>Berangkat</span>
+          <strong>{{ nextTrip.departureTime }}</strong>
+        </div>
+        <div class="detail-tile">
+          <ion-icon name="flag-outline"></ion-icon>
+          <span>Tiba</span>
+          <strong>{{ nextTrip.arrivalTime }}</strong>
+        </div>
+        <div class="detail-tile">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Penumpang</span>
+          <strong>{{ nextTrip.passengers }} Orang</strong>
+        </div>
+        <div class="detail-tile">
+          <ion-icon name="car-sport-outline"></ion-icon>
+          <span>Kendaraan</span>
+          <strong>{{ nextTrip.vehicleType }}</strong>
+        </div>
+      </div>
+
+      <ion-button expand="block" disabled class="tomorrow-btn">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        Dapat dimulai besok
+      </ion-button>
+    </div>
+
+    <!-- Tracking / Map Placeholder -->
+    <div class="tracking-section" *ngIf="tripStatus === 'on_the_way'">
+      <div class="section-header">
+        <h3>Live Tracking</h3>
+      </div>
+      <div class="map-placeholder">
+        <ion-icon name="map"></ion-icon>
+        <p>GPS Tracking Aktif</p>
+        <div class="radar"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <ion-modal [isOpen]="isManifestModalOpen" (didDismiss)="closeManifest()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Manifest Penumpang</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeManifest()">Tutup</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="loading-state" *ngIf="isLoadingManifest" style="text-align: center; padding: 30px;">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p>Memuat manifest...</p>
+        </div>
+
+        <div class="empty-state" *ngIf="!isLoadingManifest && manifestData.length === 0" style="text-align: center; padding: 30px; color: #888;">
+          <ion-icon name="people-circle-outline" style="font-size: 48px; color: #ccc;"></ion-icon>
+          <p>Belum ada penumpang yang membayar.</p>
+        </div>
+
+        <ion-list *ngIf="!isLoadingManifest && manifestData.length > 0">
+          <ion-item *ngFor="let passenger of manifestData" lines="full">
+            <ion-icon name="person-circle" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>{{ passenger.passenger_name }}</h2>
+              <p>No. HP: {{ passenger.phone }}</p>
+            </ion-label>
+            <ion-badge slot="end" color="success">Kursi: {{ passenger.seats.join(', ') }}</ion-badge>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
+
+<!-- Custom Bottom Navigation for Driver -->
+<ion-footer class="custom-footer driver-footer">
+  <div class="nav-bar">
+    <div class="nav-item active" routerLink="/driver-home" routerDirection="root">
+      <ion-icon name="car-outline"></ion-icon>
+      <span>Tugas</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-history" routerDirection="root">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>Riwayat</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-chat" routerDirection="root">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <span>Pesan</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-profile" routerDirection="root">
+      <ion-icon name="person-outline"></ion-icon>
+      <span>Akun</span>
+    </div>
+  </div>
+</ion-footer>

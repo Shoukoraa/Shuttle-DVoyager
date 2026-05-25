@@ -1,0 +1,57 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/signup" icon="arrow-back" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Verifikasi OTP</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg">
+  <div class="otp-container">
+    <div class="header-section">
+      <div class="logo-box">
+        <ion-icon name="mail-unread-outline"></ion-icon>
+      </div>
+      <h1>Cek Email Kamu</h1>
+      <p>Kode OTP 6 digit sudah dikirim ke</p>
+      <strong>{{ email || 'email kamu' }}</strong>
+    </div>
+
+    <form class="otp-card" (ngSubmit)="verify()">
+      <div class="input-group">
+        <ion-label class="custom-label">Kode OTP</ion-label>
+        <ion-item class="custom-input-item" lines="none">
+          <ion-icon name="keypad-outline" slot="start"></ion-icon>
+          <ion-input
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            name="otp"
+            [(ngModel)]="otp"
+            placeholder="123456"
+            [disabled]="isLoading">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="error-banner" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <ion-button expand="block" type="submit" class="verify-btn" [disabled]="isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        <span>{{ isLoading ? 'Memverifikasi...' : 'Verifikasi' }}</span>
+      </ion-button>
+
+      <button class="resend-btn" type="button" (click)="resend()" [disabled]="resendCooldownSeconds > 0 || isLoading">
+        <ion-icon name="refresh-outline"></ion-icon>
+        <span>{{ resendCooldownSeconds > 0 ? ('Kirim ulang dalam ' + resendCooldownSeconds + 's') : 'Kirim Ulang Kode' }}</span>
+      </button>
+
+      <p class="helper-text">
+        Belum menerima email? Periksa folder spam atau kirim ulang setelah cooldown selesai.
+      </p>
+    </form>
+  </div>
+</ion-content>

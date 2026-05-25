@@ -1,0 +1,58 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/booking-summary" icon="arrow-back" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Metode Pembayaran</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg">
+  
+  <div class="payment-section">
+    <!-- Total Payment Summary -->
+    <div class="total-card">
+      <span class="label">Total Pembayaran</span>
+      <strong class="amount">Rp {{ totalFare | number:'1.0-0' }}</strong>
+      <div class="payment-breakdown">
+        <span>Tiket: Rp {{ ticketTotal | number:'1.0-0' }}</span>
+        <span>Biaya layanan: Rp {{ serviceFee | number:'1.0-0' }}</span>
+      </div>
+      <div class="timer">
+        Selesaikan dalam <strong>14:59</strong>
+      </div>
+    </div>
+
+    <!-- Payment Methods List -->
+    <div class="methods-container" *ngFor="let group of paymentMethods">
+      <h3 class="category-title">{{ group.category }}</h3>
+      
+      <div class="method-card" 
+           *ngFor="let method of group.items"
+           [class.selected]="selectedMethodId === method.id"
+           (click)="selectMethod(method.id)">
+        <div class="method-info">
+          <div class="icon-box">
+            <ion-icon [name]="method.icon"></ion-icon>
+          </div>
+          <span class="method-name">{{ method.name }}</span>
+        </div>
+        
+        <div class="radio-circle">
+          <div class="inner-circle" *ngIf="selectedMethodId === method.id"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>
+
+<!-- Action Footer -->
+<ion-footer class="ion-no-border" *ngIf="selectedMethodId">
+  <div class="action-footer">
+    <ion-button expand="block" class="pay-btn" (click)="processPayment()" [disabled]="isProcessing">
+      <span *ngIf="!isProcessing">Bayar Sekarang</span>
+      <ion-spinner *ngIf="isProcessing" name="crescent"></ion-spinner>
+    </ion-button>
+  </div>
+</ion-footer>

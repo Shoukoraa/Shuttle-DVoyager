@@ -1,0 +1,66 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-title>Promo & Penawaran</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg">
+  <div class="promos-container">
+    
+    <div class="promo-card">
+      <div class="promo-image bg-yellow">
+        <ion-icon name="gift"></ion-icon>
+      </div>
+      <div class="promo-content">
+        <div class="promo-badge">Pengguna Baru</div>
+        <h3>Diskon 20% Perjalanan Pertama</h3>
+        <p>Gunakan kode voucher <strong>NEWARNES</strong> saat checkout.</p>
+        <span class="expiry">Berakhir: 31 Des 2026</span>
+      </div>
+    </div>
+
+    <div class="promo-card">
+      <div class="promo-image bg-blue">
+        <ion-icon name="wallet"></ion-icon>
+      </div>
+      <div class="promo-content">
+        <div class="promo-badge">E-Wallet</div>
+        <h3>Cashback Rp 15.000 OVO</h3>
+        <p>Khusus pembayaran menggunakan OVO Cash minimal transaksi Rp 100rb.</p>
+        <span class="expiry">Berakhir: 30 Jun 2026</span>
+      </div>
+    </div>
+
+
+  </div>
+</ion-content>
+
+<!-- Custom Bottom Navigation -->
+<ion-footer class="custom-footer ion-no-border">
+  <div class="nav-bar material-nav">
+    <div class="nav-item" routerLink="/home">
+      <div class="icon-container">
+        <ion-icon name="home-outline"></ion-icon>
+      </div>
+      <span>Beranda</span>
+    </div>
+    <div class="nav-item" routerLink="/tickets">
+      <div class="icon-container">
+        <ion-icon name="ticket-outline"></ion-icon>
+      </div>
+      <span>Pesanan</span>
+    </div>
+    <div class="nav-item active" routerLink="/promos">
+      <div class="icon-container">
+        <ion-icon name="pricetag"></ion-icon>
+      </div>
+      <span>Promo</span>
+    </div>
+    <div class="nav-item" routerLink="/profile">
+      <div class="icon-container">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <span>Profil</span>
+    </div>
+  </div>
+</ion-footer>

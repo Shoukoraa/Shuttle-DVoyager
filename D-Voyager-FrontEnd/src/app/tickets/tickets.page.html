@@ -1,0 +1,178 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-title>Pesanan Saya</ion-title>
+  </ion-toolbar>
+  <div class="segment-container">
+    <ion-segment value="aktif" mode="ios">
+      <ion-segment-button value="aktif">
+        <ion-label>Aktif</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="riwayat">
+        <ion-label>Riwayat</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+</ion-header>
+
+<ion-content class="custom-bg">
+  <div class="tickets-container">
+    
+    <div class="loading-state" *ngIf="isLoading" style="text-align: center; margin-top: 50px;">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Memuat pesanan...</p>
+    </div>
+
+    <!-- Active Ticket Card -->
+    <ng-container *ngIf="hasTickets && !isLoading">
+      <div class="ticket-card active-ticket" *ngFor="let ticket of tickets" [ngStyle]="{'border-top': ticket.status === 'paid' ? '4px solid #10dc60' : '4px solid #ffc409'}">
+        <div class="ticket-header">
+          <div class="status-badge" [ngStyle]="{'background': ticket.status === 'paid' ? '#10dc60' : '#ffc409', 'color': '#fff'}">
+            {{ ticket.status | titlecase }}
+          </div>
+          <div class="booking-id">ID: #{{ ticket.id }}</div>
+        </div>
+        
+        <div class="route-info">
+          <div class="location-group">
+            <h4>{{ ticket.schedule?.route?.origin?.name || 'Asal' }}</h4>
+          </div>
+          <div class="divider">
+            <ion-icon name="arrow-forward"></ion-icon>
+          </div>
+          <div class="location-group right">
+            <h4>{{ ticket.schedule?.route?.destination?.name || 'Tujuan' }}</h4>
+          </div>
+        </div>
+        
+        <div class="datetime-info">
+          <div class="dt-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>{{ ticket.schedule?.departure_time | date:'EEE, dd MMM yyyy' }}</span>
+          </div>
+          <div class="dt-item">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ ticket.schedule?.departure_time | date:'HH:mm' }} - {{ ticket.schedule?.arrival_time | date:'HH:mm' }}</span>
+          </div>
+        </div>
+
+        <div class="ticket-footer">
+          <div class="seat-info">
+            <span>Kursi</span>
+            <strong>
+              <span *ngFor="let seat of ticket.seats; let last = last">
+                {{ seat.seat_number }}{{ !last ? ', ' : '' }}
+              </span>
+            </strong>
+          </div>
+          <div class="seat-info">
+            <span>Total Bayar</span>
+            <strong>Rp {{ ticket.total_price | number }}</strong>
+          </div>
+        </div>
+        
+        <div class="ticket-actions" *ngIf="ticket.status === 'booked'" style="padding: 0 15px 15px;">
+          <ion-button expand="block" color="warning" (click)="continuePayment(ticket)">
+            Lanjutkan Pembayaran
+            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="ticket-actions" *ngIf="ticket.status === 'paid'" style="padding: 0 15px 15px;">
+          <ion-button expand="block" color="primary" (click)="openChat(ticket)">
+            <ion-icon name="chatbubbles" slot="start"></ion-icon>
+            Hubungi Driver
+          </ion-button>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!hasTickets && !isLoading">
+      <div class="empty-icon-wrapper">
+        <ion-icon name="bus-outline"></ion-icon>
+      </div>
+      <h3>Belum Ada Pesanan</h3>
+      <p>Anda belum memiliki tiket perjalanan yang aktif. Yuk, mulai perjalanan pertama Anda bersama kami!</p>
+      <ion-button class="mega-search-btn" routerLink="/schedule">
+        Cari Shuttle Sekarang
+        <ion-icon name="arrow-forward"></ion-icon>
+      </ion-button>
+    </div>
+
+  </div>
+
+  <!-- Chat Room Modal -->
+  <ion-modal [isOpen]="isChatOpen" (didDismiss)="closeChat()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="primary">
+          <ion-buttons slot="start">
+            <ion-button (click)="closeChat()">
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>Chat dengan Driver</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="chat-room-content">
+        <div class="message-list">
+          <div *ngFor="let msg of chatMessages" class="message-wrapper" [class.sent]="msg.sender_type === 'customer'" [class.received]="msg.sender_type === 'driver'">
+            <div class="message-bubble">
+              <p>{{ msg.message }}</p>
+              <span class="message-time">{{ msg.created_at | date:'HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+
+      <ion-footer class="ion-no-border">
+        <ion-toolbar class="chat-toolbar">
+          <div class="chat-input-wrapper">
+            <ion-textarea 
+              [(ngModel)]="newMessage" 
+              placeholder="Ketik pesan..." 
+              auto-grow="true" 
+              rows="1" 
+              max-rows="4">
+            </ion-textarea>
+            <ion-button fill="clear" (click)="sendMessage()" [disabled]="!newMessage.trim()">
+              <ion-icon name="send" slot="icon-only" color="primary"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
+
+<!-- Custom Bottom Navigation -->
+<ion-footer class="custom-footer ion-no-border">
+  <div class="nav-bar material-nav">
+    <div class="nav-item" routerLink="/home">
+      <div class="icon-container">
+        <ion-icon name="home-outline"></ion-icon>
+      </div>
+      <span>Beranda</span>
+    </div>
+    <div class="nav-item active" routerLink="/tickets">
+      <div class="icon-container">
+        <ion-icon name="ticket"></ion-icon>
+      </div>
+      <span>Pesanan</span>
+    </div>
+    <div class="nav-item" routerLink="/promos">
+      <div class="icon-container">
+        <ion-icon name="pricetag-outline"></ion-icon>
+      </div>
+      <span>Promo</span>
+    </div>
+    <div class="nav-item" routerLink="/profile">
+      <div class="icon-container">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <span>Profil</span>
+    </div>
+  </div>
+</ion-footer>

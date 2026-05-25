@@ -1,0 +1,321 @@
+.custom-bg {
+  --background: var(--bg-color);
+}
+
+.custom-header {
+  ion-toolbar {
+    --background: var(--white);
+    --padding-top: 10px;
+  }
+
+  ion-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--dark-gray);
+  }
+
+  .segment-container {
+    background: var(--white);
+    padding: 10px 24px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    ion-segment {
+      background: var(--bg-color);
+      padding: 4px;
+      border-radius: 12px;
+
+      ion-segment-button {
+        --color-checked: var(--dark-gray);
+        --color: #9ca3af;
+        --indicator-color: var(--white);
+        --background-checked: var(--white);
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        border-radius: 8px;
+        min-height: 36px;
+      }
+    }
+  }
+}
+
+.tickets-container {
+  padding: 24px;
+
+  .ticket-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+
+    &.active-ticket {
+      border-left: 6px solid var(--primary-color);
+    }
+
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .status-badge {
+        background: rgba(255, 193, 7, 0.15);
+        color: var(--primary-dark);
+        font-size: 11px;
+        font-weight: 800;
+        padding: 6px 12px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .booking-id {
+        font-size: 12px;
+        color: #9ca3af;
+        font-weight: 700;
+      }
+    }
+
+    .route-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .location-group {
+        flex: 1;
+
+        h4 {
+          margin: 0 0 4px;
+          font-size: 18px;
+          font-weight: 800;
+          color: var(--dark-gray);
+        }
+
+        p {
+          margin: 0;
+          font-size: 13px;
+          color: #6b7280;
+        }
+
+        &.right {
+          text-align: right;
+        }
+      }
+
+      .divider {
+        padding: 0 16px;
+        color: #D1D5DB;
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+    }
+
+    .datetime-info {
+      display: flex;
+      gap: 20px;
+      padding: 12px 16px;
+      background: var(--bg-color);
+      border-radius: 12px;
+      margin-bottom: 20px;
+
+      .dt-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--dark-gray);
+
+        ion-icon {
+          font-size: 16px;
+          color: var(--primary-color);
+        }
+      }
+    }
+
+    .ticket-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px dashed var(--light-gray);
+      padding-top: 16px;
+
+      .seat-info {
+        display: flex;
+        flex-direction: column;
+
+        span {
+          font-size: 11px;
+          color: #9ca3af;
+          text-transform: uppercase;
+          font-weight: 700;
+        }
+
+        strong {
+          font-size: 16px;
+          color: var(--dark-gray);
+          font-weight: 800;
+          margin-top: 2px;
+        }
+      }
+
+      .view-btn {
+        margin: 0;
+        --background: var(--dark-gray);
+        --color: var(--primary-color);
+        --border-radius: 12px;
+        --box-shadow: 0 4px 12px rgba(30, 30, 30, 0.2);
+        font-weight: 800;
+        font-size: 13px;
+        height: 40px;
+      }
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px 40px;
+
+    .empty-icon-wrapper {
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 193, 7, 0.15);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 24px;
+
+      ion-icon {
+        font-size: 48px;
+        color: var(--primary-dark);
+      }
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--dark-gray);
+      margin: 0 0 12px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.5;
+      margin: 0 0 32px;
+    }
+
+    .mega-search-btn {
+      width: 100%;
+      margin: 0;
+      --background: var(--dark-gray);
+      --color: var(--primary-color);
+      --border-radius: 20px;
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+      --box-shadow: 0 12px 24px rgba(30, 30, 30, 0.2);
+      font-size: 15px;
+      font-weight: 800;
+      
+      ion-icon {
+        font-size: 18px;
+        margin-left: 8px;
+      }
+    }
+  }
+}
+
+/* Chat Room Modal */
+.chat-room-content {
+  --background: #F0F2F5;
+
+  .message-list {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .message-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    &.sent {
+      align-items: flex-end;
+      .message-bubble {
+        background: var(--primary-color, #10dc60);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+        p { color: #fff; }
+        .message-time { color: rgba(255,255,255,0.8); }
+      }
+    }
+
+    &.received {
+      align-items: flex-start;
+      .message-bubble {
+        background: #fff;
+        border-bottom-left-radius: 4px;
+        p { color: #1E1E1E; }
+        .message-time { color: #6B7280; }
+      }
+    }
+  }
+
+  .message-bubble {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+
+    p {
+      margin: 0 0 4px 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .message-time {
+      font-size: 11px;
+      display: block;
+      text-align: right;
+    }
+  }
+}
+
+.chat-toolbar {
+  --background: #fff;
+  padding: 8px 12px;
+  
+  .chat-input-wrapper {
+    display: flex;
+    align-items: flex-end;
+    background: #F0F2F5;
+    border-radius: 20px;
+    padding: 4px 8px;
+
+    ion-textarea {
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+      --padding-start: 12px;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    ion-button {
+      margin: 0 0 2px 0;
+      --padding-start: 8px;
+      --padding-end: 8px;
+      height: 36px;
+    }
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">D-Voyager</string>
+    <string name="title_activity_main">D-Voyager</string>
+    <string name="package_name">com.DVoyage.app</string>
+    <string name="custom_url_scheme">com.DVoyage.app</string>
+</resources>

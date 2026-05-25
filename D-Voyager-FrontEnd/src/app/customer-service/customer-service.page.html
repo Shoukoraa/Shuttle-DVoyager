@@ -1,0 +1,92 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/profile" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pusat Bantuan</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg">
+  <div class="cs-container">
+    
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-icon">
+        <ion-icon name="headset"></ion-icon>
+      </div>
+      <div class="hero-text">
+        <h2>Hai, {{ userName }}!</h2>
+        <p>Ada yang bisa kami bantu hari ini? Tim kami siap melayani Anda.</p>
+      </div>
+    </div>
+
+    <!-- Quick Contacts -->
+    <h3 class="section-title">Hubungi Kami</h3>
+    <div class="contact-grid">
+      <a class="contact-card" href="https://wa.me/62895324354052" target="_blank" rel="noopener noreferrer" aria-label="Chat via WhatsApp">
+        <div class="icon-wrapper whatsapp">
+          <ion-icon name="logo-whatsapp"></ion-icon>
+        </div>
+        <span>Chat WA</span> <!-- Ngelink ke whatsapp -->
+      </a>
+      <a class="contact-card" href="tel:0895324354052" aria-label="Hubungi customer service 0895324354052">
+        <div class="icon-wrapper phone">
+          <ion-icon name="call"></ion-icon>
+        </div>
+        <span>Telepon</span> <!-- Ngelink ke kontak pemanggilan -->
+      </a>
+      <a class="contact-card" href="mailto:domiini1c.id@gmail.com" aria-label="Kirim email ke customer service domiini1c.id@gmail.com">
+        <div class="icon-wrapper email">
+          <ion-icon name="mail"></ion-icon>
+        </div>
+        <span>Email</span>
+      </a>
+    </div>
+
+    <!-- FAQ Section -->
+    <h3 class="section-title">Pertanyaan Umum (FAQ)</h3>
+    <div class="faq-list">
+      <ion-accordion-group mode="md">
+        
+        <ion-accordion value="faq-1">
+          <ion-item slot="header" lines="none">
+            <ion-label>Bagaimana cara membatalkan pesanan?</ion-label>
+          </ion-item>
+          <div slot="content">
+            Anda dapat membatalkan pesanan melalui halaman "Pesanan Saya" maksimal 2 jam sebelum keberangkatan. Dana akan dikembalikan ke saldo dompet Anda sesuai dengan syarat dan ketentuan yang berlaku.
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="faq-2">
+          <ion-item slot="header" lines="none">
+            <ion-label>Apakah saya bisa mengubah jadwal?</ion-label>
+          </ion-item>
+          <div slot="content">
+            Ya, perubahan jadwal (*reschedule*) dapat dilakukan maksimal 4 jam sebelum keberangkatan. Silakan hubungi Call Center kami untuk bantuan lebih lanjut.
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="faq-3">
+          <ion-item slot="header" lines="none">
+            <ion-label>Di mana letak titik penjemputan (pool)?</ion-label>
+          </ion-item>
+          <div slot="content">
+            Lokasi *pool* dapat Anda lihat pada rincian e-tiket Anda. Jika Anda kesulitan menemukan lokasi, silakan hubungi pengemudi melalui nomor yang tertera di aplikasi.
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="faq-4">
+          <ion-item slot="header" lines="none">
+            <ion-label>Apakah ada batasan bagasi?</ion-label>
+          </ion-item>
+          <div slot="content">
+            Setiap penumpang diperbolehkan membawa 1 tas jinjing dan 1 koper berukuran sedang. Jika membawa barang berlebih, mungkin akan dikenakan biaya tambahan.
+          </div>
+        </ion-accordion>
+
+      </ion-accordion-group>
+    </div>
+
+  </div>
+</ion-content>

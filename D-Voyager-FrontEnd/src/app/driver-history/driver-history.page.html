@@ -1,0 +1,53 @@
+<ion-content class="driver-bg">
+  <div class="modern-header">
+    <ion-icon name="time" class="bg-icon"></ion-icon>
+    <h1>Riwayat Perjalanan</h1>
+    <p>Aktivitas tugas Anda sebelumnya</p>
+  </div>
+  
+  <div class="history-container">
+    <div class="loading-state" *ngIf="isLoading" style="text-align: center; padding: 30px;">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Memuat riwayat perjalanan...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoading && history.length === 0" style="text-align: center; padding: 30px; color: #888;">
+      <ion-icon name="time-outline" style="font-size: 48px; color: #ccc;"></ion-icon>
+      <p>Belum ada riwayat perjalanan selesai.</p>
+    </div>
+
+    <div class="history-card" *ngFor="let item of history">
+      <div class="card-top">
+        <span class="trip-id">{{ item.id }}</span>
+        <span class="status-badge success">{{ item.status }}</span>
+      </div>
+      <div class="card-mid">
+        <h3>{{ item.route }}</h3>
+        <p><ion-icon name="calendar-outline"></ion-icon> {{ item.date }}</p>
+        <p><ion-icon name="people-outline"></ion-icon> {{ item.passengers }} Penumpang</p>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Custom Bottom Navigation for Driver -->
+<ion-footer class="custom-footer driver-footer">
+  <div class="nav-bar">
+    <div class="nav-item" routerLink="/driver-home" routerDirection="root">
+      <ion-icon name="car-outline"></ion-icon>
+      <span>Tugas</span>
+    </div>
+    <div class="nav-item active">
+      <ion-icon name="time"></ion-icon>
+      <span>Riwayat</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-chat" routerDirection="root">
+      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <span>Pesan</span>
+    </div>
+    <div class="nav-item" routerLink="/driver-profile" routerDirection="root">
+      <ion-icon name="person-outline"></ion-icon>
+      <span>Akun</span>
+    </div>
+  </div>
+</ion-footer>

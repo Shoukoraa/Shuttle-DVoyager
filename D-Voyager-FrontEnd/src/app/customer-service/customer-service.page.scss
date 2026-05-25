@@ -1,0 +1,178 @@
+.custom-bg {
+  --background: var(--bg-color);
+}
+
+.custom-header {
+  ion-toolbar {
+    --background: var(--white);
+    --padding-top: 10px;
+  }
+
+  ion-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--dark-gray);
+  }
+
+  ion-back-button {
+    color: var(--dark-gray);
+  }
+}
+
+.cs-container {
+  padding: 0 24px 40px;
+
+  /* Hero Banner */
+  .hero-banner {
+    background: var(--primary-color);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 10px 30px rgba(255, 193, 7, 0.2);
+
+    .hero-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--white);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      ion-icon {
+        font-size: 32px;
+        color: var(--dark-gray);
+      }
+    }
+
+    .hero-text {
+      h2 {
+        margin: 0 0 4px;
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--dark-gray);
+      }
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: rgba(30, 30, 30, 0.7);
+        font-weight: 600;
+        line-height: 1.4;
+      }
+    }
+  }
+
+  /* Quick Contacts */
+  .section-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--dark-gray);
+    margin: 0 0 16px;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 40px;
+
+    .contact-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      transition: all 0.2s;
+
+      &:active {
+        transform: scale(0.95);
+        background: rgba(0, 0, 0, 0.02);
+      }
+
+      .icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 12px;
+
+        ion-icon {
+          font-size: 24px;
+        }
+
+        &.whatsapp {
+          background: rgba(16, 185, 129, 0.1);
+          color: #10B981;
+        }
+
+        &.phone {
+          background: rgba(59, 130, 246, 0.1);
+          color: #3B82F6;
+        }
+
+        &.email {
+          background: rgba(245, 158, 11, 0.1);
+          color: #F59E0B;
+        }
+      }
+
+      span {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--dark-gray);
+      }
+    }
+  }
+
+  /* FAQ Accordion */
+  .faq-list {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+
+    ion-accordion-group {
+      ion-accordion {
+        background: transparent;
+        border-bottom: 1px solid #F3F4F6;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        ion-item {
+          --background: transparent;
+          --padding-start: 20px;
+          --inner-padding-end: 20px;
+          --min-height: 60px;
+          
+          ion-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark-gray);
+          }
+        }
+
+        div[slot="content"] {
+          padding: 0 20px 20px;
+          font-size: 13px;
+          color: #6b7280;
+          line-height: 1.6;
+        }
+      }
+    }
+  }
+}

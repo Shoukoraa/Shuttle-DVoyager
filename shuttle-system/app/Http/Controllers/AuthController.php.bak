@@ -1,0 +1,218 @@
+﻿<?php
+
+namespace App\Http\Controllers;
+
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+use App\Models\SocialAccount;
+use App\Models\Role;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
+class AuthController extends Controller
+{
+    public function redirectToGoogle(Request $request)
+    {
+        $redirectUrl = $request->query("redirect");
+        $state = null;
+
+        if ($redirectUrl) {
+            $state = base64_encode(json_encode([
+                "redirect" => $redirectUrl,
+            ]));
+        }
+
+        $google = Socialite::driver("google")
+            ->stateless()
+            ->with(["prompt" => "select_account"]);
+
+        if ($state) {
+            $google = $google->with(["state" => $state]);
+        }
+
+        return $google->redirect();
+    }
+
+    public function loginAdmin(Request $request)
+    {
+        $request->validate([
+            "email" => "required|email",
+            "password" => "required"
+        ]);
+
+        $credentials = $request->only("email", "password");
+
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                "email" => "Email atau password salah"
+            ]);
+        }
+
+        $user = Auth::user();
+
+        // PROTEKSI: hanya admin boleh login di sini
+        if ($user->role->name !== "admin") {
+            Auth::logout();
+
+            return back()->withErrors([
+                "email" => "Akses hanya untuk admin"
+            ]);
+        }
+
+        return redirect("/admin/dashboard");
+    }
+
+    public function handleGoogleCallback(Request $request)
+    {
+        try {
+            $googleUser = Socialite::driver("google")->stateless()->user();
+
+            if (!$googleUser->email) {
+                return response()->json(["message" => "Google account has no email"], 400);
+            }
+
+            $user = DB::transaction(function () use ($googleUser) {
+                $account = SocialAccount::where("provider", "google")
+                    ->where("provider_id", $googleUser->id)
+                    ->first();
+
+                if ($account) {
+                    return $account->user;
+                }
+
+                $user = User::where("email", $googleUser->email)->first();
+
+                if ($user) {
+                    if (!$user->role || $user->role->name !== "customer") {
+                        abort(403, "Login Google hanya untuk customer");
+                    }
+                } else {
+                    $role = Role::where("name", "customer")->first();
+                    if (!$role) throw new \Exception("Role customer tidak ditemukan");
+
+                    $user = User::create([
+                        "name" => $googleUser->name ?? "User",
+                        "email" => $googleUser->email,
+                        "password" => null,
+                        "role_id" => $role->id
+                    ]);
+                }
+
+                SocialAccount::firstOrCreate(
+                    ["provider" => "google", "provider_id" => $googleUser->id],
+                    ["user_id" => $user->id, "provider_email" => $googleUser->email]
+                );
+
+                return $user;
+            });
+
+            if (!$user->role || $user->role->name !== "customer") {
+                return response()->json(["message" => "Unauthorized"], 403);
+            }
+
+            $token = $user->createToken("auth_token")->plainTextToken;
+            
+            $stateParam = $request->query("state");
+            $frontendRedirect = "http://localhost:3000/auth/callback";
+
+            if ($stateParam) {
+                $stateData = json_decode(base64_decode($stateParam), true);
+                if (isset($stateData["redirect"])) {
+                    $frontendRedirect = $stateData["redirect"];
+                }
+            }
+
+            $separator = str_contains($frontendRedirect, "?") ? "&" : "?";
+            return redirect()->away(
+                $frontendRedirect . $separator . "oauth=google&token=" . urlencode($token) . "&role=customer"
+            );
+
+        } catch (\Exception $e) {
+            return response()->json(["message" => "Auth failed", "error" => $e->getMessage()], 500);
+        }
+    }
+
+    public function getUserProfile(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(["message" => "Unauthenticated"], 401);
+        }
+
+        return response()->json([
+            "id" => $user->id,
+            "name" => $user->name,
+            "email" => $user->email,
+            "phone" => $user->phone,
+            "role_id" => $user->role_id,
+            "role" => $user->role ? $user->role->name : "customer",
+            "created_at" => $user->created_at,
+            "updated_at" => $user->updated_at,
+        ]);
+    }
+
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            "name" => "required|string|max:255",
+            "email" => "required|email|unique:users,email",
+            "password" => "required|string|min:6|confirmed",
+        ]);
+
+        try {
+            $user = DB::transaction(function () use ($validated) {
+                $role = Role::where("name", "customer")->first();
+                if (!$role) throw new \Exception("Role customer tidak ditemukan");
+
+                return User::create([
+                    "name" => $validated["name"],
+                    "email" => $validated["email"],
+                    "password" => bcrypt($validated["password"]),
+                    "role_id" => $role->id
+                ]);
+            });
+
+            $token = $user->createToken("auth_token")->plainTextToken;
+
+            return response()->json([
+                "message" => "Register berhasil",
+                "user" => $user,
+                "token" => $token
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json(["message" => "Register gagal", "error" => $e->getMessage()], 500);
+        }
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            "email" => "required|email",
+            "password" => "required",
+        ]);
+
+        $user = User::where("email", $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(["message" => "Email atau password salah"], 401);
+        }
+
+        $token = $user->createToken("auth_token")->plainTextToken;
+
+        return response()->json([
+            "message" => "Login berhasil",
+            "token" => $token,
+            "user" => $user
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        return response()->json(["message" => "Logged out"]);
+    }
+}

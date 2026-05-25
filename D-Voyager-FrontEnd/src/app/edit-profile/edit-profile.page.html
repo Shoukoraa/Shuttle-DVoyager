@@ -1,0 +1,114 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/profile" icon="arrow-back" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Edit Profil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-bg">
+  <div class="edit-container">
+    <div class="profile-summary">
+      <label class="avatar-circle" for="profilePhotoInput">
+        <img *ngIf="profilePhotoUrl" [src]="profilePhotoUrl" alt="Foto profil">
+        <ion-icon *ngIf="!profilePhotoUrl" name="person"></ion-icon>
+        <span class="photo-action" *ngIf="!isUploadingPhoto">
+          <ion-icon name="camera"></ion-icon>
+        </span>
+        <ion-spinner *ngIf="isUploadingPhoto" name="crescent"></ion-spinner>
+      </label>
+      <input
+        id="profilePhotoInput"
+        class="photo-input"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        (change)="uploadProfilePhoto($event)"
+        [disabled]="isLoading || isUploadingPhoto">
+      <h1>{{ name || 'User' }}</h1>
+      <p>{{ email || 'Email tidak tersedia' }}</p>
+    </div>
+
+    <form class="edit-form" (ngSubmit)="saveChanges()">
+      <div class="input-group">
+        <ion-label class="custom-label">Nama Lengkap</ion-label>
+        <ion-item class="custom-input-item" lines="none">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-input
+            type="text"
+            name="name"
+            [(ngModel)]="name"
+            placeholder="Masukkan nama lengkap"
+            autocomplete="name"
+            [disabled]="isLoading || isSaving"
+            required>
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="input-group">
+        <ion-label class="custom-label">Email</ion-label>
+        <ion-item class="custom-input-item readonly" lines="none">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-input
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            readonly>
+          </ion-input>
+        </ion-item>
+        <p class="hint-text">Email mengikuti akun login dan tidak bisa diubah dari aplikasi.</p>
+      </div>
+
+      <div class="input-group">
+        <ion-label class="custom-label">Nomor Telepon</ion-label>
+        <ion-item class="custom-input-item" lines="none">
+          <ion-icon name="call-outline" slot="start"></ion-icon>
+          <ion-input
+            type="tel"
+            name="phone"
+            [(ngModel)]="phone"
+            placeholder="Contoh: 081234567890"
+            autocomplete="tel"
+            inputmode="tel"
+            maxlength="20"
+            [disabled]="isLoading || isSaving">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="info-card">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Nomor telepon membantu admin atau driver menghubungi kamu saat proses perjalanan.</span>
+      </div>
+
+      <div class="error-banner" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-divider"></div>
+
+      <div class="section-title">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <div>
+          <h2>Ganti Password</h2>
+          <p>Untuk mengganti password, buka halaman khusus agar form tidak menumpuk di sini.</p>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <ion-icon name="key"></ion-icon>
+        <div style="flex:1">
+          <h4>Halaman Ganti Password</h4>
+          <p>Kelola password akun kamu di halaman terpisah.</p>
+        </div>
+        <ion-button fill="clear" color="primary" routerLink="/change-password">Ganti Password</ion-button>
+      </div>
+
+      <ion-button expand="block" type="submit" class="save-btn" [disabled]="isLoading || isSaving || isSavingPassword">
+        <ion-spinner *ngIf="isSaving || isSavingPassword" name="crescent"></ion-spinner>
+        <span>{{ (isSaving || isSavingPassword) ? 'Menyimpan...' : 'Simpan Semua Perubahan' }}</span>
+      </ion-button>
+    </form>
+  </div>
+</ion-content>

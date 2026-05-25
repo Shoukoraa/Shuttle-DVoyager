@@ -1,0 +1,133 @@
+<ion-content class="custom-bg">
+  
+  <!-- Diagonal Header Background (Not curved) -->
+  <div class="header-diagonal">
+    <div class="top-bar">
+      <div class="greeting">
+        <p>Halo,</p>
+        <h2>{{ userName }} 👋</h2>
+      </div>
+      <a class="profile-avatar" routerLink="/profile" aria-label="Buka profil pengguna">
+        <img *ngIf="profilePhotoUrl; else avatarFallback" [src]="profilePhotoUrl" alt="Foto profil akun">
+        <ng-template #avatarFallback>
+          <ion-icon name="person"></ion-icon>
+        </ng-template>
+      </a>
+    </div>
+    
+    <div class="hero-text">
+      <h1>Mau pergi ke mana hari ini?</h1>
+    </div>
+  </div>
+
+  <!-- Main Content Wrapper -->
+  <div class="home-container">
+    
+    <!-- Floating Frameless Search Section -->
+    <div class="search-section">
+      
+      <div class="route-group">
+        <div class="input-floating">
+          <div class="dot origin"></div>
+          <div class="input-content" style="width: 100%;">
+            <span class="label">Keberangkatan</span>
+            <ion-select placeholder="Pilih kota asal" [(ngModel)]="asalId" style="width: 100%;">
+              <ion-select-option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</ion-select-option>
+            </ion-select>
+          </div>
+        </div>
+
+        <div class="route-divider">
+          <div class="line"></div>
+          <div class="swap-fab" (click)="swapRoutes()">
+            <ion-icon name="swap-vertical"></ion-icon>
+          </div>
+        </div>
+
+        <div class="input-floating">
+          <div class="dot destination"></div>
+          <div class="input-content" style="width: 100%;">
+            <span class="label">Tujuan</span>
+            <ion-select placeholder="Pilih kota tujuan" [(ngModel)]="tujuanId" style="width: 100%;">
+              <ion-select-option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</ion-select-option>
+            </ion-select>
+          </div>
+        </div>
+      </div>
+
+      <div class="date-group">
+        <div class="input-floating">
+          <ion-icon name="calendar-clear" class="cal-icon"></ion-icon>
+          <div class="input-content">
+            <span class="label">Tanggal Perjalanan</span>
+            <ion-datetime-button datetime="datetime"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="datetime" presentation="date" [(ngModel)]="tanggal"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </div>
+        </div>
+      </div>
+
+      <button class="mega-search-btn" (click)="searchShuttle()">
+        CARI SHUTTLE
+        <ion-icon name="arrow-forward"></ion-icon>
+      </button>
+
+    </div>
+
+    <!-- Promo Section (Horizontal Cards) -->
+    <div class="promo-section">
+      <div class="section-header">
+        <h3>Penawaran Eksklusif</h3>
+      </div>
+      
+      <div class="promo-scroller">
+        <div class="promo-ticket" *ngFor="let promo of promos" [style.borderLeftColor]="promo.color">
+          <div class="ticket-cutout top"></div>
+          <div class="ticket-cutout bottom"></div>
+          
+          <div class="promo-icon" [style.color]="promo.color">
+            <ion-icon [name]="promo.icon"></ion-icon>
+          </div>
+          <div class="promo-text">
+            <h4>{{ promo.title }}</h4>
+            <p>{{ promo.subtitle }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>
+
+<!-- Custom Bottom Navigation -->
+<ion-footer class="custom-footer ion-no-border">
+  <div class="nav-bar material-nav">
+    <div class="nav-item active" routerLink="/home">
+      <div class="icon-container">
+        <ion-icon name="home"></ion-icon>
+      </div>
+      <span>Beranda</span>
+    </div>
+    <div class="nav-item" routerLink="/tickets">
+      <div class="icon-container">
+        <ion-icon name="ticket-outline"></ion-icon>
+      </div>
+      <span>Pesanan</span>
+    </div>
+    <div class="nav-item" routerLink="/promos">
+      <div class="icon-container">
+        <ion-icon name="pricetag-outline"></ion-icon>
+      </div>
+      <span>Promo</span>
+    </div>
+    <div class="nav-item" routerLink="/profile">
+      <div class="icon-container">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <span>Profil</span>
+    </div>
+  </div>
+</ion-footer>
