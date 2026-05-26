@@ -96,6 +96,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/bookings/{booking}/edit', [AdminWebController::class, 'editBooking']);
     Route::put('/bookings/{booking}', [AdminWebController::class, 'updateBooking']);
 
+    // REVIEWS
+    Route::get('/reviews', [AdminWebController::class, 'reviews'])->name('admin.reviews');
+
     // TRACKING MAPS
     Route::get('/tracking', [AdminWebController::class, 'tracking'])->name('admin.tracking');
 

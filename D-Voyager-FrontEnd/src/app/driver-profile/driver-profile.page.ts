@@ -19,6 +19,9 @@ export class DriverProfilePage implements OnInit {
   public profilePhotoUrl: string = '';
   public rating: number = 0;
   public totalTrips: number = 0;
+  public reviewCount: number = 0;
+  public reviews: any[] = [];
+  public isLoadingReviews: boolean = false;
   public isLoggingOut: boolean = false;
   public isUploadingPhoto: boolean = false;
   public errorMessage: string = '';
@@ -40,6 +43,7 @@ export class DriverProfilePage implements OnInit {
 
   ionViewWillEnter() {
     this.refreshUserData();
+    this.loadDriverReviews();
   }
 
   loadCachedUserData() {
@@ -94,7 +98,31 @@ export class DriverProfilePage implements OnInit {
     this.vehicleType = user?.vehicle?.type || user?.vehicle_type || this.vehicleType;
     this.vehiclePlate = user?.vehicle?.plate || user?.vehicle_plate || this.vehiclePlate;
     this.rating = typeof user?.rating === 'number' ? user.rating : this.rating;
+    this.reviewCount = typeof user?.review_count === 'number' ? user.review_count : this.reviewCount;
     this.totalTrips = typeof user?.total_trips === 'number' ? user.total_trips : this.totalTrips;
+  }
+
+  loadDriverReviews() {
+    this.isLoadingReviews = true;
+
+    this.apiService.getDriverReviews().subscribe({
+      next: (response) => {
+        this.reviews = response?.reviews || [];
+        this.rating = typeof response?.average_rating === 'number' ? response.average_rating : this.rating;
+        this.reviewCount = typeof response?.review_count === 'number' ? response.review_count : this.reviewCount;
+        this.isLoadingReviews = false;
+      },
+      error: (err) => {
+        console.error('Failed to load driver reviews:', err);
+        this.isLoadingReviews = false;
+      }
+    });
+  }
+
+  getReviewRoute(review: any): string {
+    const origin = review?.booking?.schedule?.route?.origin?.name || 'Asal';
+    const destination = review?.booking?.schedule?.route?.destination?.name || 'Tujuan';
+    return `${origin} -> ${destination}`;
   }
 
   uploadProfilePhoto(event: Event) {

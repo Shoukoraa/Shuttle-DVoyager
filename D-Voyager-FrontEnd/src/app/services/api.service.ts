@@ -214,6 +214,10 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/customer/booking/${bookingId}/pay`, data, { headers: this.getHeaders() });
   }
 
+  submitBookingReview(bookingId: number, data: { rating: number; comment?: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/customer/booking/${bookingId}/review`, data, { headers: this.getHeaders() });
+  }
+
   getMyTickets(): Observable<any> {
     return this.http.get(`${this.apiUrl}/customer/my-bookings`, { headers: this.getHeaders() });
   }
@@ -235,6 +239,10 @@ export class ApiService {
 
   getDriverSchedules(): Observable<any> {
     return this.http.get(`${this.apiUrl}/driver/my-schedules`, { headers: this.getHeaders() });
+  }
+
+  getDriverReviews(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/driver/reviews`, { headers: this.getHeaders() });
   }
 
   // --- Tracking & Control ---

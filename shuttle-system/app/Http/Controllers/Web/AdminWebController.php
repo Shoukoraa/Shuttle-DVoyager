@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Exports\MonthlyReportExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{Location, Vehicle, Route as RouteModel, Schedule, Driver, Customer, Booking, User, Role};
+use App\Models\{Location, Vehicle, Route as RouteModel, Schedule, Driver, Customer, Booking, User, Role, Review};
 use App\Models\Seat;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -475,6 +475,24 @@ class AdminWebController extends Controller
         }
 
         return redirect()->route('admin.bookings')->with('success', 'Status transaksi berhasil diperbarui!');
+    }
+
+    // REVIEWS
+    public function reviews() {
+        $reviews = Review::with([
+            'customer.user',
+            'driver.user',
+            'booking.schedule.route.origin',
+            'booking.schedule.route.destination',
+        ])->latest()->get();
+
+        $summary = [
+            'average_rating' => round((float) $reviews->avg('rating'), 1),
+            'review_count' => $reviews->count(),
+            'low_rating_count' => $reviews->where('rating', '<=', 2)->count(),
+        ];
+
+        return view('admin.reviews', compact('reviews', 'summary'));
     }
 
     // TRACKING MAPS

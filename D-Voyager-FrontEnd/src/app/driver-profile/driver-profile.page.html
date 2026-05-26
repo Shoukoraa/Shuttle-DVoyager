@@ -36,7 +36,7 @@
         <div class="stat-box">
           <ion-icon name="star" color="warning"></ion-icon>
           <h3>{{ rating }}</h3>
-          <span>Rating</span>
+          <span>{{ reviewCount }} Ulasan</span>
         </div>
         <div class="stat-box">
           <ion-icon name="map" color="success"></ion-icon>
@@ -59,6 +59,38 @@
       <div class="info-row">
         <span class="label">Plat Nomor</span>
         <span class="value badge">{{ vehiclePlate }}</span>
+      </div>
+    </div>
+
+    <!-- Customer Reviews -->
+    <div class="info-card reviews-card">
+      <div class="card-title">
+        <ion-icon name="star-outline"></ion-icon>
+        Ulasan Customer
+      </div>
+
+      <div class="loading-reviews" *ngIf="isLoadingReviews">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Memuat ulasan...</span>
+      </div>
+
+      <div class="empty-reviews" *ngIf="!isLoadingReviews && reviews.length === 0">
+        Belum ada ulasan dari customer.
+      </div>
+
+      <div class="review-item" *ngFor="let review of reviews">
+        <div class="review-top">
+          <div>
+            <strong>{{ review.customer?.user?.name || 'Customer' }}</strong>
+            <span>{{ getReviewRoute(review) }}</span>
+          </div>
+          <div class="review-rating">
+            <ion-icon name="star"></ion-icon>
+            {{ review.rating }}/5
+          </div>
+        </div>
+        <p *ngIf="review.comment">{{ review.comment }}</p>
+        <small>{{ review.created_at | date:'dd MMM yyyy, HH:mm' }}</small>
       </div>
     </div>
 

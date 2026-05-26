@@ -3,7 +3,7 @@
     <ion-title>Pesanan Saya</ion-title>
   </ion-toolbar>
   <div class="segment-container">
-    <ion-segment value="aktif" mode="ios">
+    <ion-segment [(ngModel)]="selectedTab" value="aktif" mode="ios">
       <ion-segment-button value="aktif">
         <ion-label>Aktif</ion-label>
       </ion-segment-button>
@@ -23,8 +23,8 @@
     </div>
 
     <!-- Active Ticket Card -->
-    <ng-container *ngIf="hasTickets && !isLoading">
-      <div class="ticket-card active-ticket" *ngFor="let ticket of tickets" [ngStyle]="{'border-top': ticket.status === 'paid' ? '4px solid #10dc60' : '4px solid #ffc409'}">
+    <ng-container *ngIf="selectedTickets.length > 0 && !isLoading">
+      <div class="ticket-card active-ticket" *ngFor="let ticket of selectedTickets" [ngStyle]="{'border-top': ticket.status === 'paid' ? '4px solid #10dc60' : '4px solid #ffc409'}">
         <div class="ticket-header">
           <div class="status-badge" [ngStyle]="{'background': ticket.status === 'paid' ? '#10dc60' : '#ffc409', 'color': '#fff'}">
             {{ ticket.status | titlecase }}
@@ -83,17 +83,36 @@
             Hubungi Driver
           </ion-button>
         </div>
+
+        <div class="review-summary" *ngIf="ticket.review">
+          <div>
+            <span>Rating Anda</span>
+            <strong>
+              <ion-icon *ngFor="let star of ratingOptions" [name]="star <= ticket.review.rating ? 'star' : 'star-outline'"></ion-icon>
+            </strong>
+          </div>
+          <p *ngIf="ticket.review.comment">{{ ticket.review.comment }}</p>
+        </div>
+
+        <div class="ticket-actions" *ngIf="canRate(ticket)">
+          <ion-button expand="block" color="primary" (click)="openRating(ticket)">
+            <ion-icon name="star" slot="start"></ion-icon>
+            Beri Rating
+          </ion-button>
+        </div>
       </div>
     </ng-container>
 
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="!hasTickets && !isLoading">
+    <div class="empty-state" *ngIf="selectedTickets.length === 0 && !isLoading">
       <div class="empty-icon-wrapper">
         <ion-icon name="bus-outline"></ion-icon>
       </div>
-      <h3>Belum Ada Pesanan</h3>
-      <p>Anda belum memiliki tiket perjalanan yang aktif. Yuk, mulai perjalanan pertama Anda bersama kami!</p>
-      <ion-button class="mega-search-btn" routerLink="/schedule">
+      <h3 *ngIf="selectedTab === 'aktif'">Belum Ada Pesanan Aktif</h3>
+      <h3 *ngIf="selectedTab === 'riwayat'">Belum Ada Riwayat</h3>
+      <p *ngIf="selectedTab === 'aktif'">Anda belum memiliki tiket perjalanan yang aktif. Yuk, mulai perjalanan pertama Anda bersama kami!</p>
+      <p *ngIf="selectedTab === 'riwayat'">Riwayat perjalanan akan muncul setelah pesanan selesai.</p>
+      <ion-button *ngIf="selectedTab === 'aktif'" class="mega-search-btn" routerLink="/schedule">
         Cari Shuttle Sekarang
         <ion-icon name="arrow-forward"></ion-icon>
       </ion-button>
@@ -140,6 +159,56 @@
               <ion-icon name="send" slot="icon-only" color="primary"></ion-icon>
             </ion-button>
           </div>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Rating Modal -->
+  <ion-modal [isOpen]="isRatingOpen" (didDismiss)="closeRating()" class="rating-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Rating Driver</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeRating()" [disabled]="isSubmittingRating">
+              <ion-icon name="close" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="rating-content">
+        <div class="rating-trip" *ngIf="ratingTicket">
+          <span>Booking #{{ ratingTicket.id }}</span>
+          <strong>{{ ratingTicket.schedule?.driver?.user?.name || 'Driver' }}</strong>
+          <p>{{ ratingTicket.schedule?.route?.origin?.name || 'Asal' }} -> {{ ratingTicket.schedule?.route?.destination?.name || 'Tujuan' }}</p>
+          <small>Nilai driver berdasarkan pengalaman perjalanan ini.</small>
+        </div>
+
+        <div class="star-picker">
+          <button type="button" *ngFor="let star of ratingOptions" (click)="setRating(star)" [class.active]="star <= selectedRating" [attr.aria-label]="'Rating ' + star">
+            <ion-icon [name]="star <= selectedRating ? 'star' : 'star-outline'"></ion-icon>
+          </button>
+        </div>
+
+        <ion-item lines="none" class="comment-box">
+          <ion-textarea
+            [(ngModel)]="ratingComment"
+            placeholder="Tulis komentar singkat (opsional)"
+            auto-grow="true"
+            rows="4"
+            maxlength="1000">
+          </ion-textarea>
+        </ion-item>
+      </ion-content>
+
+      <ion-footer class="ion-no-border">
+        <ion-toolbar>
+          <ion-button expand="block" color="primary" (click)="submitRating()" [disabled]="isSubmittingRating || selectedRating === 0">
+            <ion-spinner *ngIf="isSubmittingRating" name="crescent" slot="start"></ion-spinner>
+            Kirim Rating
+          </ion-button>
         </ion-toolbar>
       </ion-footer>
     </ng-template>

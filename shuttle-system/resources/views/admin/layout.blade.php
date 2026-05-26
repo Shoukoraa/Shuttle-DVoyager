@@ -26,6 +26,7 @@
                 <li><a href="{{ route('admin.drivers') }}">Drivers</a></li>
                 <li><a href="{{ route('admin.customers') }}">Customers</a></li>
                 <li><a href="{{ route('admin.bookings') }}">Bookings</a></li>
+                <li><a href="{{ route('admin.reviews') }}">Reviews</a></li>
                 <li><a href="{{ route('admin.tracking') }}">Live Tracking (Maps)</a></li>
             </ul>
         </nav>

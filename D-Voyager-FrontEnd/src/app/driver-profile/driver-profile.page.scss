@@ -224,6 +224,75 @@
   }
 }
 
+.reviews-card {
+  .loading-reviews,
+  .empty-reviews {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-sub);
+    font-size: 14px;
+    padding: 8px 0;
+  }
+
+  .review-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--light-gray);
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .review-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+
+      strong {
+        display: block;
+        color: var(--text-main);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      span {
+        display: block;
+        color: var(--text-sub);
+        font-size: 12px;
+        margin-top: 3px;
+      }
+    }
+
+    .review-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #d97706;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+
+    p {
+      margin: 10px 0 6px;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    small {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+  }
+}
+
 .settings-list {
   background: transparent;
   margin-bottom: 30px;

@@ -175,6 +175,46 @@
         height: 40px;
       }
     }
+
+    .review-summary {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: #fff8e1;
+      border: 1px solid rgba(255, 193, 7, 0.35);
+      border-radius: 12px;
+
+      div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      span {
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      strong {
+        display: flex;
+        color: #f59e0b;
+        font-size: 18px;
+      }
+
+      p {
+        margin: 8px 0 0;
+        color: var(--dark-gray);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+    }
+
+    .ticket-actions {
+      padding: 0 15px 15px;
+      margin-top: 14px;
+    }
   }
 
   .empty-state {
@@ -231,6 +271,85 @@
         font-size: 18px;
         margin-left: 8px;
       }
+    }
+  }
+}
+
+.rating-modal {
+  --width: min(430px, calc(100% - 32px));
+  --height: 430px;
+  --border-radius: 18px;
+}
+
+.rating-content {
+  --background: #fff;
+  min-height: 300px;
+
+  .rating-trip {
+    padding: 20px 20px 8px;
+
+    span {
+      display: block;
+      color: #9ca3af;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    strong {
+      display: block;
+      color: var(--dark-gray);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    p {
+      margin: 6px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    small {
+      display: block;
+      margin-top: 8px;
+      color: #9ca3af;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+  }
+
+  .star-picker {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 20px 12px;
+
+    button {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      background: #f3f4f6;
+      border-radius: 12px;
+      color: #d1d5db;
+      font-size: 28px;
+
+      &.active {
+        background: #fff8e1;
+        color: #f59e0b;
+      }
+    }
+  }
+
+  .comment-box {
+    margin: 8px 20px 20px;
+    --background: #f8fafc;
+    --border-radius: 14px;
+
+    ion-textarea {
+      font-size: 14px;
+      --padding-start: 12px;
+      --padding-end: 12px;
     }
   }
 }

@@ -19,9 +19,19 @@ class BookingController extends Controller
         }
         
         $bookings = Booking::where('customer_id', $customer->id)
-            ->with(['schedule.route.origin', 'schedule.route.destination', 'seats'])
+            ->with(['schedule.route.origin', 'schedule.route.destination', 'schedule.driver.user', 'schedule.driver.vehicle', 'seats', 'review'])
             ->orderBy('booking_time', 'desc')
             ->get();
+
+        $bookings->each(function ($booking) {
+            $scheduleStatus = strtolower((string) optional($booking->schedule)->status);
+            $bookingStatus = strtolower((string) $booking->status);
+
+            if ($scheduleStatus === 'completed' && !in_array($bookingStatus, ['completed', 'cancelled'], true)) {
+                $booking->update(['status' => 'completed']);
+                $booking->status = 'completed';
+            }
+        });
             
         return response()->json($bookings);
     }

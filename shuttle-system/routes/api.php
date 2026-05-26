@@ -63,9 +63,18 @@ Route::get('/me', function (Request $request) {
             ->first();
 
         if ($driver) {
+            $averageRating = \App\Models\Review::where('driver_id', $driver->id)->avg('rating');
+
             $response['driver_id'] = (int) $driver->id;
             $response['license_number'] = (string) ($driver->license_number ?? '');
             $response['driver_status'] = (string) ($driver->status ?? 'inactive');
+            $response['rating'] = $averageRating ? round((float) $averageRating, 1) : 0;
+            $response['review_count'] = \App\Models\Review::where('driver_id', $driver->id)->count();
+            $response['total_trips'] = \App\Models\Booking::whereHas('schedule', function ($query) use ($driver) {
+                    $query->where('driver_id', $driver->id);
+                })
+                ->whereIn('status', ['completed', 'finished'])
+                ->count();
 
             if ($driver->vehicle) {
                 $response['vehicle'] = [
@@ -138,6 +147,7 @@ Route::middleware('bearer.auth')->group(function () {
         Route::post('/booking/{id}/pay', [PaymentController::class, 'pay']);
         
         // Review
+        Route::post('/booking/{id}/review', [ReviewController::class, 'storeForBooking']);
         Route::post('/driver/{id}/review', [ReviewController::class, 'store']);
         
         // Chat (Customer)
@@ -152,6 +162,7 @@ Route::middleware('bearer.auth')->group(function () {
     */
     Route::middleware('role:driver')->prefix('driver')->group(function () {
         Route::get('/my-schedules', [DriverController::class, 'mySchedules']);
+        Route::get('/reviews', [ReviewController::class, 'driverReviews']);
         Route::get('/schedule/{id}/manifest', [DriverController::class, 'manifest']);
         Route::post('/location', [DriverController::class, 'updateLocation']);
         
@@ -183,6 +194,7 @@ Route::middleware('bearer.auth')->group(function () {
         Route::apiResource('customers', \App\Http\Controllers\Admin\CustomerController::class)->only(['index', 'show', 'destroy']);
         Route::apiResource('schedules', \App\Http\Controllers\Admin\ScheduleController::class);
         Route::get('bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index']);
+        Route::get('reviews', [ReviewController::class, 'adminReviews']);
     });
 
 });
