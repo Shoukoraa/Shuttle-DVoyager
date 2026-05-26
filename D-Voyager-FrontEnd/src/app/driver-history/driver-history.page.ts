@@ -29,14 +29,17 @@ export class DriverHistoryPage implements OnInit {
         this.history = schedules
           .filter(schedule => schedule.status === 'completed')
           .map(schedule => {
-            const finishedAt = schedule.end_time || schedule.departure_time;
+            const rawEndTime = schedule.end_time || schedule.departure_time || '';
+            const finishedAt = rawEndTime ? rawEndTime.replace(' ', 'T') : '';
+            const rawDepartureTime = schedule.departure_time || '';
+            const departureTime = rawDepartureTime ? rawDepartureTime.replace(' ', 'T') : '';
             const routeOrigin = schedule.route?.origin?.name || 'Unknown';
             const routeDestination = schedule.route?.destination?.name || 'Unknown';
 
             return {
               finishedAt: finishedAt ? new Date(finishedAt).getTime() : 0,
               id: `TRP-${schedule.id}`,
-              date: finishedAt ? new Date(finishedAt).toLocaleDateString('id-ID', {
+              date: departureTime ? new Date(departureTime).toLocaleDateString('id-ID', {
                 day: '2-digit',
                 month: 'long',
                 year: 'numeric'

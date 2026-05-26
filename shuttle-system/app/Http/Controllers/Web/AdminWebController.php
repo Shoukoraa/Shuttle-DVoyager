@@ -52,7 +52,7 @@ class AdminWebController extends Controller
         $selectedMonth = (int) ($validated['month'] ?? now()->month);
 
         $bookingMonthlyRows = Booking::query()
-            ->selectRaw('YEAR(booking_time) as report_year, MONTH(booking_time) as report_month, COUNT(*) as booking_count, COALESCE(SUM(CASE WHEN status = "paid" THEN total_price ELSE 0 END), 0) as revenue')
+            ->selectRaw('YEAR(booking_time) as report_year, MONTH(booking_time) as report_month, COUNT(*) as booking_count, COALESCE(SUM(CASE WHEN status IN ("paid", "completed") THEN total_price ELSE 0 END), 0) as revenue')
             ->groupByRaw('YEAR(booking_time), MONTH(booking_time)')
             ->get()
             ->keyBy(fn ($row) => $this->monthlyKey((int) $row->report_year, (int) $row->report_month));

@@ -15,7 +15,7 @@ class DriverController extends Controller
         
         $schedules = \App\Models\Schedule::where('driver_id', $driver->id)
             ->with(['locations', 'route.origin', 'route.destination', 'vehicle', 'bookings' => function($q) {
-                $q->whereIn('status', ['paid', 'booked']);
+                $q->whereIn('status', ['paid', 'booked', 'completed']);
             }])
             ->orderBy('departure_time', 'asc')
             ->get();
