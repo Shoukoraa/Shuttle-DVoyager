@@ -40,7 +40,11 @@ export class SelectSeatPage implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       if (params['schedule_id']) {
-        this.scheduleId = params['schedule_id'];
+        const incomingId = Number(params['schedule_id']);
+        if (this.scheduleId !== incomingId) {
+          this.selectedSeats = [];
+          this.scheduleId = incomingId;
+        }
         this.loadSeats(this.scheduleId!);
       }
     });
@@ -96,6 +100,37 @@ export class SelectSeatPage implements OnInit {
     const getDbSeat = (seatNo: string) =>
       dbSeats.find((s) => String(s.seat_number) === String(seatNo));
 
+    const isAlreadySelected = (seatNo: string) =>
+      this.selectedSeats.some((s) => String(s.id) === String(seatNo));
+
+    const newSelectedSeats: Seat[] = [];
+
+    const mapSeat = (seatId: string): Seat => {
+      if (seatId === 'driver') return { id: seatId, status: 'driver' as const };
+      if (seatId.startsWith('e')) return { id: seatId, status: 'empty' as const };
+
+      const dbSeat = getDbSeat(seatId);
+      const rawStatus = String(dbSeat?.status || '').toLowerCase();
+      const isAvailable = rawStatus === 'available';
+
+      let status: 'available' | 'unavailable' | 'selected' = 'unavailable';
+      if (dbSeat && isAvailable) {
+        status = isAlreadySelected(seatId) ? 'selected' : 'available';
+      }
+
+      const seatObj: Seat = {
+        id: seatId,
+        real_id: dbSeat ? dbSeat.id : undefined,
+        status: status
+      };
+
+      if (status === 'selected') {
+        newSelectedSeats.push(seatObj);
+      }
+
+      return seatObj;
+    };
+
     let seatsPerRow = 3;
     let rowPattern: Array<'S' | 'E'> = ['S', 'S', 'E', 'S'];
     let driverRow: string[] = ['e_front_1', 'e_front_2', 'e_front_3', 'driver'];
@@ -121,23 +156,8 @@ export class SelectSeatPage implements OnInit {
         layoutTemplate.push([leftSeat, rightSeat]);
       }
 
-      this.seatMap = layoutTemplate.map(row => {
-        return row.map(seatId => {
-          if (seatId === 'driver') return { id: seatId, status: 'driver' as const };
-          if (seatId.startsWith('e')) return { id: seatId, status: 'empty' as const };
-
-          const dbSeat = getDbSeat(seatId);
-          const rawStatus = String(dbSeat?.status || '').toLowerCase();
-          const isAvailable = rawStatus === 'available';
-
-          return {
-            id: seatId,
-            real_id: dbSeat ? dbSeat.id : undefined,
-            status: dbSeat ? (isAvailable ? 'available' as const : 'unavailable' as const) : 'unavailable' as const
-          };
-        });
-      });
-
+      this.seatMap = layoutTemplate.map(row => row.map(mapSeat));
+      this.selectedSeats = newSelectedSeats;
       return;
     } else if (category === 'mini_bus') {
       // Mini bus layout: front row has 1 passenger on the left and driver on the right,
@@ -163,23 +183,8 @@ export class SelectSeatPage implements OnInit {
         layoutTemplate.push(row);
       }
 
-      this.seatMap = layoutTemplate.map(row => {
-        return row.map(seatId => {
-          if (seatId === 'driver') return { id: seatId, status: 'driver' as const };
-          if (seatId.startsWith('e')) return { id: seatId, status: 'empty' as const };
-
-          const dbSeat = getDbSeat(seatId);
-          const rawStatus = String(dbSeat?.status || '').toLowerCase();
-          const isAvailable = rawStatus === 'available';
-
-          return {
-            id: seatId,
-            real_id: dbSeat ? dbSeat.id : undefined,
-            status: dbSeat ? (isAvailable ? 'available' as const : 'unavailable' as const) : 'unavailable' as const
-          };
-        });
-      });
-
+      this.seatMap = layoutTemplate.map(row => row.map(mapSeat));
+      this.selectedSeats = newSelectedSeats;
       return;
     } else {
       seatsPerRow = 4;
@@ -210,22 +215,8 @@ export class SelectSeatPage implements OnInit {
       rowIndex += 1;
     }
 
-    this.seatMap = layoutTemplate.map(row => {
-      return row.map(seatId => {
-        if (seatId === 'driver') return { id: seatId, status: 'driver' as const };
-        if (seatId.startsWith('e')) return { id: seatId, status: 'empty' as const };
-
-        const dbSeat = getDbSeat(seatId);
-        const rawStatus = String(dbSeat?.status || '').toLowerCase();
-        const isAvailable = rawStatus === 'available';
-
-        return {
-          id: seatId,
-          real_id: dbSeat ? dbSeat.id : undefined,
-          status: dbSeat ? (isAvailable ? 'available' as const : 'unavailable' as const) : 'unavailable' as const
-        };
-      });
-    });
+    this.seatMap = layoutTemplate.map(row => row.map(mapSeat));
+    this.selectedSeats = newSelectedSeats;
   }
 
   toggleSeat(seat: Seat) {
