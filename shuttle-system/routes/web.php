@@ -103,3 +103,30 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/tracking', [AdminWebController::class, 'tracking'])->name('admin.tracking');
 
 });
+
+// ==========================================
+// CHATBOT CUSTOMER SERVICE DEMO ROUTES
+// ==========================================
+Route::get('/chat-demo', function () {
+    $customerRole = \App\Models\Role::where('name', 'customer')->first();
+    $user = \App\Models\User::firstOrCreate(
+        ['email' => 'test@example.com'],
+        [
+            'name' => 'Test User',
+            'password' => bcrypt('password'),
+            'role_id' => $customerRole ? $customerRole->id : 3,
+            'phone' => '081234567890',
+        ]
+    );
+    \Illuminate\Support\Facades\Auth::login($user);
+
+    return view('chat_demo');
+});
+
+Route::get('/admin/active-sessions', function () {
+    return \App\Models\ChatSession::with(['user', 'lastCategory'])
+        ->where('status', 'active')
+        ->orderBy('created_at', 'desc')
+        ->get();
+});
+

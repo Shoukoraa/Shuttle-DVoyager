@@ -103,5 +103,9 @@ class DatabaseSeeder extends Seeder
             'capacity' => 12,
             'status' => 'scheduled'
         ]);
+
+        $this->call([
+            ChatbotSeeder::class,
+        ]);
     }
 }
