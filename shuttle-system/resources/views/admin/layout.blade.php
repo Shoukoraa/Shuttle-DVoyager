@@ -88,7 +88,7 @@
     </header>
 
     <!-- Sidebar Container -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:static md:flex flex-col w-64 min-h-screen bg-dark-900 text-white z-40 shadow-xl flex-shrink-0 border-r border-dark-850">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:sticky md:top-0 md:flex flex-col w-64 h-screen bg-dark-900 text-white z-40 shadow-xl flex-shrink-0 border-r border-dark-850">
         
         <!-- Sidebar Branding -->
         <div class="px-6 py-6 border-b border-dark-850 flex items-center justify-between">

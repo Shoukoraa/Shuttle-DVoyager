@@ -45,6 +45,10 @@ class User extends Authenticatable
             return null;
         }
 
+        if (filter_var($this->profile_photo_path, FILTER_VALIDATE_URL)) {
+            return $this->profile_photo_path;
+        }
+
         return asset(Storage::url($this->profile_photo_path));
     }
 

@@ -76,9 +76,31 @@
 
         <!-- Vehicles List Table -->
         <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-50">
-                <h3 class="font-bold text-dark-900 font-outfit text-base">Daftar Kendaraan</h3>
-                <p class="text-xs text-gray-400">Total terdaftar: {{ $vehicles->count() }} armada aktif.</p>
+            <div class="px-6 py-5 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h3 class="font-bold text-dark-900 font-outfit text-base">Daftar Kendaraan</h3>
+                    <p class="text-xs text-gray-400">Total terdaftar: {{ $vehicles->count() }} armada aktif.</p>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="flex items-center gap-2">
+                    <form id="bulkDeleteForm" action="{{ route('admin.vehicles.bulk-delete') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" onclick="return confirm('Hapus semua kendaraan terpilih?')" class="inline-flex items-center justify-center px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-150 transition-colors gap-1.5 shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7M10 11v6m4-4v6M1 4h22M9 4v3" />
+                            </svg>
+                            Hapus Terpilih (<span id="selectedCount" class="font-extrabold text-brand-600">0</span>)
+                        </button>
+                    </form>
+
+                    <form action="{{ route('admin.vehicles.delete-all') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus SEMUA kendaraan? Tindakan ini tidak bisa dibatalkan.')" class="inline-flex items-center justify-center px-3.5 py-1.5 bg-dark-900 hover:bg-[#A32A2A] text-white text-xs font-bold rounded-lg transition-colors gap-1.5 shadow-sm border border-dark-900">
+                            Bersihkan Semua
+                        </button>
+                    </form>
+                </div>
             </div>
 
             @if($vehicles->isEmpty())
@@ -98,6 +120,9 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 border-b border-gray-100">
+                                <th class="px-5 py-3.5 text-center text-xs font-bold text-gray-400">
+                                    <input type="checkbox" id="selectAllItems" class="rounded text-brand-500 focus:ring-brand-500 h-4 w-4 border-gray-300">
+                                </th>
                                 <th class="px-6 py-3.5 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">ID</th>
                                 <th class="px-6 py-3.5 text-xs font-bold text-gray-400 uppercase tracking-wider">Plat Nomor</th>
                                 <th class="px-6 py-3.5 text-xs font-bold text-gray-400 uppercase tracking-wider">Model / Tipe</th>
@@ -110,6 +135,9 @@
                         <tbody class="divide-y divide-gray-50 text-sm">
                             @foreach($vehicles as $veh)
                                 <tr class="hover:bg-gray-50/50 transition-colors">
+                                    <td class="px-5 py-4 text-center whitespace-nowrap">
+                                        <input form="bulkDeleteForm" type="checkbox" name="vehicle_ids[]" value="{{ $veh->id }}" class="item-checkbox rounded text-brand-500 focus:ring-brand-500 h-4 w-4 border-gray-300">
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-gray-400">
                                         {{ $veh->id }}
                                     </td>
@@ -180,4 +208,40 @@
 
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectAll = document.getElementById('selectAllItems');
+        const checkboxes = Array.from(document.querySelectorAll('.item-checkbox'));
+        const selectedCount = document.getElementById('selectedCount');
+
+        function updateCount() {
+            if (selectedCount) {
+                const count = checkboxes.filter(cb => cb.checked).length;
+                selectedCount.textContent = count;
+            }
+        }
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function () {
+                checkboxes.forEach(cb => {
+                    cb.checked = selectAll.checked;
+                });
+                updateCount();
+            });
+        }
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                const allChecked = checkboxes.length > 0 && checkboxes.every(x => x.checked);
+                if (selectAll) {
+                    selectAll.checked = allChecked;
+                }
+                updateCount();
+            });
+        });
+
+        updateCount();
+    });
+</script>
 @endsection

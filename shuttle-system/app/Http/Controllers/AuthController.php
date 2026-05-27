@@ -120,6 +120,10 @@ class AuthController extends Controller
                     if (!$user->role || $user->role->name !== "customer") {
                         abort(403, "Login Google hanya untuk customer");
                     }
+
+                    if (!$user->profile_photo_path && $googleUser->avatar) {
+                        $user->update(["profile_photo_path" => $googleUser->avatar]);
+                    }
                 } else {
                     $role = Role::where("name", "customer")->first();
                     if (!$role) throw new \Exception("Role customer tidak ditemukan");
@@ -128,6 +132,7 @@ class AuthController extends Controller
                         "name" => $googleUser->name ?? "User",
                         "email" => $googleUser->email,
                         "password" => null,
+                        "profile_photo_path" => $googleUser->avatar,
                         "role_id" => $role->id
                     ]);
                 }
@@ -189,6 +194,7 @@ class AuthController extends Controller
                 "email" => (string)$user->email,
                 "phone" => (string)($user->phone ?? ''),
                 "role_id" => (int)$user->role_id,
+                "profile_photo_url" => $user->profile_photo_url,
                 "has_password" => !empty($user->password),
             ]);
         } catch (\Throwable $e) {

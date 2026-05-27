@@ -87,7 +87,7 @@
         <span>Harga Tiket ({{ tripDetails.seats.length }}x)</span>
         <span>Rp {{ (tripDetails.seats.length * fareDetails.ticketPrice) | number:'1.0-0' }}</span>
       </div>
-      <div class="fare-row">
+      <div class="fare-row" *ngIf="fareDetails.fee > 0">
         <span>Biaya Layanan</span>
         <span>Rp {{ fareDetails.fee | number:'1.0-0' }}</span>
       </div>

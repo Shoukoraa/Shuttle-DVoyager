@@ -52,7 +52,7 @@ export class LoginPage implements OnInit {
             if (role === 'driver') {
               this.router.navigate(['/driver-home'], { replaceUrl: true });
             } else {
-              this.location.back();
+              this.router.navigate(['/home'], { replaceUrl: true });
             }
           },
           error: (error) => {
@@ -70,7 +70,7 @@ export class LoginPage implements OnInit {
             if (role === 'driver') {
               this.router.navigate(['/driver-home'], { replaceUrl: true });
             } else {
-              this.location.back();
+              this.router.navigate(['/home'], { replaceUrl: true });
             }
           }
         });

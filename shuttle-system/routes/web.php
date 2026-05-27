@@ -51,6 +51,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     // LOCATIONS
     Route::get('/locations', [AdminWebController::class, 'locations'])->name('admin.locations');
     Route::post('/locations', [AdminWebController::class, 'storeLocation']);
+    Route::post('/locations/bulk-delete', [AdminWebController::class, 'bulkDeleteLocations'])->name('admin.locations.bulk-delete');
+    Route::post('/locations/delete-all', [AdminWebController::class, 'deleteAllLocations'])->name('admin.locations.delete-all');
     Route::get('/locations/{location}/edit', [AdminWebController::class, 'editLocation']);
     Route::put('/locations/{location}', [AdminWebController::class, 'updateLocation']);
     Route::delete('/locations/{location}', [AdminWebController::class, 'deleteLocation']);
@@ -58,6 +60,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     // VEHICLES
     Route::get('/vehicles', [AdminWebController::class, 'vehicles'])->name('admin.vehicles');
     Route::post('/vehicles', [AdminWebController::class, 'storeVehicle']);
+    Route::post('/vehicles/bulk-delete', [AdminWebController::class, 'bulkDeleteVehicles'])->name('admin.vehicles.bulk-delete');
+    Route::post('/vehicles/delete-all', [AdminWebController::class, 'deleteAllVehicles'])->name('admin.vehicles.delete-all');
     Route::get('/vehicles/{vehicle}/edit', [AdminWebController::class, 'editVehicle']);
     Route::put('/vehicles/{vehicle}', [AdminWebController::class, 'updateVehicle']);
     Route::delete('/vehicles/{vehicle}', [AdminWebController::class, 'deleteVehicle']);
@@ -65,6 +69,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     // ROUTES
     Route::get('/routes', [AdminWebController::class, 'routes'])->name('admin.routes');
     Route::post('/routes', [AdminWebController::class, 'storeRoute']);
+    Route::post('/routes/bulk-delete', [AdminWebController::class, 'bulkDeleteRoutes'])->name('admin.routes.bulk-delete');
+    Route::post('/routes/delete-all', [AdminWebController::class, 'deleteAllRoutes'])->name('admin.routes.delete-all');
     Route::get('/routes/{route}/edit', [AdminWebController::class, 'editRoute']);
     Route::put('/routes/{route}', [AdminWebController::class, 'updateRoute']);
     Route::delete('/routes/{route}', [AdminWebController::class, 'deleteRoute']);
@@ -81,12 +87,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     // DRIVERS
     Route::get('/drivers', [AdminWebController::class, 'drivers'])->name('admin.drivers');
     Route::post('/drivers', [AdminWebController::class, 'storeDriver']);
+    Route::post('/drivers/bulk-delete', [AdminWebController::class, 'bulkDeleteDrivers'])->name('admin.drivers.bulk-delete');
+    Route::post('/drivers/delete-all', [AdminWebController::class, 'deleteAllDrivers'])->name('admin.drivers.delete-all');
     Route::get('/drivers/{driver}/edit', [AdminWebController::class, 'editDriver']);
     Route::put('/drivers/{driver}', [AdminWebController::class, 'updateDriver']);
     Route::delete('/drivers/{driver}', [AdminWebController::class, 'deleteDriver']);
 
     // CUSTOMERS
     Route::get('/customers', [AdminWebController::class, 'customers'])->name('admin.customers');
+    Route::post('/customers/bulk-delete', [AdminWebController::class, 'bulkDeleteCustomers'])->name('admin.customers.bulk-delete');
+    Route::post('/customers/delete-all', [AdminWebController::class, 'deleteAllCustomers'])->name('admin.customers.delete-all');
     Route::get('/customers/{customer}/edit', [AdminWebController::class, 'editCustomer']);
     Route::put('/customers/{customer}', [AdminWebController::class, 'updateCustomer']);
     Route::delete('/customers/{customer}', [AdminWebController::class, 'deleteCustomer']);

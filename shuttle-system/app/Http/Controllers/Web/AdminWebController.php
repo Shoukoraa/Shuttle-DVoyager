@@ -181,6 +181,17 @@ class AdminWebController extends Controller
         catch (\Exception $e) { return back()->with('error', 'Gagal menghapus lokasi karena sedang digunakan oleh rute.'); }
     }
 
+    public function bulkDeleteLocations(Request $request) {
+        $validated = $request->validate([ 'location_ids' => 'required|array|min:1', 'location_ids.*' => 'integer|exists:locations,id' ]);
+        try { $count = Location::whereIn('id', $validated['location_ids'])->delete(); return back()->with('success', $count . ' lokasi berhasil dihapus.'); } 
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus lokasi terpilih.'); }
+    }
+
+    public function deleteAllLocations() {
+        try { $count = Location::query()->delete(); return back()->with('success', $count . ' lokasi berhasil dihapus semua.'); } 
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus semua lokasi.'); }
+    }
+
     // VEHICLES
     public function vehicles() { return view('admin.vehicles', ['vehicles' => Vehicle::all()]); }
     public function storeVehicle(Request $request) {
@@ -233,6 +244,17 @@ class AdminWebController extends Controller
         catch (\Exception $e) { return back()->with('error', 'Gagal menghapus kendaraan karena sedang digunakan di jadwal.'); }
     }
 
+    public function bulkDeleteVehicles(Request $request) {
+        $validated = $request->validate([ 'vehicle_ids' => 'required|array|min:1', 'vehicle_ids.*' => 'integer|exists:vehicles,id' ]);
+        try { $count = Vehicle::whereIn('id', $validated['vehicle_ids'])->delete(); return back()->with('success', $count . ' kendaraan berhasil dihapus.'); } 
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus kendaraan terpilih.'); }
+    }
+
+    public function deleteAllVehicles() {
+        try { $count = Vehicle::query()->delete(); return back()->with('success', $count . ' kendaraan berhasil dihapus semua.'); } 
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus semua kendaraan.'); }
+    }
+
     // ROUTES
     public function routes() { return view('admin.routes', ['routes' => RouteModel::with(['origin', 'destination'])->get(), 'locations' => Location::all()]); }
     public function storeRoute(Request $request) {
@@ -249,6 +271,17 @@ class AdminWebController extends Controller
     public function deleteRoute(RouteModel $route) {
         try { $route->delete(); return back()->with('success', 'Rute berhasil dihapus!'); }
         catch (\Exception $e) { return back()->with('error', 'Gagal menghapus rute karena ada jadwal terkait.'); }
+    }
+
+    public function bulkDeleteRoutes(Request $request) {
+        $validated = $request->validate([ 'route_ids' => 'required|array|min:1', 'route_ids.*' => 'integer|exists:routes,id' ]);
+        try { $count = RouteModel::whereIn('id', $validated['route_ids'])->delete(); return back()->with('success', $count . ' rute berhasil dihapus.'); } 
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus rute terpilih.'); }
+    }
+
+    public function deleteAllRoutes() {
+        try { $count = RouteModel::query()->delete(); return back()->with('success', $count . ' rute berhasil dihapus semua.'); } 
+        catch (\Exception $e) { return back()->with('error', 'Gagal menghapus semua rute.'); }
     }
 
     // SCHEDULES
@@ -424,8 +457,44 @@ class AdminWebController extends Controller
         return redirect()->route('admin.drivers')->with('success', 'Data supir berhasil diperbarui!');
     }
     public function deleteDriver(Driver $driver) {
-        try { $user = $driver->user; $driver->delete(); if($user) $user->delete(); return back()->with('success', 'Supir berhasil dihapus!'); }
+        try { 
+            $user = $driver->user; 
+            \App\Models\Vehicle::where('driver_id', $driver->id)->update(['driver_id' => null]);
+            $driver->delete(); 
+            if($user) $user->delete(); 
+            return back()->with('success', 'Supir berhasil dihapus!'); 
+        }
         catch (\Exception $e) { return back()->with('error', 'Gagal menghapus supir.'); }
+    }
+
+    public function bulkDeleteDrivers(Request $request) {
+        $validated = $request->validate([ 'driver_ids' => 'required|array|min:1', 'driver_ids.*' => 'integer|exists:drivers,id' ]);
+        try { 
+            $count = 0;
+            $drivers = Driver::whereIn('id', $validated['driver_ids'])->get();
+            foreach ($drivers as $d) { 
+                $user = $d->user; 
+                \App\Models\Vehicle::where('driver_id', $d->id)->update(['driver_id' => null]);
+                $d->delete(); 
+                if($user) $user->delete(); 
+                $count++; 
+            }
+            return back()->with('success', $count . ' supir berhasil dihapus.'); 
+        } catch (\Exception $e) { return back()->with('error', 'Gagal menghapus supir terpilih.'); }
+    }
+
+    public function deleteAllDrivers() {
+        try { 
+            $count = 0;
+            foreach (Driver::all() as $d) { 
+                $user = $d->user; 
+                \App\Models\Vehicle::where('driver_id', $d->id)->update(['driver_id' => null]);
+                $d->delete(); 
+                if($user) $user->delete(); 
+                $count++; 
+            }
+            return back()->with('success', $count . ' supir berhasil dihapus semua.'); 
+        } catch (\Exception $e) { return back()->with('error', 'Gagal menghapus semua supir.'); }
     }
 
     // CUSTOMERS
@@ -457,6 +526,24 @@ class AdminWebController extends Controller
     public function deleteCustomer(Customer $customer) {
         try { $user = $customer->user; $customer->delete(); if($user) $user->delete(); return back()->with('success', 'Pelanggan berhasil dihapus!'); }
         catch (\Exception $e) { return back()->with('error', 'Gagal menghapus pelanggan.'); }
+    }
+
+    public function bulkDeleteCustomers(Request $request) {
+        $validated = $request->validate([ 'customer_ids' => 'required|array|min:1', 'customer_ids.*' => 'integer|exists:customers,id' ]);
+        try { 
+            $count = 0;
+            $customers = Customer::whereIn('id', $validated['customer_ids'])->get();
+            foreach ($customers as $c) { $user = $c->user; $c->delete(); if($user) $user->delete(); $count++; }
+            return back()->with('success', $count . ' pelanggan berhasil dihapus.'); 
+        } catch (\Exception $e) { return back()->with('error', 'Gagal menghapus pelanggan terpilih.'); }
+    }
+
+    public function deleteAllCustomers() {
+        try { 
+            $count = 0;
+            foreach (Customer::all() as $c) { $user = $c->user; $c->delete(); if($user) $user->delete(); $count++; }
+            return back()->with('success', $count . ' pelanggan berhasil dihapus semua.'); 
+        } catch (\Exception $e) { return back()->with('error', 'Gagal menghapus semua pelanggan.'); }
     }
 
     // BOOKINGS

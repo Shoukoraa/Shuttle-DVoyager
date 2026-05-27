@@ -53,7 +53,7 @@ class ProfileController extends Controller
             'profile_photo_path' => $newPhotoPath,
         ]);
 
-        if ($oldPhotoPath && $oldPhotoPath !== $newPhotoPath) {
+        if ($oldPhotoPath && $oldPhotoPath !== $newPhotoPath && !filter_var($oldPhotoPath, FILTER_VALIDATE_URL)) {
             Storage::disk('public')->delete($oldPhotoPath);
         }
 
