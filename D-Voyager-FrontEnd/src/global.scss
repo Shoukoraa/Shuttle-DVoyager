@@ -106,3 +106,122 @@
     }
   }
 }
+
+/* ==========================================================================
+   Premium Logout Modal
+   ========================================================================== */
+.premium-logout-modal {
+  --background: transparent;
+  --width: 320px;
+  --height: fit-content;
+  --max-height: 380px;
+  --border-radius: 28px;
+  --backdrop-opacity: 0.65;
+
+  &::part(content) {
+    border-radius: 28px;
+    background: var(--white);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+  }
+
+  .logout-modal-wrapper {
+    padding: 28px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: var(--white);
+    width: 100%;
+
+    .alert-icon-wrapper {
+      width: 60px;
+      height: 60px;
+      background: rgba(239, 68, 68, 0.09);
+      color: #EF4444;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 28px;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      animation: pulseAlertIcon 2s infinite ease-in-out;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--dark-gray);
+      margin: 0 0 10px 0;
+      letter-spacing: -0.5px;
+    }
+
+    p {
+      margin: 0 0 24px 0;
+      color: #6B7280;
+      font-size: 13.5px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .modal-action-buttons {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+
+      button {
+        height: 48px;
+        border-radius: 16px;
+        font-size: 14px;
+        font-weight: 800;
+        border: none;
+        flex: 1;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        outline: none;
+
+        &:active {
+          transform: scale(0.97);
+        }
+      }
+
+      .btn-cancel {
+        background: #F3F4F6;
+        color: #4B5563;
+
+        &:active {
+          background: #E5E7EB;
+        }
+      }
+
+      .btn-confirm {
+        background: #EF4444;
+        color: #FFFFFF;
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.22);
+
+        &:active {
+          background: #DC2626;
+          box-shadow: 0 4px 10px rgba(239, 68, 68, 0.22);
+        }
+      }
+    }
+  }
+}
+
+@keyframes pulseAlertIcon {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 8px 30px rgba(239, 68, 68, 0.28);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
+  }
+}

@@ -19,6 +19,7 @@ export class ProfilePage implements OnInit {
   };
   isLoading: boolean = true;
   isLoggingOut: boolean = false;
+  isLogoutModalOpen: boolean = false;
   private isRefreshingProfile: boolean = false;
   private lastProfileRefreshAt: number = 0;
 
@@ -97,30 +98,16 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  async logout() {
+  logout() {
     if (this.isLoggingOut) {
       return;
     }
+    this.isLogoutModalOpen = true;
+  }
 
-    const alert = await this.alertController.create({
-      header: 'Keluar akun?',
-      message: 'Kamu perlu login lagi untuk melihat tiket dan melakukan pemesanan.',
-      buttons: [
-        {
-          text: 'Batal',
-          role: 'cancel',
-        },
-        {
-          text: 'Keluar',
-          role: 'destructive',
-          handler: () => {
-            this.performLogout();
-          },
-        },
-      ],
-    });
-
-    await alert.present();
+  confirmLogout() {
+    this.isLogoutModalOpen = false;
+    this.performLogout();
   }
 
   private async performLogout() {

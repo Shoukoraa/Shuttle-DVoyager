@@ -132,6 +132,11 @@ export class EditProfilePage implements OnInit {
       return;
     }
 
+    if (trimmedName.length > 50) {
+      this.errorMessage = 'Nama lengkap maksimal 50 karakter.';
+      return;
+    }
+
     if (trimmedPhone && !/^[0-9+\-\s()]{8,20}$/.test(trimmedPhone)) {
       this.errorMessage = 'Nomor telepon harus 8-20 karakter dan hanya berisi angka atau simbol telepon.';
       return;

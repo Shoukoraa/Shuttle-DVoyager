@@ -33,6 +33,11 @@ export class SignupPage implements OnInit {
       return;
     }
 
+    if (this.fullName.trim().length > 50) {
+      this.errorMessage = 'Nama lengkap maksimal 50 karakter.';
+      return;
+    }
+
     if (this.password !== this.confirmPassword) {
       this.errorMessage = 'Password dan konfirmasi password harus sama.';
       return;

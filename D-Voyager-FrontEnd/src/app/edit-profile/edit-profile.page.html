@@ -40,6 +40,7 @@
             [(ngModel)]="name"
             placeholder="Masukkan nama lengkap"
             autocomplete="name"
+            maxlength="50"
             [disabled]="isLoading || isSaving"
             required>
           </ion-input>
@@ -88,21 +89,20 @@
 
       <div class="form-divider"></div>
 
-      <div class="section-title">
-        <ion-icon name="lock-closed-outline"></ion-icon>
-        <div>
-          <h2>Ganti Password</h2>
-          <p>Untuk mengganti password, buka halaman khusus agar form tidak menumpuk di sini.</p>
+      <div class="input-group">
+        <ion-label class="custom-label">Keamanan Akun</ion-label>
+        <div class="password-action-card" routerLink="/change-password" role="button" tabindex="0">
+          <div class="card-icon">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
+          <div class="card-content">
+            <h3>Ganti Password</h3>
+            <p>Perbarui kata sandi secara berkala untuk menjaga keamanan akun Anda.</p>
+          </div>
+          <div class="card-arrow">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
         </div>
-      </div>
-
-      <div class="info-card">
-        <ion-icon name="key"></ion-icon>
-        <div style="flex:1">
-          <h4>Halaman Ganti Password</h4>
-          <p>Kelola password akun kamu di halaman terpisah.</p>
-        </div>
-        <ion-button fill="clear" color="primary" routerLink="/change-password">Ganti Password</ion-button>
       </div>
 
       <ion-button expand="block" type="submit" class="save-btn" [disabled]="isLoading || isSaving || isSavingPassword">

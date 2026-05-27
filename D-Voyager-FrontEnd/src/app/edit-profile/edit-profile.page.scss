@@ -93,6 +93,9 @@
     font-size: 24px;
     font-weight: 800;
     margin: 0 0 4px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   p {
@@ -269,3 +272,90 @@
     font-size: 17px;
   }
 }
+
+.password-action-card {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1.5px dashed rgba(255, 193, 7, 0.4);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 6px 0 10px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  outline: none;
+
+  &:hover, &:focus {
+    background: rgba(255, 193, 7, 0.04);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 24px rgba(255, 193, 7, 0.08);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.04);
+  }
+
+  .card-icon {
+    background: rgba(255, 193, 7, 0.12);
+    border-radius: 12px;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-right: 14px;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+
+  &:hover .card-icon, &:focus .card-icon {
+    background: var(--primary-color);
+    color: var(--dark-gray);
+  }
+
+  .card-content {
+    flex: 1;
+
+    h3 {
+      color: var(--dark-gray);
+      font-size: 14px;
+      font-weight: 800;
+      margin: 0 0 3px;
+    }
+
+    p {
+      color: #71717a;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.45;
+      margin: 0;
+    }
+  }
+
+  .card-arrow {
+    color: #A1A1AA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    transition: all 0.25s ease;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  &:hover .card-arrow, &:focus .card-arrow {
+    transform: translateX(4px);
+    color: var(--primary-dark);
+  }
+}
+
