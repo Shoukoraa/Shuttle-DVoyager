@@ -9,7 +9,8 @@ import { ApiService } from '../services/api.service';
   standalone: false,
 })
 export class HomePage implements OnInit {
-  public userName = 'User';
+  public isLoggedIn = false;
+  public userName = 'Penjelajah';
   public profilePhotoUrl = '';
   public locations: any[] = [];
   public asalId: number | null = null;
@@ -41,6 +42,11 @@ export class HomePage implements OnInit {
 
   private loadCachedUserProfile(): void {
     const userDataRaw = localStorage.getItem('user_data');
+    const token = localStorage.getItem('auth_token');
+    
+    if (token) {
+      this.isLoggedIn = true;
+    }
 
     if (!userDataRaw) {
       return;
@@ -59,8 +65,11 @@ export class HomePage implements OnInit {
     const token = localStorage.getItem('auth_token');
 
     if (!token) {
+      this.isLoggedIn = false;
       return;
     }
+    
+    this.isLoggedIn = true;
 
     this.apiService.getUserProfile().subscribe({
       next: (response) => {

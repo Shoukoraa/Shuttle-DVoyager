@@ -7,11 +7,14 @@
         <p>Halo,</p>
         <h2>{{ userName }} 👋</h2>
       </div>
-      <a class="profile-avatar" routerLink="/profile" aria-label="Buka profil pengguna">
+      <a *ngIf="isLoggedIn" class="profile-avatar" routerLink="/profile" aria-label="Buka profil pengguna">
         <img *ngIf="profilePhotoUrl; else avatarFallback" [src]="profilePhotoUrl" alt="Foto profil akun">
         <ng-template #avatarFallback>
           <ion-icon name="person"></ion-icon>
         </ng-template>
+      </a>
+      <a *ngIf="!isLoggedIn" routerLink="/login" style="font-size: 13px; font-weight: 800; background: #FBC02D; color: #1E1E1E; padding: 8px 16px; border-radius: 20px; text-decoration: none; box-shadow: 0 4px 10px rgba(251,192,45,0.3);">
+        Login
       </a>
     </div>
     

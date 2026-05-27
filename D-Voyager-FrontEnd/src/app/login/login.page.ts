@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -18,7 +19,8 @@ export class LoginPage implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -48,9 +50,9 @@ export class LoginPage implements OnInit {
             }));
 
             if (role === 'driver') {
-              this.router.navigate(['/driver-home']);
+              this.router.navigate(['/driver-home'], { replaceUrl: true });
             } else {
-              this.router.navigate(['/home']);
+              this.location.back();
             }
           },
           error: (error) => {
@@ -66,9 +68,9 @@ export class LoginPage implements OnInit {
             
             // Tetap redirect meski gagal fetch profile
             if (role === 'driver') {
-              this.router.navigate(['/driver-home']);
+              this.router.navigate(['/driver-home'], { replaceUrl: true });
             } else {
-              this.router.navigate(['/home']);
+              this.location.back();
             }
           }
         });
@@ -96,9 +98,9 @@ export class LoginPage implements OnInit {
         const userRole = this.apiService.getUserRole(response.user);
         
         if (userRole === 'driver') {
-          this.router.navigate(['/driver-home']);
+          this.router.navigate(['/driver-home'], { replaceUrl: true });
         } else {
-          this.router.navigate(['/home']);
+          this.location.back();
         }
       },
       error: (error) => {

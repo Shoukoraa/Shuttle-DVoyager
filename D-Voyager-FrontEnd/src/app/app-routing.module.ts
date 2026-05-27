@@ -6,13 +6,11 @@ import { RoleGuard } from './guards/role.guard';
 const routes: Routes = [
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule),
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'customer' }
+    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   },
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'home',
     pathMatch: 'full'
   },
   {
@@ -33,13 +31,11 @@ const routes: Routes = [
   },
   {
     path: 'schedule',
-    loadChildren: () => import('./schedule/schedule.module').then( m => m.SchedulePageModule),
-    canActivate: [AuthGuard]
+    loadChildren: () => import('./schedule/schedule.module').then( m => m.SchedulePageModule)
   },
   {
     path: 'select-seat',
-    loadChildren: () => import('./select-seat/select-seat.module').then( m => m.SelectSeatPageModule),
-    canActivate: [AuthGuard]
+    loadChildren: () => import('./select-seat/select-seat.module').then( m => m.SelectSeatPageModule)
   },
   {
     path: 'booking-summary',

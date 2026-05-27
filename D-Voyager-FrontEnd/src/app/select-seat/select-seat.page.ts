@@ -234,6 +234,13 @@ export class SelectSeatPage implements OnInit {
   }
 
   proceedToBooking() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      alert('Anda harus login atau mendaftar terlebih dahulu untuk melanjutkan pemesanan.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
     const seatNumbers = this.selectedSeats.map(s => s.id);
     this.router.navigate(['/booking-summary'], {
       state: {
