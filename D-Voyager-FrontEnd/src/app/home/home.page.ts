@@ -17,6 +17,11 @@ export class HomePage implements OnInit {
   public tujuanId: number | null = null;
   public tanggal: string = new Date().toISOString();
 
+  public isAsalModalOpen = false;
+  public isTujuanModalOpen = false;
+  public asalSearch = '';
+  public tujuanSearch = '';
+
   public promos = [
     { title: 'Diskon 10%', subtitle: 'Rute Bus', color: '#FFC107', icon: 'ticket-outline' },
     { title: 'Cashback 20%', subtitle: 'Rute Shuttle', color: '#6CCD76', icon: 'cash-outline' },
@@ -101,6 +106,77 @@ export class HomePage implements OnInit {
     const tmr = new Date();
     tmr.setDate(tmr.getDate() + 1);
     this.tanggal = tmr.toISOString();
+  }
+
+  isToday(): boolean {
+    if (!this.tanggal) return false;
+    const today = new Date();
+    const current = new Date(this.tanggal);
+    return today.toDateString() === current.toDateString();
+  }
+
+  isTomorrow(): boolean {
+    if (!this.tanggal) return false;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const current = new Date(this.tanggal);
+    return tomorrow.toDateString() === current.toDateString();
+  }
+
+  getFormattedDate(): string {
+    if (!this.tanggal) return 'Pilih Tanggal';
+    const dateObj = new Date(this.tanggal);
+    const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    return dateObj.toLocaleDateString('id-ID', options);
+  }
+
+  getCalendarMonth(): string {
+    if (!this.tanggal) return 'MEI';
+    const dateObj = new Date(this.tanggal);
+    return dateObj.toLocaleDateString('id-ID', { month: 'short' }).toUpperCase();
+  }
+
+  getCalendarDay(): string {
+    if (!this.tanggal) return '27';
+    const dateObj = new Date(this.tanggal);
+    return dateObj.toLocaleDateString('id-ID', { day: '2-digit' });
+  }
+
+  openAsalModal() {
+    this.asalSearch = '';
+    this.isAsalModalOpen = true;
+  }
+
+  openTujuanModal() {
+    this.tujuanSearch = '';
+    this.isTujuanModalOpen = true;
+  }
+
+  selectAsal(loc: any) {
+    this.asalId = loc.id;
+    this.isAsalModalOpen = false;
+  }
+
+  selectTujuan(loc: any) {
+    this.tujuanId = loc.id;
+    this.isTujuanModalOpen = false;
+  }
+
+  getAsalName(): string {
+    const loc = this.locations.find(l => l.id === this.asalId);
+    return loc ? loc.name : '';
+  }
+
+  getTujuanName(): string {
+    const loc = this.locations.find(l => l.id === this.tujuanId);
+    return loc ? loc.name : '';
+  }
+
+  getFilteredLocations(query: string): any[] {
+    if (!query) return this.locations;
+    return this.locations.filter(loc => 
+      loc.name.toLowerCase().includes(query.toLowerCase())
+    );
   }
 
   searchShuttle() {

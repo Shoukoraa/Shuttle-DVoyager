@@ -84,8 +84,7 @@
 .search-section {
   margin-bottom: 40px;
 
-  .route-group,
-  .date-group {
+  .route-group {
     background: var(--white);
     border-radius: 20px;
     padding: 12px 20px;
@@ -96,7 +95,7 @@
   .input-floating {
     display: flex;
     align-items: center;
-    padding: 12px 0;
+    padding: 12px 40px 12px 0; /* Clear space for the route swap button */
 
     .dot {
       width: 14px;
@@ -214,6 +213,162 @@
   }
 }
 
+/* Custom Date Selector Upgrades */
+.date-group-wrapper {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.date-picker-trigger {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+/* Elegant Calendar Pill Icon */
+.calendar-pill {
+  width: 44px;
+  height: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  .calendar-pill-header {
+    background: #e53935; /* Crisp red calendar header */
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 800;
+    text-align: center;
+    padding: 3px 0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .calendar-pill-body {
+    background: #f8fafc;
+    color: var(--dark-gray);
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.date-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .date-label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+
+  .date-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--dark-gray);
+  }
+}
+
+.date-chevron {
+  color: #9ca3af;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+/* Quick Date Selector Buttons */
+.quick-date-container {
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  padding-top: 12px;
+}
+
+.quick-date-btn {
+  flex: 1;
+  background: #f1f5f9;
+  color: #64748b;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 16px;
+  }
+
+  &:hover, &:active {
+    background: #e2e8f0;
+  }
+
+  &.active {
+    background: rgba(251, 192, 45, 0.15); /* Light primary yellow tint */
+    color: #827717; /* Darker mustard yellow/gold tint */
+    font-weight: 800;
+    box-shadow: inset 0 0 0 1px rgba(251, 192, 45, 0.3);
+  }
+}
+
+/* Custom premium styles for Ion Datetime modal */
+.custom-datetime-modal {
+  --border-radius: 24px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.15);
+  --width: 90%;
+  --height: auto;
+  --max-height: 480px;
+
+  &::part(content) {
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  .premium-datetime {
+    --background: var(--white);
+    --title-color: var(--dark-gray);
+    font-family: inherit;
+    
+    &::part(calendar-day) {
+      font-weight: 600;
+    }
+    
+    &::part(calendar-day active) {
+      background: var(--primary-color) !important;
+      color: var(--dark-gray) !important;
+      font-weight: 800;
+    }
+  }
+}
+
 /* Promo Section (Ticket Style) */
 .promo-section {
   .section-header {
@@ -286,5 +441,112 @@
         }
       }
     }
+  }
+}
+
+/* Custom Location Selector Modal Styles */
+.custom-modal {
+  --background: var(--white);
+  --border-radius: 24px 24px 0 0;
+  
+  &::part(content) {
+    border-radius: 24px 24px 0 0;
+  }
+
+  .modal-toolbar {
+    --background: var(--white);
+    --color: var(--dark-gray);
+    --border-width: 0;
+    
+    ion-title {
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    ion-button {
+      --color: var(--primary-color);
+      font-weight: 700;
+      font-size: 14px;
+    }
+  }
+}
+
+.modal-searchbar {
+  --background: #f1f5f9;
+  --placeholder-color: #94a3b8;
+  --icon-color: #64748b;
+  --border-radius: 14px;
+  padding: 0 16px 8px 16px;
+}
+
+.location-list {
+  background: transparent;
+  padding: 8px 16px 24px 16px;
+
+  .location-item {
+    --background: var(--white);
+    --border-radius: 16px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.98);
+      background: #f8fafc;
+    }
+
+    .location-icon {
+      color: #64748b;
+      font-size: 20px;
+      margin-right: 12px;
+      background: #f1f5f9;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    h3 {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--dark-gray);
+      margin: 0 0 2px 0;
+    }
+
+    p {
+      font-size: 12px;
+      color: #64748b;
+      margin: 0;
+    }
+
+    .check-icon {
+      font-size: 22px;
+      color: #FBC02D; /* Primary accent yellow check */
+    }
+  }
+}
+
+/* Custom visual presentation inside trigger */
+.input-floating {
+  .value-text {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--dark-gray);
+    margin-top: 4px;
+    display: inline-block;
+
+    &.placeholder {
+      color: #9ca3af;
+      font-weight: 600;
+    }
+  }
+
+  .chevron {
+    color: #9ca3af;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
   }
 }

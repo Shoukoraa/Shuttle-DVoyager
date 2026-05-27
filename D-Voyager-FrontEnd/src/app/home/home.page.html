@@ -30,13 +30,16 @@
     <div class="search-section">
       
       <div class="route-group">
-        <div class="input-floating">
+        <div class="input-floating" (click)="openAsalModal()">
           <div class="dot origin"></div>
-          <div class="input-content" style="width: 100%;">
+          <div class="input-content">
             <span class="label">Keberangkatan</span>
-            <ion-select placeholder="Pilih kota asal" [(ngModel)]="asalId" style="width: 100%;">
-              <ion-select-option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</ion-select-option>
-            </ion-select>
+            <span class="value-text" [class.placeholder]="!asalId">
+              {{ getAsalName() || 'Pilih kota asal' }}
+            </span>
+          </div>
+          <div class="chevron">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
           </div>
         </div>
 
@@ -47,30 +50,59 @@
           </div>
         </div>
 
-        <div class="input-floating">
+        <div class="input-floating" (click)="openTujuanModal()">
           <div class="dot destination"></div>
-          <div class="input-content" style="width: 100%;">
+          <div class="input-content">
             <span class="label">Tujuan</span>
-            <ion-select placeholder="Pilih kota tujuan" [(ngModel)]="tujuanId" style="width: 100%;">
-              <ion-select-option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</ion-select-option>
-            </ion-select>
+            <span class="value-text" [class.placeholder]="!tujuanId">
+              {{ getTujuanName() || 'Pilih kota tujuan' }}
+            </span>
+          </div>
+          <div class="chevron">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
           </div>
         </div>
       </div>
 
-      <div class="date-group">
-        <div class="input-floating">
-          <ion-icon name="calendar-clear" class="cal-icon"></ion-icon>
-          <div class="input-content">
-            <span class="label">Tanggal Perjalanan</span>
-            <ion-datetime-button datetime="datetime"></ion-datetime-button>
-            <ion-modal [keepContentsMounted]="true">
-              <ng-template>
-                <ion-datetime id="datetime" presentation="date" [(ngModel)]="tanggal"></ion-datetime>
-              </ng-template>
-            </ion-modal>
+      <div class="date-group-wrapper">
+        <div class="date-picker-trigger" id="open-date-picker">
+          <div class="calendar-pill">
+            <div class="calendar-pill-header">{{ getCalendarMonth() }}</div>
+            <div class="calendar-pill-body">{{ getCalendarDay() }}</div>
+          </div>
+          <div class="date-info">
+            <span class="date-label">Tanggal Perjalanan</span>
+            <span class="date-value">{{ getFormattedDate() }}</span>
+          </div>
+          <div class="date-chevron">
+            <ion-icon name="chevron-down-outline"></ion-icon>
           </div>
         </div>
+
+        <div class="quick-date-container">
+          <button type="button" class="quick-date-btn" [class.active]="isToday()" (click)="setToday(); $event.stopPropagation()">
+            <ion-icon name="today-outline" *ngIf="isToday()"></ion-icon>
+            Hari Ini
+          </button>
+          <button type="button" class="quick-date-btn" [class.active]="isTomorrow()" (click)="setTomorrow(); $event.stopPropagation()">
+            <ion-icon name="calendar-outline" *ngIf="isTomorrow()"></ion-icon>
+            Besok
+          </button>
+        </div>
+
+        <ion-modal trigger="open-date-picker" [keepContentsMounted]="true" class="custom-datetime-modal">
+          <ng-template>
+            <ion-datetime 
+              id="datetime" 
+              presentation="date" 
+              [(ngModel)]="tanggal"
+              [showDefaultButtons]="true"
+              doneText="Pilih"
+              cancelText="Batal"
+              class="premium-datetime">
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
       </div>
 
       <button class="mega-search-btn" (click)="searchShuttle()">
@@ -102,6 +134,80 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal Pilih Kota Asal -->
+  <ion-modal 
+    [isOpen]="isAsalModalOpen" 
+    (didDismiss)="isAsalModalOpen = false" 
+    [initialBreakpoint]="0.6" 
+    [breakpoints]="[0, 0.6, 0.9]"
+    class="custom-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Pilih Keberangkatan</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isAsalModalOpen = false">Tutup</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-searchbar 
+          placeholder="Cari kota asal..." 
+          [(ngModel)]="asalSearch"
+          class="modal-searchbar"
+          animated="true">
+        </ion-searchbar>
+        <ion-list lines="none" class="location-list">
+          <ion-item button *ngFor="let loc of getFilteredLocations(asalSearch)" (click)="selectAsal(loc)" class="location-item">
+            <ion-icon name="location" slot="start" class="location-icon"></ion-icon>
+            <ion-label>
+              <h3>{{ loc.name }}</h3>
+              <p>Terminal / Titik Jemput</p>
+            </ion-label>
+            <ion-icon name="checkmark-circle" slot="end" class="check-icon" *ngIf="asalId === loc.id"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal Pilih Kota Tujuan -->
+  <ion-modal 
+    [isOpen]="isTujuanModalOpen" 
+    (didDismiss)="isTujuanModalOpen = false" 
+    [initialBreakpoint]="0.6" 
+    [breakpoints]="[0, 0.6, 0.9]"
+    class="custom-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Pilih Tujuan</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isTujuanModalOpen = false">Tutup</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-searchbar 
+          placeholder="Cari kota tujuan..." 
+          [(ngModel)]="tujuanSearch"
+          class="modal-searchbar"
+          animated="true">
+        </ion-searchbar>
+        <ion-list lines="none" class="location-list">
+          <ion-item button *ngFor="let loc of getFilteredLocations(tujuanSearch)" (click)="selectTujuan(loc)" class="location-item">
+            <ion-icon name="location" slot="start" class="location-icon"></ion-icon>
+            <ion-label>
+              <h3>{{ loc.name }}</h3>
+              <p>Terminal / Titik Tujuan</p>
+            </ion-label>
+            <ion-icon name="checkmark-circle" slot="end" class="check-icon" *ngIf="tujuanId === loc.id"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
 
