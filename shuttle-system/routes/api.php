@@ -109,6 +109,7 @@ Route::post('/auth/google', [AuthController::class, 'handleGoogleCallback']);
 Route::get('/locations', [\App\Http\Controllers\CustomerScheduleController::class, 'locations']);
 Route::get('/schedules', [\App\Http\Controllers\CustomerScheduleController::class, 'index']);
 Route::get('/schedules/{id}/seats', [\App\Http\Controllers\CustomerScheduleController::class, 'seats']);
+Route::post('/payments/dompetx/webhook', [PaymentController::class, 'webhook']);
 
 /*
 |--------------------------------------------------------------------------

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 import { environment } from 'src/environments/environment';
 import { ApiService } from '../services/api.service';
 
@@ -8,7 +10,7 @@ interface PaymentMethod {
   id: string;
   name: string;
   icon: string;
-  type: 'va' | 'ewallet' | 'retail';
+  type: 'va' | 'qris';
 }
 
 @Component({
@@ -32,24 +34,20 @@ export class PaymentPage implements OnInit {
     {
       category: 'Virtual Account',
       items: [
-        { id: 'bca', name: 'BCA Virtual Account', icon: 'business-outline', type: 'va' },
-        { id: 'mandiri', name: 'Mandiri Virtual Account', icon: 'business-outline', type: 'va' },
-        { id: 'bni', name: 'BNI Virtual Account', icon: 'business-outline', type: 'va' }
+        { id: 'VA_PERMATA', name: 'Permata Virtual Account', icon: 'business-outline', type: 'va' },
+        { id: 'VA_BCA', name: 'BCA Virtual Account', icon: 'business-outline', type: 'va' },
+        { id: 'VA_MANDIRI', name: 'Mandiri Virtual Account', icon: 'business-outline', type: 'va' },
+        { id: 'VA_DANAMON', name: 'Danamon Virtual Account', icon: 'business-outline', type: 'va' },
+        { id: 'VA_CIMB', name: 'CIMB Virtual Account', icon: 'business-outline', type: 'va' },
+        { id: 'VA_BSI', name: 'BSI Virtual Account', icon: 'business-outline', type: 'va' },
+        { id: 'VA_BRI', name: 'BRI Virtual Account', icon: 'business-outline', type: 'va' },
+        { id: 'VA_BNI', name: 'BNI Virtual Account', icon: 'business-outline', type: 'va' }
       ]
     },
     {
-      category: 'E-Wallet',
+      category: 'QRIS',
       items: [
-        { id: 'gopay', name: 'GoPay', icon: 'wallet-outline', type: 'ewallet' },
-        { id: 'ovo', name: 'OVO', icon: 'wallet-outline', type: 'ewallet' },
-        { id: 'dana', name: 'DANA', icon: 'wallet-outline', type: 'ewallet' }
-      ]
-    },
-    {
-      category: 'Minimarket',
-      items: [
-        { id: 'alfamart', name: 'Alfamart', icon: 'storefront-outline', type: 'retail' },
-        { id: 'indomaret', name: 'Indomaret', icon: 'storefront-outline', type: 'retail' }
+        { id: 'QRIS', name: 'QRIS', icon: 'qr-code-outline', type: 'qris' }
       ]
     }
   ];
@@ -155,8 +153,7 @@ export class PaymentPage implements OnInit {
       }).subscribe({
         next: async (payRes) => {
           this.isProcessing = false;
-          await this.showToast('Pembayaran berhasil!', 'success');
-          this.router.navigate(['/home']);
+          await this.handlePaymentResponse(payRes);
         },
         error: (err) => {
           console.error(err);
@@ -203,8 +200,7 @@ export class PaymentPage implements OnInit {
           next: async (payRes) => {
             this.isProcessing = false;
             sessionStorage.removeItem('bookingSummaryState');
-            await this.showToast('Pembayaran berhasil!', 'success');
-            this.router.navigate(['/home']);
+            await this.handlePaymentResponse(payRes);
           },
           error: (err) => {
             console.error(err);
@@ -219,6 +215,33 @@ export class PaymentPage implements OnInit {
         this.showToast(err.error?.message || 'Gagal membuat booking', 'danger');
       }
     });
+  }
+
+  private async handlePaymentResponse(payRes: any) {
+    const paymentUrl = payRes?.payment_url || payRes?.payment?.payment_url;
+
+    if (paymentUrl) {
+      await this.showToast('Checkout DompetX dibuat. Mengarahkan ke pembayaran...', 'success');
+      await this.openPaymentCheckout(paymentUrl);
+      return;
+    }
+
+    await this.showToast('Pembayaran sedang diproses.', 'success');
+    this.router.navigate(['/tickets']);
+  }
+
+  private async openPaymentCheckout(paymentUrl: string) {
+    if (Capacitor.isNativePlatform()) {
+      await Browser.open({
+        url: paymentUrl,
+        presentationStyle: 'fullscreen',
+      });
+
+      return;
+    }
+
+    window.open(paymentUrl, '_blank', 'noopener,noreferrer');
+    this.router.navigate(['/tickets']);
   }
 
   async showToast(message: string, color: string) {

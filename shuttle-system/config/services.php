@@ -41,4 +41,9 @@ return [
     'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'dompetx' => [
+        'api_key' => env('DOMPETX_API_KEY'),
+        'base_url' => env('DOMPETX_BASE_URL', 'https://api.dompetx.com/v1'),
+    ],
+
 ];

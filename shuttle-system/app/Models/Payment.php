@@ -10,12 +10,17 @@ class Payment extends Model
         'booking_id',
         'amount',
         'payment_method',
+        'gateway',
+        'gateway_transaction_id',
+        'payment_url',
+        'gateway_response',
         'status',
         'payment_time',
     ];
 
     protected $casts = [
         'payment_time' => 'datetime',
+        'gateway_response' => 'array',
     ];
 
     public function booking()

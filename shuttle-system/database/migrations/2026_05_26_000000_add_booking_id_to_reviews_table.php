@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('reviews', 'booking_id')) {
+            return;
+        }
+
         Schema::table('reviews', function (Blueprint $table) {
             $table->foreignId('booking_id')
                 ->nullable()
@@ -21,6 +25,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (!Schema::hasColumn('reviews', 'booking_id')) {
+            return;
+        }
+
         Schema::table('reviews', function (Blueprint $table) {
             $table->dropUnique(['booking_id']);
             $table->dropConstrainedForeignId('booking_id');
