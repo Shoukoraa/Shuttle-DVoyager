@@ -14,6 +14,8 @@ export class SignupPage implements OnInit {
   phone = '';
   password = '';
   confirmPassword = '';
+  showPassword = false;
+  showConfirmPassword = false;
   isLoading = false;
   errorMessage = '';
 

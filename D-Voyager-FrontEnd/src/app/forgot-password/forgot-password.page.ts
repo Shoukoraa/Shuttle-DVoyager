@@ -14,6 +14,8 @@ export class ForgotPasswordPage implements OnInit {
   otp = '';
   password = '';
   confirmPassword = '';
+  showNewPassword = false;
+  showConfirmPassword = false;
   isCodeSent = false;
   isLoading = false;
   errorMessage = '';

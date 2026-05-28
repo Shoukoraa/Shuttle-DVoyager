@@ -14,6 +14,9 @@ export class ChangePasswordPage implements OnInit {
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
   isSaving = false;
   errorMessage = '';
 

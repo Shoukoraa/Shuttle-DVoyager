@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Services\DompetXService;
+use App\Services\PaymentStatusService;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use App\Mail\TicketMail;
 
 class PaymentController extends Controller
 {
@@ -96,7 +95,7 @@ class PaymentController extends Controller
         ], 201);
     }
 
-    public function webhook(Request $request, DompetXService $dompetX)
+    public function webhook(Request $request, DompetXService $dompetX, PaymentStatusService $paymentStatus)
     {
         $rawBody = $request->getContent();
 
@@ -119,46 +118,12 @@ class PaymentController extends Controller
         }
 
         $booking = Booking::with('payment')->findOrFail($bookingId);
-        $status = $this->normalizeGatewayStatus(
-            $payload['status'] ?? data_get($payload, 'data.status') ?? 'pending'
-        );
-
-        $payment = Payment::updateOrCreate(
-            ['booking_id' => $booking->id],
-            [
-                'amount' => $payload['amount'] ?? data_get($payload, 'data.amount') ?? $booking->total_price,
-                'payment_method' => $payload['method'] ?? data_get($payload, 'data.method') ?? optional($booking->payment)->payment_method ?? 'dompetx',
-                'gateway' => 'dompetx',
-                'gateway_transaction_id' => $payload['id'] ?? data_get($payload, 'data.id') ?? optional($booking->payment)->gateway_transaction_id,
-                'payment_url' => optional($booking->payment)->payment_url,
-                'gateway_response' => $payload,
-                'status' => $status,
-                'payment_time' => $status === 'success' ? now() : optional($booking->payment)->payment_time,
-            ]
-        );
-
-        if ($status === 'success') {
-            $this->markBookingPaid($booking);
-        }
+        $payment = $paymentStatus->updateFromGatewayPayload($booking, $payload);
 
         return response()->json([
             'message' => 'Webhook processed.',
             'payment' => $payment,
         ]);
-    }
-
-    private function markBookingPaid(Booking $booking): void
-    {
-        if ($booking->status !== 'paid') {
-            $booking->update(['status' => 'paid']);
-
-            try {
-                $emailTarget = $booking->passenger_email ?? $booking->customer->user->email;
-                Mail::to($emailTarget)->send(new TicketMail($booking));
-            } catch (\Exception $e) {
-                \Log::error("Failed to send ticket email: " . $e->getMessage());
-            }
-        }
     }
 
     private function normalizeGatewayStatus(string $status): string

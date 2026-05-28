@@ -13,6 +13,7 @@ import { ApiService } from '../services/api.service';
 export class LoginPage implements OnInit {
   public email: string = '';
   public password: string = '';
+  public showPassword: boolean = false;
   public isLoading: boolean = false;
   public errorMessage: string = '';
 

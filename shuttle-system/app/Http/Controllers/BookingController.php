@@ -8,10 +8,11 @@ use App\Models\Seat;
 use App\Models\Booking;
 use App\Models\BookingSeat;
 use App\Models\Trip;
+use App\Services\PaymentStatusService;
 
 class BookingController extends Controller
 {
-    public function myBookings()
+    public function myBookings(PaymentStatusService $paymentStatus)
     {
         $customer = \App\Models\Customer::where('user_id', auth()->id())->first();
         if (!$customer) {
@@ -19,7 +20,7 @@ class BookingController extends Controller
         }
         
         $bookings = Booking::where('customer_id', $customer->id)
-            ->with(['schedule.route.origin', 'schedule.route.destination', 'schedule.driver.user', 'schedule.driver.vehicle', 'seats', 'review'])
+            ->with(['schedule.route.origin', 'schedule.route.destination', 'schedule.driver.user', 'schedule.driver.vehicle', 'seats', 'review', 'payment'])
             ->orderBy('booking_time', 'desc')
             ->get();
 
@@ -31,6 +32,17 @@ class BookingController extends Controller
                 $booking->update(['status' => 'completed']);
                 $booking->status = 'completed';
             }
+        });
+
+        $bookings = $bookings->map(function ($booking) use ($paymentStatus) {
+            $bookingStatus = strtolower((string) $booking->status);
+
+            if ($bookingStatus === 'booked' && optional($booking->payment)->status === 'pending') {
+                return $paymentStatus->syncBookingPayment($booking)
+                    ->load(['schedule.route.origin', 'schedule.route.destination', 'schedule.driver.user', 'schedule.driver.vehicle', 'seats', 'review', 'payment']);
+            }
+
+            return $booking;
         });
             
         return response()->json($bookings);
