@@ -18,7 +18,7 @@
 
     <!-- Edit Form Card -->
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <form action="/admin/drivers/{{ $driver->id }}" method="POST" class="space-y-5">
+        <form action="/admin/drivers/{{ $driver->id }}" method="POST" enctype="multipart/form-data" class="space-y-5">
             @csrf
             @method('PUT')
 
@@ -45,6 +45,17 @@
             <div class="flex flex-col gap-1.5">
                 <label for="license_number" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Nomor SIM</label>
                 <input type="text" name="license_number" id="license_number" placeholder="Nomor SIM" value="{{ $driver->license_number }}" required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2.5 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label for="profile_photo" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Foto Profil (Opsional)</label>
+                @if($driver->user && $driver->user->profile_photo_path)
+                    <div class="mb-2">
+                        <img src="{{ Storage::url($driver->user->profile_photo_path) }}" alt="Foto Profil" class="w-16 h-16 rounded-full object-cover border border-gray-200">
+                    </div>
+                @endif
+                <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+                <p class="text-[11px] text-gray-400">Biarkan kosong jika tidak ingin mengubah foto profil.</p>
             </div>
 
             <div class="flex flex-col gap-1.5">

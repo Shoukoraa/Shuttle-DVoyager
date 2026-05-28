@@ -224,4 +224,31 @@
     transform: scale(1);
     box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
   }
+}
+
+/* ==========================================================================
+   Premium Ionic Toasts
+   ========================================================================== */
+ion-toast {
+  --border-radius: 16px !important;
+  --box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25) !important;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  
+  &::part(button) {
+    font-weight: 800;
+  }
+  
+  &::part(message) {
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 16px 20px;
+  }
+  
+  &::part(container) {
+    margin: 20px !important;
+    border-radius: 16px !important;
+    width: calc(100% - 40px) !important;
+    min-width: 0 !important;
+  }
 }

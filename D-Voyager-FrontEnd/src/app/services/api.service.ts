@@ -214,6 +214,10 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/customer/booking/${bookingId}/pay`, data, { headers: this.getHeaders() });
   }
 
+  cancelBooking(bookingId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/customer/booking/${bookingId}/cancel`, {}, { headers: this.getHeaders() });
+  }
+
   submitBookingReview(bookingId: number, data: { rating: number; comment?: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/customer/booking/${bookingId}/review`, data, { headers: this.getHeaders() });
   }
