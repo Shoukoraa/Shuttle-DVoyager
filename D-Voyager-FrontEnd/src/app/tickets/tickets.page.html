@@ -24,10 +24,10 @@
 
     <!-- Active Ticket Card -->
     <ng-container *ngIf="selectedTickets.length > 0 && !isLoading">
-      <div class="ticket-card active-ticket" *ngFor="let ticket of selectedTickets" [ngStyle]="{'border-top': ticket.status === 'paid' ? '4px solid #10dc60' : '4px solid #ffc409'}">
+      <div class="ticket-card active-ticket" *ngFor="let ticket of selectedTickets" [ngStyle]="{'border-top': '4px solid ' + getStatusColor(ticket.status)}">
         <div class="ticket-header">
-          <div class="status-badge" [ngStyle]="{'background': ticket.status === 'paid' ? '#10dc60' : '#ffc409', 'color': '#fff'}">
-            {{ ticket.status | titlecase }}
+          <div class="status-badge" [ngStyle]="{'background': getStatusColor(ticket.status), 'color': '#fff'}">
+            {{ ticket.status === 'on_the_way' ? 'On The Way' : (ticket.status | titlecase) }}
           </div>
           <div class="booking-id">ID: #{{ ticket.id }}</div>
         </div>
@@ -70,9 +70,12 @@
           </div>
         </div>
         
-        <div class="ticket-actions" *ngIf="ticket.status === 'booked'" style="padding: 0 15px 15px;">
-          <ion-button expand="block" color="warning" (click)="continuePayment(ticket)">
-            Lanjutkan Pembayaran
+        <div class="ticket-actions" *ngIf="ticket.status === 'booked'" style="padding: 0 15px 15px; display: flex; gap: 10px;">
+          <ion-button fill="outline" color="danger" (click)="cancelBooking(ticket)" style="flex: 1; margin: 0; --border-radius: 8px;">
+            Batalkan
+          </ion-button>
+          <ion-button expand="block" color="warning" (click)="continuePayment(ticket)" style="flex: 2; margin: 0; --border-radius: 8px;">
+            Bayar
             <ion-icon name="arrow-forward" slot="end"></ion-icon>
           </ion-button>
         </div>
@@ -112,7 +115,7 @@
       <h3 *ngIf="selectedTab === 'riwayat'">Belum Ada Riwayat</h3>
       <p *ngIf="selectedTab === 'aktif'">Anda belum memiliki tiket perjalanan yang aktif. Yuk, mulai perjalanan pertama Anda bersama kami!</p>
       <p *ngIf="selectedTab === 'riwayat'">Riwayat perjalanan akan muncul setelah pesanan selesai.</p>
-      <ion-button *ngIf="selectedTab === 'aktif'" class="mega-search-btn" routerLink="/schedule">
+      <ion-button *ngIf="selectedTab === 'aktif'" class="mega-search-btn" routerLink="/home">
         Cari Shuttle Sekarang
         <ion-icon name="arrow-forward"></ion-icon>
       </ion-button>
@@ -211,6 +214,28 @@
           </ion-button>
         </ion-toolbar>
       </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Cancel Modal -->
+  <ion-modal [isOpen]="isCancelModalOpen" (didDismiss)="closeCancelModal()" class="cancel-modal">
+    <ng-template>
+      <div class="cancel-content">
+        <div class="cancel-icon-wrapper">
+          <ion-icon name="alert-circle"></ion-icon>
+        </div>
+        <h3>Batalkan Pesanan?</h3>
+        <p>Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dikembalikan.</p>
+        
+        <div class="cancel-actions">
+          <ion-button expand="block" color="light" class="btn-keep" (click)="closeCancelModal()">
+            Kembali
+          </ion-button>
+          <ion-button expand="block" color="danger" class="btn-confirm" (click)="confirmCancel()">
+            Ya, Batalkan
+          </ion-button>
+        </div>
+      </div>
     </ng-template>
   </ion-modal>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
@@ -19,7 +19,7 @@ interface PaymentMethod {
   styleUrls: ['./payment.page.scss'],
   standalone: false
 })
-export class PaymentPage implements OnInit {
+export class PaymentPage implements OnInit, OnDestroy {
 
   totalFare = 0;
   ticketTotal = 0;
@@ -29,6 +29,9 @@ export class PaymentPage implements OnInit {
   selectedSeats: string[] = [];
   isProcessing = false;
   pendingBookingId: number | null = null;
+  displayTimer: string = '15:00';
+  countdownSeconds: number = 900;
+  timerInterval: any;
 
   paymentMethods: { category: string, items: PaymentMethod[] }[] = [
     {
@@ -60,6 +63,7 @@ export class PaymentPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.startTimer();
     this.route.queryParams.subscribe(params => {
       if (params['pendingBookingId']) {
         this.pendingBookingId = Number(params['pendingBookingId']);
@@ -69,6 +73,27 @@ export class PaymentPage implements OnInit {
         this.loadServiceFee();
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+  }
+
+  private startTimer() {
+    this.timerInterval = setInterval(() => {
+      if (this.countdownSeconds > 0) {
+        this.countdownSeconds--;
+        const minutes = Math.floor(this.countdownSeconds / 60);
+        const seconds = this.countdownSeconds % 60;
+        this.displayTimer = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      } else {
+        clearInterval(this.timerInterval);
+        this.showToast('Waktu pembayaran telah habis', 'danger');
+        this.router.navigate(['/booking-summary']);
+      }
+    }, 1000);
   }
 
   selectMethod(id: string) {

@@ -9,6 +9,6 @@ class BookingController extends Controller
 {
     public function index()
     {
-        return response()->json(Booking::with(['customer', 'driver', 'schedule.route'])->get());
+        return response()->json(Booking::with(['customer', 'schedule.route', 'schedule.driver'])->get());
     }
 }

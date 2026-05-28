@@ -49,7 +49,7 @@ class ScheduleController extends Controller
 
     public function show(Schedule $schedule)
     {
-        return response()->json($schedule->load(['route', 'vehicle', 'bindings']));
+        return response()->json($schedule->load(['route', 'vehicle', 'driver', 'locations']));
     }
 
     public function update(Request $request, Schedule $schedule)

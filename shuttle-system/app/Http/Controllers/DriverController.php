@@ -14,15 +14,17 @@ class DriverController extends Controller
         }
         
         $schedules = \App\Models\Schedule::where('driver_id', $driver->id)
-            ->with(['locations', 'route.origin', 'route.destination', 'vehicle', 'bookings' => function($q) {
-                $q->whereIn('status', ['paid', 'booked', 'completed']);
-            }])
+            ->with(['locations', 'route.origin', 'route.destination', 'vehicle'])
+            ->withSum([
+                'bookings as total_passengers' => function ($q) {
+                    $q->whereIn('status', ['paid', 'booked', 'completed']);
+                }
+            ], 'total_seat')
             ->orderBy('departure_time', 'asc')
             ->get();
-            
-        $schedules->each(function($schedule) {
-            $schedule->total_passengers = $schedule->bookings->sum('total_seat');
-            unset($schedule->bookings); // Hide bookings details from this endpoint to save payload
+
+        $schedules->each(function ($schedule) {
+            $schedule->total_passengers = (int) ($schedule->total_passengers ?? 0);
         });
             
         return response()->json($schedules);

@@ -29,7 +29,7 @@
                 <h3 class="font-bold text-dark-900 font-outfit">Tambah Supir Baru</h3>
             </div>
 
-            <form action="/admin/drivers" method="POST" class="space-y-4">
+            <form action="/admin/drivers" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 
                 <div class="flex flex-col gap-1.5">
@@ -66,6 +66,11 @@
                 <div class="flex flex-col gap-1.5">
                     <label for="license_number" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Nomor SIM</label>
                     <input type="text" name="license_number" id="license_number" placeholder="Nomor SIM A/B" required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2.5 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium">
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label for="profile_photo" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Foto Profil</label>
+                    <input type="file" name="profile_photo" id="profile_photo" accept="image/*" required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
                 </div>
 
                 <div class="flex flex-col gap-1.5">

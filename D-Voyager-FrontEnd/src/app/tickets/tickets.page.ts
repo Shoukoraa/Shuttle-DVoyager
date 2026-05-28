@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -25,7 +25,8 @@ export class TicketsPage implements OnInit {
   constructor(
     private apiService: ApiService,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {
@@ -106,8 +107,51 @@ export class TicketsPage implements OnInit {
     });
   }
 
+  isCancelModalOpen = false;
+  ticketToCancel: any = null;
+
+  cancelBooking(ticket: any) {
+    this.ticketToCancel = ticket;
+    this.isCancelModalOpen = true;
+  }
+
+  closeCancelModal() {
+    this.isCancelModalOpen = false;
+    setTimeout(() => {
+      this.ticketToCancel = null;
+    }, 300);
+  }
+
+  confirmCancel() {
+    if (!this.ticketToCancel) return;
+    this.isLoading = true;
+    this.isCancelModalOpen = false;
+    this.apiService.cancelBooking(this.ticketToCancel.id).subscribe({
+      next: () => {
+        this.presentToast('Pesanan berhasil dibatalkan', 'success');
+        this.fetchMyBookings();
+        this.ticketToCancel = null;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
+        this.presentToast(err.error?.message || 'Gagal membatalkan pesanan', 'danger');
+        this.ticketToCancel = null;
+      }
+    });
+  }
+
   canRate(ticket: any): boolean {
-    return this.isHistoryTicket(ticket) && !ticket?.review && !!ticket?.schedule?.driver_id;
+    const isCompleted = (ticket?.status || '').toLowerCase() === 'completed';
+    return this.isHistoryTicket(ticket) && !ticket?.review && !!ticket?.schedule?.driver_id && isCompleted;
+  }
+
+  getStatusColor(status: string): string {
+    const s = (status || '').toLowerCase();
+    if (s === 'paid' || s === 'completed') return '#10dc60'; // Success green
+    if (s === 'cancelled' || s === 'canceled') return '#eb445a'; // Danger red
+    if (s === 'on_the_way') return '#3880ff'; // Primary blue
+    return '#ffc409'; // Warning yellow for booked
   }
 
   openRating(ticket: any) {

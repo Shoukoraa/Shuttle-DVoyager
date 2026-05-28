@@ -19,7 +19,7 @@
         <span *ngIf="serviceFee > 0">Biaya layanan: Rp {{ serviceFee | number:'1.0-0' }}</span>
       </div>
       <div class="timer">
-        Selesaikan dalam <strong>14:59</strong>
+        Selesaikan dalam <strong>{{ displayTimer }}</strong>
       </div>
     </div>
 

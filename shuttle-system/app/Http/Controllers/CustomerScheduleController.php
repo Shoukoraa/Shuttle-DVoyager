@@ -6,13 +6,18 @@ use App\Models\Schedule;
 use App\Models\Location;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CustomerScheduleController extends Controller
 {
     // API Daftar Lokasi (Kota)
     public function locations()
     {
-        return response()->json(Location::all());
+        $locations = Cache::remember('locations:all', 300, function () {
+            return Location::all();
+        });
+
+        return response()->json($locations);
     }
 
     // API Pencarian Jadwal Berdasarkan Rute
@@ -31,7 +36,9 @@ class CustomerScheduleController extends Controller
 
             if ($route) {
                 // 2. Ambil "Jadwal Master" dari jadwal-jadwal yang pernah dibuat untuk rute ini
-                $existingSchedules = Schedule::where('route_id', $route->id)->get();
+                $existingSchedules = Schedule::where('route_id', $route->id)
+                    ->select(['departure_time', 'arrival_time', 'vehicle_id', 'driver_id', 'capacity', 'price'])
+                    ->get();
                 $templates = [];
                 
                 foreach ($existingSchedules as $s) {

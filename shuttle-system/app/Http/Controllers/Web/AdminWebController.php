@@ -353,7 +353,8 @@ class AdminWebController extends Controller
             'password' => 'required|min:6',
             'phone' => 'nullable|string',
             'license_number' => 'required|string',
-            'vehicle_id' => 'nullable|integer|exists:vehicles,id'
+            'vehicle_id' => 'nullable|integer|exists:vehicles,id',
+            'profile_photo' => 'required|image|max:2048'
         ]);
 
         $driverRoleId = Role::where('name', 'driver')->value('id');
@@ -372,12 +373,21 @@ class AdminWebController extends Controller
                 return back()->withErrors(['email' => 'Email ini milik role lain dan tidak bisa dipakai untuk driver.'])->withInput();
             }
 
+            $profilePhotoPath = $existingUser->profile_photo_path;
+            if ($request->hasFile('profile_photo')) {
+                if ($profilePhotoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($profilePhotoPath)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($profilePhotoPath);
+                }
+                $profilePhotoPath = $request->file('profile_photo')->store('profile-photos', 'public');
+            }
+
             $existingUser->restore();
             $existingUser->update([
                 'name' => $validated['name'],
                 'phone' => $validated['phone'] ?? null,
                 'password' => Hash::make($validated['password']),
                 'role_id' => $driverRoleId,
+                'profile_photo_path' => $profilePhotoPath,
             ]);
 
             $driver = Driver::withTrashed()->where('user_id', $existingUser->id)->first();
@@ -408,12 +418,18 @@ class AdminWebController extends Controller
             return back()->with('success', 'Akun driver lama berhasil dipulihkan!');
         }
 
+        $profilePhotoPath = null;
+        if ($request->hasFile('profile_photo')) {
+            $profilePhotoPath = $request->file('profile_photo')->store('profile-photos', 'public');
+        }
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
-            'role_id' => $driverRoleId
+            'role_id' => $driverRoleId,
+            'profile_photo_path' => $profilePhotoPath
         ]);
         
         $driver = Driver::create(['user_id' => $user->id, 'license_number' => $validated['license_number'], 'status' => 'active']);
@@ -438,9 +454,23 @@ class AdminWebController extends Controller
             'phone' => 'nullable|string',
             'license_number' => 'required|string',
             'status' => 'required|string',
-            'vehicle_id' => 'nullable|integer|exists:vehicles,id'
+            'vehicle_id' => 'nullable|integer|exists:vehicles,id',
+            'profile_photo' => 'nullable|image|max:2048'
         ]);
-        $driver->user->update(['name' => $validated['name'], 'email' => $validated['email'], 'phone' => $validated['phone'] ?? null]);
+        $profilePhotoPath = $driver->user->profile_photo_path;
+        if ($request->hasFile('profile_photo')) {
+            if ($profilePhotoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($profilePhotoPath)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profilePhotoPath);
+            }
+            $profilePhotoPath = $request->file('profile_photo')->store('profile-photos', 'public');
+        }
+
+        $driver->user->update([
+            'name' => $validated['name'], 
+            'email' => $validated['email'], 
+            'phone' => $validated['phone'] ?? null,
+            'profile_photo_path' => $profilePhotoPath
+        ]);
         if (!empty($validated['password'])) { $driver->user->update(['password' => Hash::make($validated['password'])]); }
         $driver->update(['license_number' => $validated['license_number'], 'status' => $validated['status']]);
         

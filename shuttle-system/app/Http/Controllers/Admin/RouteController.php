@@ -10,19 +10,16 @@ class RouteController extends Controller
 {
     public function index()
     {
-        return response()->json(Route::all());
+        return response()->json(Route::with(['origin', 'destination'])->get());
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'origin_name' => 'required|string',
-            'destination_name' => 'required|string',
-            'origin_lat' => 'required|numeric',
-            'origin_lng' => 'required|numeric',
-            'destination_lat' => 'required|numeric',
-            'destination_lng' => 'required|numeric',
-            'distance_km' => 'nullable|numeric'
+            'origin_location_id' => 'required|exists:locations,id',
+            'destination_location_id' => 'required|exists:locations,id|different:origin_location_id',
+            'distance_km' => 'nullable|numeric|min:0',
+            'price' => 'nullable|numeric|min:0'
         ]);
 
         $route = Route::create($validated);
@@ -36,8 +33,15 @@ class RouteController extends Controller
 
     public function update(Request $request, Route $route)
     {
-        $route->update($request->all());
-        return response()->json(['message' => 'Route updated successfully', 'data' => $route]);
+        $validated = $request->validate([
+            'origin_location_id' => 'sometimes|exists:locations,id',
+            'destination_location_id' => 'sometimes|exists:locations,id|different:origin_location_id',
+            'distance_km' => 'nullable|numeric|min:0',
+            'price' => 'nullable|numeric|min:0'
+        ]);
+
+        $route->update($validated);
+        return response()->json(['message' => 'Route updated successfully', 'data' => $route->load(['origin', 'destination'])]);
     }
 
     public function destroy(Route $route)
