@@ -79,7 +79,7 @@
             <div class="px-6 py-5 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h3 class="font-bold text-dark-900 font-outfit text-base">Daftar Kendaraan</h3>
-                    <p class="text-xs text-gray-400">Total terdaftar: {{ $vehicles->count() }} armada aktif.</p>
+                    <p class="text-xs text-gray-400">Total terdaftar: {{ $vehicles->total() }} armada aktif.</p>
                 </div>
 
                 <!-- Action Bar -->
@@ -202,6 +202,9 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-50">
+                    {{ $vehicles->links() }}
                 </div>
             @endif
         </div>

@@ -29,8 +29,8 @@
     <!-- Floating Frameless Search Section -->
     <div class="search-section">
       
-      <div class="route-group">
-        <div class="input-floating" (click)="openAsalModal()">
+      <div class="route-group" [class.swapping]="isSwapping">
+        <div class="input-floating origin-wrapper" (click)="openAsalModal()">
           <div class="dot origin"></div>
           <div class="input-content">
             <span class="label">Keberangkatan</span>
@@ -50,7 +50,7 @@
           </div>
         </div>
 
-        <div class="input-floating" (click)="openTujuanModal()">
+        <div class="input-floating destination-wrapper" (click)="openTujuanModal()">
           <div class="dot destination"></div>
           <div class="input-content">
             <span class="label">Tujuan</span>

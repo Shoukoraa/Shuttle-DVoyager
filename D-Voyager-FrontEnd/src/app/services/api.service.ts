@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { EchoService } from './echo.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,10 @@ export class ApiService {
     3: 'customer',
   };
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private echoService: EchoService
+  ) { }
 
   // Auth Methods
   getUserRole(user: any, fallback: string = 'customer'): string {
@@ -164,6 +168,17 @@ export class ApiService {
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+      try {
+        const echo = this.echoService.getEcho();
+        if (echo) {
+          const socketId = echo.socketId();
+          if (socketId) {
+            headers['X-Socket-ID'] = socketId;
+          }
+        }
+      } catch (e) {
+        // Echo might not be initialized yet
+      }
     }
 
     return new HttpHeaders(headers);
@@ -175,6 +190,17 @@ export class ApiService {
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+      try {
+        const echo = this.echoService.getEcho();
+        if (echo) {
+          const socketId = echo.socketId();
+          if (socketId) {
+            headers['X-Socket-ID'] = socketId;
+          }
+        }
+      } catch (e) {
+        // Echo might not be initialized yet
+      }
     }
 
     return new HttpHeaders(headers);

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Terminal Management - Shuttle Go</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0066FF; --bg: #F8FAFC; --dark: #0F172A; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; display: flex; }
+        
+        /* Layout */
+        .sidebar { width: 350px; height: 100vh; background: white; border-right: 1px solid #E2E8F0; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+        .map-container { flex: 1; height: 100vh; position: relative; }
+        #map { width: 100%; height: 100%; }
+
+        /* Search & Form */
+        h2 { font-size: 20px; font-weight: 800; margin-bottom: 25px; color: var(--dark); margin-top: 0; }
+        .search-box { position: relative; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px 15px; border: 1.5px solid #E2E8F0; border-radius: 12px; outline: none; font-family: inherit; box-sizing: border-box; }
+        input:focus { border-color: var(--primary); }
+        
+        .results-list { 
+            position: absolute; top: 100%; left: 0; right: 0; background: white; 
+            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            z-index: 100; max-height: 250px; overflow-y: auto; display: none;
+        }
+        .result-item { padding: 12px 15px; border-bottom: 1px solid #F1F5F9; cursor: pointer; font-size: 13px; }
+        .result-item:hover { background: #F8FAFF; }
+        .result-item b { display: block; color: var(--dark); }
+
+        .form-card { background: #F8FAFC; padding: 20px; border-radius: 16px; margin-top: 20px; display: none; }
+        .btn { 
+            width: 100%; padding: 12px; border-radius: 12px; border: none; 
+            font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* Saved List */
+        .terminal-list { flex: 1; overflow-y: auto; margin-top: 20px; }
+        .terminal-item { 
+            padding: 15px; background: white; border: 1px solid #E2E8F0; 
+            border-radius: 12px; margin-top: 10px; font-size: 13px;
+            position: relative;
+        }
+        .delete-btn {
+            position: absolute; top: 10px; right: 10px; color: #FF3B30;
+            background: none; border: none; cursor: pointer; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Terminal Management</h2>
+        
+        <div class="search-box">
+            <label style="font-size: 12px; font-weight: 700; color: #64748B; display: block; margin-bottom: 5px;">CARI LOKASI TERMINAL</label>
+            <input type="text" id="searchInput" placeholder="Ketik nama terminal/kota..." oninput="debounceSearch(this.value)">
+            <div id="searchResults" class="results-list"></div>
+        </div>
+
+        <div id="selectionForm" class="form-card">
+            <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;" id="selName">-</div>
+            <div style="font-size: 12px; color: #64748B; margin-bottom: 15px;" id="selAddr">-</div>
+            <button class="btn btn-primary" onclick="saveTerminal()">Simpan Terminal</button>
+        </div>
+
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #E2E8F0;">
+        <h3 style="font-size: 14px; margin: 0;">TERMINAL TERSIMPAN</h3>
+        <div class="terminal-list" id="savedTerminals"></div>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibW9yZW4tNjciLCJhIjoiY21vam1pbWxuMDA0bDJxb2xkZTBnM2s3cSJ9.wUfxEG062R3T-AZr_m9Fvw';
+        
+        let map, selectedData = null;
+        let markers = [];
+        let tempMarker = null;
+
+        function initMap() {
+            map = new mapboxgl.Map({
+                container: 'map', style: 'mapbox://styles/mapbox/streets-v12',
+                center: [107.299, -6.324], zoom: 12
+            });
+            loadSavedTerminals();
+        }
+
+        const tomtomKey = 'erJwfxKE6VaiuzgQmkkAeSGVrn5X8KUr';
+        let searchTimeout = null;
+
+        function debounceSearch(query) {
+            if (searchTimeout) clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                searchLocation(query);
+            }, 500); // Tunggu 500ms setelah berhenti mengetik
+        }
+
+        async function searchLocation(query) {
+            if (query.length < 3) {
+                document.getElementById('searchResults').style.display = 'none';
+                return;
+            }
+
+            const center = map.getCenter();
+
+            // TomTom Search API (Fuzzy Search) dengan radius 100km dari posisi peta
+            const url = `https://api.tomtom.com/search/2/search/${encodeURIComponent(query)}.json?key=${tomtomKey}&countrySet=ID&language=id-ID&limit=10&lat=${center.lat}&lon=${center.lng}&radius=100000`;
+            
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                const resultsDiv = document.getElementById('searchResults');
+                resultsDiv.innerHTML = "";
+                
+                if (!data.results || data.results.length === 0) {
+                    resultsDiv.style.display = 'none';
+                    return;
+                }
+
+                resultsDiv.style.display = 'block';
+
+                data.results.forEach(f => {
+                    const item = document.createElement('div');
+                    item.className = 'result-item';
+                    
+                    const title = f.poi ? f.poi.name : (f.address ? f.address.freeformAddress : "Lokasi");
+                    const subtitle = f.address ? f.address.freeformAddress : "";
+                    const categoryText = (f.poi && f.poi.categories && f.poi.categories.length > 0) ? f.poi.categories[0] : '';
+                    
+                    const cat = categoryText ? `<small style="color:var(--primary); display:block; font-size:10px; font-weight:700;">${categoryText.toUpperCase()}</small>` : '';
+                    item.innerHTML = `${cat}<b>${title}</b><span>${subtitle}</span>`;
+                    item.onclick = () => selectLocation(f);
+                    resultsDiv.appendChild(item);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+
+
+        function selectLocation(feature) {
+            document.getElementById('searchResults').style.display = 'none';
+            
+            const title = feature.poi ? feature.poi.name : (feature.address ? feature.address.freeformAddress : "Lokasi");
+            document.getElementById('searchInput').value = title;
+            
+            const city = feature.address && feature.address.municipality ? feature.address.municipality : 'Unknown';
+            const address = feature.address && feature.address.freeformAddress ? feature.address.freeformAddress : 'Unknown';
+            
+            selectedData = {
+                name: title,
+                city: city,
+                latitude: feature.position.lat,
+                longitude: feature.position.lon,
+                address: address
+            };
+
+            document.getElementById('selName').textContent = selectedData.name;
+            document.getElementById('selAddr').textContent = selectedData.address;
+            document.getElementById('selectionForm').style.display = 'block';
+
+            const center = [feature.position.lon, feature.position.lat];
+            map.flyTo({ center: center, zoom: 15 });
+            
+            if (tempMarker) tempMarker.remove();
+            tempMarker = new mapboxgl.Marker({ color: 'red' }).setLngLat(center).addTo(map);
+        }
+
+        async function saveTerminal() {
+            const res = await fetch('/api/terminals/data/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(selectedData)
+            });
+
+            if (res.ok) {
+                alert("Terminal berhasil disimpan!");
+                document.getElementById('selectionForm').style.display = 'none';
+                document.getElementById('searchInput').value = "";
+                if (tempMarker) tempMarker.remove();
+                loadSavedTerminals();
+            }
+        }
+
+        // Helper function untuk mengambil CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function deleteTerminal(id) {
+            if(!confirm("Yakin ingin menghapus terminal ini?")) return;
+            const res = await fetch(`/api/terminals/data/${id}/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            if (res.ok) {
+                loadSavedTerminals();
+            }
+        }
+
+        async function loadSavedTerminals() {
+            try {
+                const res = await fetch('/api/terminals/data/');
+                const json = await res.json();
+            
+                const listDiv = document.getElementById('savedTerminals');
+                listDiv.innerHTML = "";
+                
+                // Clear existing markers
+                markers.forEach(m => m.remove());
+                markers = [];
+
+                if(json.data) {
+                    json.data.forEach(t => {
+                        // Add to list
+                        const item = document.createElement('div');
+                        item.className = 'terminal-item';
+                        item.innerHTML = `
+                            <b>${t.name}</b><br><small>${t.city}</small>
+                            <button class="delete-btn" onclick="deleteTerminal(${t.id})">×</button>
+                        `;
+                        item.style.cursor = 'pointer';
+                        item.onclick = (e) => {
+                            if (e.target.className !== 'delete-btn') {
+                                map.flyTo({ center: [t.longitude, t.latitude], zoom: 15 });
+                            }
+                        };
+                        listDiv.appendChild(item);
+
+                        // Add to map
+                        const m = new mapboxgl.Marker({ color: '#0066FF' })
+                            .setLngLat([t.longitude, t.latitude])
+                            .setPopup(new mapboxgl.Popup().setHTML(`<b>${t.name}</b><br>${t.address}`))
+                            .addTo(map);
+                        markers.push(m);
+                    });
+                }
+            } catch (error) {
+                console.error("Gagal memuat terminal:", error);
+            }
+        }
+
+        initMap();
+    </script>
+</body>
+</html>

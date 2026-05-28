@@ -35,6 +35,12 @@ export class PaymentPage implements OnInit, OnDestroy {
 
   paymentMethods: { category: string, items: PaymentMethod[] }[] = [
     {
+      category: 'Developer Testing (Bypass Gateway)',
+      items: [
+        { id: 'DEV_BYPASS', name: 'Developer Bypass (Bayar Instan Tanpa Uang Asli)', icon: 'terminal-outline', type: 'va' }
+      ]
+    },
+    {
       category: 'Virtual Account',
       items: [
         { id: 'VA_PERMATA', name: 'Permata Virtual Account', icon: 'business-outline', type: 'va' },

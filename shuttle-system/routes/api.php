@@ -117,6 +117,8 @@ Route::post('/payments/dompetx/webhook', [PaymentController::class, 'webhook']);
 |--------------------------------------------------------------------------
 */
 Route::middleware('bearer.auth')->group(function () {
+    Route::post('/broadcasting/auth', [\Illuminate\Broadcasting\BroadcastController::class, 'authenticate']);
+
     Route::get('/test-auth', function () {
         return response()->json(['message' => 'Auth OK']);
     });

@@ -21,7 +21,7 @@
         <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div class="space-y-1">
                 <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pelanggan</div>
-                <div class="text-3xl font-extrabold font-outfit text-dark-900">{{ $customers->count() }}</div>
+                <div class="text-3xl font-extrabold font-outfit text-dark-900">{{ $customers->total() }}</div>
                 <div class="text-[10px] text-gray-500 font-medium">Terdaftar di database</div>
             </div>
             <div class="h-12 w-12 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-600">
@@ -51,7 +51,7 @@
         <div class="px-6 py-5 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h3 class="font-bold text-dark-900 font-outfit text-base">Daftar Pelanggan</h3>
-                <p class="text-xs text-gray-400">Total terdaftar: {{ $customers->count() }} akun pelanggan.</p>
+                <p class="text-xs text-gray-400">Total terdaftar: {{ $customers->total() }} akun pelanggan.</p>
             </div>
 
             <!-- Action Bar -->
@@ -150,6 +150,9 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-50">
+                {{ $customers->links() }}
             </div>
         @endif
     </div>

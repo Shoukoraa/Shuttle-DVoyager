@@ -111,6 +111,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     // TRACKING MAPS
     Route::get('/tracking', [AdminWebController::class, 'tracking'])->name('admin.tracking');
+    Route::post('/broadcasting/auth', [\Illuminate\Broadcasting\BroadcastController::class, 'authenticate']);
 
 });
 

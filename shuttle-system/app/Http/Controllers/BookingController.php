@@ -20,7 +20,18 @@ class BookingController extends Controller
         }
         
         $bookings = Booking::where('customer_id', $customer->id)
-            ->with(['schedule.route.origin', 'schedule.route.destination', 'schedule.driver.user', 'schedule.driver.vehicle', 'seats', 'review', 'payment'])
+            ->with([
+                'schedule.route.origin', 
+                'schedule.route.destination', 
+                'schedule.driver.user', 
+                'schedule.driver.vehicle', 
+                'seats', 
+                'review', 
+                'payment', 
+                'schedule.locations' => function($q) {
+                    $q->latest('recorded_at');
+                }
+            ])
             ->orderBy('booking_time', 'desc')
             ->get();
 
@@ -34,17 +45,7 @@ class BookingController extends Controller
             }
         });
 
-        $bookings = $bookings->map(function ($booking) use ($paymentStatus) {
-            $bookingStatus = strtolower((string) $booking->status);
-
-            if ($bookingStatus === 'booked' && optional($booking->payment)->status === 'pending') {
-                return $paymentStatus->syncBookingPayment($booking)
-                    ->load(['schedule.route.origin', 'schedule.route.destination', 'schedule.driver.user', 'schedule.driver.vehicle', 'seats', 'review', 'payment']);
-            }
-
-            return $booking;
-        });
-            
+        // We avoid calling syncBookingPayment synchronously inside the list API to prevent blocking external API requests that cause page load hangs.
         return response()->json($bookings);
     }
 

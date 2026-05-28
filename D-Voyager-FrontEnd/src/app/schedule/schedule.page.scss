@@ -384,10 +384,28 @@
         font-weight: 600;
       }
 
+      .price-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+      }
+
       .price {
         font-size: 20px;
         font-weight: 800;
         color: var(--dark-gray);
+      }
+
+      .toll-tag {
+        font-size: 10px;
+        font-weight: 800;
+        color: #10dc60;
+        background: rgba(16, 220, 96, 0.12);
+        padding: 2px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
       }
     }
   }

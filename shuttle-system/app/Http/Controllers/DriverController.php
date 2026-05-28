@@ -45,6 +45,24 @@ class DriverController extends Controller
             'recorded_at' => now()
         ]);
 
+        // Load metadata and broadcast location event
+        $schedule = \App\Models\Schedule::with(['vehicle', 'driver.user'])->find($validated['schedule_id']);
+        $vehicleInfo = [];
+        if ($schedule) {
+            $vehicleInfo = [
+                'plate_number' => $schedule->vehicle->plate_number ?? 'Unknown',
+                'driver_name' => $schedule->driver->user->name ?? 'Unknown',
+            ];
+        }
+
+        broadcast(new \App\Events\DriverLocationUpdated(
+            $validated['schedule_id'],
+            (float) $validated['latitude'],
+            (float) $validated['longitude'],
+            $location->recorded_at->toIso8601String(),
+            $vehicleInfo
+        ))->toOthers();
+
         return response()->json($location);
     }
 

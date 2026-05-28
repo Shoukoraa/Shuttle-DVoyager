@@ -21,7 +21,7 @@
         <div class="px-6 py-5 border-b border-gray-50 flex items-center justify-between">
             <div>
                 <h3 class="font-bold text-dark-900 font-outfit text-base">Seluruh Pemesanan</h3>
-                <p class="text-xs text-gray-400">Total terdaftar: {{ $bookings->count() }} pesanan tiket.</p>
+                <p class="text-xs text-gray-400">Total terdaftar: {{ $bookings->total() }} pesanan tiket.</p>
             </div>
         </div>
 
@@ -107,6 +107,9 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-50">
+                {{ $bookings->links() }}
             </div>
         @endif
     </div>

@@ -152,6 +152,9 @@
                     </tbody>
                 </table>
             </div>
+            <div class="px-6 py-4 border-t border-gray-50">
+                {{ $reviews->links() }}
+            </div>
         @endif
     </div>
 

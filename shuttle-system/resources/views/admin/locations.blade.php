@@ -61,7 +61,7 @@
             <div class="px-6 py-5 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h3 class="font-bold text-dark-900 font-outfit text-base">Daftar Lokasi</h3>
-                    <p class="text-xs text-gray-400">Total terdaftar: {{ $locations->count() }} lokasi.</p>
+                    <p class="text-xs text-gray-400">Total terdaftar: {{ $locations->total() }} lokasi.</p>
                 </div>
                 
                 <!-- Action Bar -->
@@ -158,6 +158,9 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-50">
+                    {{ $locations->links() }}
                 </div>
             @endif
         </div>

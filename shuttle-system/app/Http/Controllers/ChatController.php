@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Message;
+use App\Events\DriverCustomerMessageSent;
 
 class ChatController extends Controller
 {
@@ -36,6 +37,9 @@ class ChatController extends Controller
         ]);
 
         $message = Message::create($validated);
+
+        // Broadcast real-time message via Reverb
+        broadcast(new DriverCustomerMessageSent($message))->toOthers();
 
         return response()->json($message);
     }

@@ -80,10 +80,14 @@
           </ion-button>
         </div>
 
-        <div class="ticket-actions" *ngIf="ticket.status === 'paid'" style="padding: 0 15px 15px;">
-          <ion-button expand="block" color="primary" (click)="openChat(ticket)">
+        <div class="ticket-actions" *ngIf="ticket.status === 'paid' || ticket.status === 'on_the_way'" style="padding: 0 15px 15px; display: flex; gap: 10px;">
+          <ion-button fill="outline" color="primary" (click)="openChat(ticket)" style="flex: 1; margin: 0; --border-radius: 8px;">
             <ion-icon name="chatbubbles" slot="start"></ion-icon>
-            Hubungi Driver
+            Chat
+          </ion-button>
+          <ion-button expand="block" color="warning" (click)="openTracking(ticket)" style="flex: 1; margin: 0; --border-radius: 8px;" *ngIf="ticket.status === 'on_the_way'">
+            <ion-icon name="map" slot="start"></ion-icon>
+            Lacak Supir
           </ion-button>
         </div>
 
@@ -145,6 +149,16 @@
               <span class="message-time">{{ msg.created_at | date:'HH:mm' }}</span>
             </div>
           </div>
+
+          <!-- Typing Indicator -->
+          <div class="typing-indicator" *ngIf="isTyping">
+            <div class="dots-container">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <span class="typing-text">Driver sedang mengetik...</span>
+          </div>
         </div>
       </ion-content>
 
@@ -153,6 +167,7 @@
           <div class="chat-input-wrapper">
             <ion-textarea 
               [(ngModel)]="newMessage" 
+              (input)="sendTypingEvent()"
               placeholder="Ketik pesan..." 
               auto-grow="true" 
               rows="1" 
@@ -236,6 +251,33 @@
           </ion-button>
         </div>
       </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Tracking Modal -->
+  <ion-modal [isOpen]="isTrackingOpen" (didDismiss)="closeTracking()">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="primary">
+          <ion-buttons slot="start">
+            <ion-button (click)="closeTracking()">
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>Lacak Perjalanan</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding" style="--background: #f8fafc;">
+        <div class="route-info-card" style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
+          <h4 style="margin: 0 0 5px; font-weight: bold; color: #1e1e1e;">{{ trackingTicket?.schedule?.route?.origin?.name }} → {{ trackingTicket?.schedule?.route?.destination?.name }}</h4>
+          <p style="margin: 0; font-size: 12px; color: #64748b;">
+            Supir: <b>{{ trackingTicket?.schedule?.driver?.user?.name || 'Driver' }}</b> ({{ trackingTicket?.schedule?.vehicle?.plate_number }})
+          </p>
+        </div>
+
+        <div id="customer-map" style="width: 100%; height: 75%; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); z-index: 10;"></div>
+      </ion-content>
     </ng-template>
   </ion-modal>
 

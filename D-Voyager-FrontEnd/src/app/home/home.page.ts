@@ -16,6 +16,7 @@ export class HomePage implements OnInit {
   public asalId: number | null = null;
   public tujuanId: number | null = null;
   public tanggal: string = new Date().toISOString();
+  public isSwapping = false;
 
   public isAsalModalOpen = false;
   public isTujuanModalOpen = false;
@@ -30,15 +31,33 @@ export class HomePage implements OnInit {
 
   constructor(private router: Router, private apiService: ApiService) {}
 
+  ionViewWillEnter() {
+    const role = localStorage.getItem('user_role');
+    if (role === 'driver') {
+      this.router.navigate(['/driver-home'], { replaceUrl: true });
+    }
+  }
+
   ngOnInit() {
+    const role = localStorage.getItem('user_role');
+    if (role === 'driver') {
+      this.router.navigate(['/driver-home'], { replaceUrl: true });
+      return;
+    }
+
     this.loadCachedUserProfile();
     this.refreshUserProfile();
 
     this.apiService.getLocations().subscribe({
       next: (res) => {
-        this.locations = res;
+        console.log('Locations raw response:', res);
+        const rawList = Array.isArray(res) ? res : Object.values(res || {});
+        this.locations = rawList.filter(loc => loc && typeof loc === 'object' && typeof loc.name === 'string');
+        console.log('Locations parsed list:', this.locations);
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error('Failed to load locations:', err);
+      }
     });
 
     // Nama dan foto user bisa ditampilkan instan dari cache,
@@ -93,9 +112,13 @@ export class HomePage implements OnInit {
   }
 
   swapRoutes() {
+    this.isSwapping = true;
     const temp = this.asalId;
     this.asalId = this.tujuanId;
     this.tujuanId = temp;
+    setTimeout(() => {
+      this.isSwapping = false;
+    }, 350);
   }
 
   setToday() {
@@ -173,8 +196,9 @@ export class HomePage implements OnInit {
   }
 
   getFilteredLocations(query: string): any[] {
-    if (!query) return this.locations;
-    return this.locations.filter(loc => 
+    const validLocs = (this.locations || []).filter(loc => loc && typeof loc === 'object' && typeof loc.name === 'string');
+    if (!query) return validLocs;
+    return validLocs.filter(loc => 
       loc.name.toLowerCase().includes(query.toLowerCase())
     );
   }

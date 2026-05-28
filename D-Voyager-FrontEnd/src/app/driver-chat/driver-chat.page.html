@@ -90,6 +90,16 @@
               <span class="message-time">{{ msg.created_at | date:'HH:mm' }}</span>
             </div>
           </div>
+
+          <!-- Typing Indicator -->
+          <div class="typing-indicator" *ngIf="isTyping">
+            <div class="dots-container">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <span class="typing-text">Penumpang sedang mengetik...</span>
+          </div>
         </div>
       </ion-content>
 
@@ -98,6 +108,7 @@
           <div class="chat-input-wrapper">
             <ion-textarea 
               [(ngModel)]="newMessage" 
+              (input)="sendTypingEvent()"
               placeholder="Ketik pesan..." 
               auto-grow="true" 
               rows="1" 

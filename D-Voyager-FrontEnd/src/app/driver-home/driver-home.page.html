@@ -131,14 +131,39 @@
     </div>
 
     <!-- Tracking / Map Placeholder -->
-    <div class="tracking-section" *ngIf="tripStatus === 'on_the_way'">
-      <div class="section-header">
-        <h3>Live Tracking</h3>
+    <div class="tracking-section" [class.fullscreen-active]="isMapFullscreen" *ngIf="tripStatus === 'on_the_way'">
+      <div class="section-header" *ngIf="!isMapFullscreen">
+        <h3>Live Tracking (Peta Rute)</h3>
       </div>
-      <div class="map-placeholder">
-        <ion-icon name="map"></ion-icon>
-        <p>GPS Tracking Aktif</p>
-        <div class="radar"></div>
+      
+      <div class="map-wrapper" [class.fullscreen-map-wrapper]="isMapFullscreen">
+        <div id="driver-map"></div>
+        
+        <!-- Map Style Switcher (Floating on Map) -->
+        <div class="map-style-switcher">
+          <button (click)="setMapStyle('streets')" [class.active-style]="currentStyle === 'streets'">Terang</button>
+          <button (click)="setMapStyle('dark')" [class.active-style]="currentStyle === 'dark'">Malam</button>
+          <button (click)="setMapStyle('satellite')" [class.active-style]="currentStyle === 'satellite'">Satelit</button>
+        </div>
+
+        <!-- Fullscreen Toggle Button (Floating on Map) -->
+        <button class="map-toggle-btn" (click)="toggleMapFullscreen()" aria-label="Toggle Fullscreen Map">
+          <ion-icon [name]="isMapFullscreen ? 'contract-outline' : 'expand-outline'"></ion-icon>
+        </button>
+
+        <!-- Mini Active Trip Info Header (Visible ONLY in Fullscreen Mode to prevent distraction) -->
+        <div class="fullscreen-trip-info" *ngIf="isMapFullscreen">
+          <div class="info-row">
+            <div class="route-info">
+              <span class="label">Rute Perjalanan</span>
+              <strong class="route">{{ currentTrip?.route }}</strong>
+            </div>
+            <div class="navigation-badge">
+              <span class="pulse-dot"></span>
+              <span>Navigasi Driver</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

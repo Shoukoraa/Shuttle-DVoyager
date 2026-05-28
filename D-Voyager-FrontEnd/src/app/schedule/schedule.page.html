@@ -98,6 +98,14 @@
               <span class="meta-label">Tipe Mobil</span>
               <strong>{{ getVehicleTypeLabel(schedule) }}</strong>
             </div>
+            <div class="vehicle-meta">
+              <span class="meta-label">Supir</span>
+              <strong>{{ schedule.driver?.user?.name || 'Belum Ditugaskan' }}</strong>
+            </div>
+            <div class="vehicle-meta">
+              <span class="meta-label">No. Polisi</span>
+              <strong>{{ schedule.vehicle?.plate_number || 'Belum Ada' }}</strong>
+            </div>
             <span class="vehicle-capacity">Kapasitas: {{ getVehicleCapacity(schedule) }} kursi</span>
           </div>
           <span class="seat-badge">
@@ -112,7 +120,10 @@
       <!-- Ticket Stub (Price) -->
       <div class="ticket-stub">
         <span class="label">Harga Tiket</span>
-        <strong class="price">Rp {{ (schedule.price || schedule.route?.price) | number:'1.0-0' }}</strong>
+        <div class="price-container">
+          <strong class="price">Rp {{ (schedule.price || schedule.route?.price) | number:'1.0-0' }}</strong>
+          <span class="toll-tag">Termasuk Tol</span>
+        </div>
       </div>
       
     </div>

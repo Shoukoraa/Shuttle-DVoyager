@@ -32,10 +32,20 @@ export class ProfilePage implements OnInit {
   ) { }
 
   ngOnInit() {
+    const role = localStorage.getItem('user_role');
+    if (role === 'driver') {
+      this.router.navigate(['/driver-profile'], { replaceUrl: true });
+      return;
+    }
     this.loadCachedUserData();
   }
 
   ionViewWillEnter() {
+    const role = localStorage.getItem('user_role');
+    if (role === 'driver') {
+      this.router.navigate(['/driver-profile'], { replaceUrl: true });
+      return;
+    }
     this.refreshUserData();
   }
 

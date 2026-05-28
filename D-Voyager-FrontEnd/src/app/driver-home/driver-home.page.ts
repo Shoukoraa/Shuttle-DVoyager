@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 
+declare var mapboxgl: any;
+
 @Component({
   selector: 'app-driver-home',
   templateUrl: './driver-home.page.html',
@@ -11,6 +13,12 @@ export class DriverHomePage implements OnInit {
   public driverName: string = 'Driver';
   public vehiclePlate: string = '';
   public profilePhotoUrl: string | null = null;
+  
+  // Mapbox properties
+  private map: any = null;
+  private driverMarker: any = null;
+  public currentStyle: string = 'streets';
+  public isMapFullscreen: boolean = false;
   
   // Trip statuses: 'scheduled', 'on_the_way', 'completed'
   public tripStatus: string = 'scheduled';
@@ -60,11 +68,20 @@ export class DriverHomePage implements OnInit {
             date: sched.departure_time,
             departureTime: new Date(sched.departure_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
             arrivalTime: sched.arrival_time ? new Date(sched.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-',
-            passengers: sched.total_passengers || 0
+            passengers: sched.total_passengers || 0,
+            origin_lat: sched.route?.origin?.latitude ? Number(sched.route.origin.latitude) : null,
+            origin_lng: sched.route?.origin?.longitude ? Number(sched.route.origin.longitude) : null,
+            destination_lat: sched.route?.destination?.latitude ? Number(sched.route.destination.latitude) : null,
+            destination_lng: sched.route?.destination?.longitude ? Number(sched.route.destination.longitude) : null
           };
           this.tripStatus = sched.status || 'scheduled';
           this.nextTrip = null;
           this.nextTripDate = null;
+          
+          if (this.tripStatus === 'on_the_way') {
+            this.startTracking();
+            setTimeout(() => this.initDriverMap(), 500);
+          }
         } else {
           this.currentTrip = null;
           this.tripStatus = 'scheduled';
@@ -168,6 +185,7 @@ export class DriverHomePage implements OnInit {
         this.tripStatus = 'on_the_way';
         console.log('Trip started!');
         this.startTracking();
+        setTimeout(() => this.initDriverMap(), 500);
       },
       error: (err) => console.error('Gagal memulai perjalanan', err)
     });
@@ -181,6 +199,11 @@ export class DriverHomePage implements OnInit {
         this.tripStatus = 'completed';
         console.log('Trip completed!');
         this.stopTracking();
+        if (this.map) {
+          this.map.remove();
+          this.map = null;
+        }
+        this.driverMarker = null;
         // Load next schedule if any
         setTimeout(() => this.loadSchedule(), 2000);
       },
@@ -188,13 +211,43 @@ export class DriverHomePage implements OnInit {
     });
   }
 
-  private watchId: number | null = null;
+  private watchId: any = null;
 
   startTracking() {
     if (navigator.geolocation) {
+      // 1. Dapatkan posisi saat ini secara instan dan kirim ke backend
+      navigator.geolocation.getCurrentPosition((position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        this.setDriverMarker(lat, lng);
+
+        if (this.currentTrip && this.currentTrip.id) {
+          this.apiService.updateLocation({
+            schedule_id: this.currentTrip.id,
+            latitude: lat,
+            longitude: lng
+          }).subscribe({
+            next: (loc) => console.log('Lokasi GPS awal berhasil dikirim:', loc),
+            error: (err) => console.error('Gagal mengirim lokasi GPS awal:', err)
+          });
+        }
+      }, (err) => {
+        console.error('Gagal mengambil lokasi awal GPS:', err);
+      }, { enableHighAccuracy: true });
+
+      // 2. Bersihkan watch lama jika ada agar tidak duplikat
+      if (this.watchId !== null) {
+        navigator.geolocation.clearWatch(this.watchId);
+      }
+
+      // 3. Mulai watch posisi untuk mendeteksi pergerakan
       this.watchId = navigator.geolocation.watchPosition((position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
+        
+        this.setDriverMarker(lat, lng);
+
         if (this.currentTrip && this.currentTrip.id) {
           this.apiService.updateLocation({
             schedule_id: this.currentTrip.id,
@@ -213,6 +266,169 @@ export class DriverHomePage implements OnInit {
       navigator.geolocation.clearWatch(this.watchId);
       this.watchId = null;
     }
+  }
+
+  initDriverMap() {
+    mapboxgl.accessToken = 'pk.eyJ1IjoibW9yZW4tNjciLCJhIjoiY21vam1pbWxuMDA0bDJxb2xkZTBnM2s3cSJ9.wUfxEG062R3T-AZr_m9Fvw';
+    if (this.map) {
+      try {
+        this.map.remove();
+      } catch (e) {}
+      this.map = null;
+    }
+
+    const defaultCenter = [110.3785, -7.7970]; // Default Yogyakarta
+    let center = defaultCenter;
+
+    if (this.currentTrip && this.currentTrip.origin_lng && this.currentTrip.origin_lat) {
+      center = [this.currentTrip.origin_lng, this.currentTrip.origin_lat];
+    }
+
+    const styleUrls: Record<string, string> = {
+      'streets': 'mapbox://styles/mapbox/streets-v12',
+      'dark': 'mapbox://styles/mapbox/dark-v11',
+      'satellite': 'mapbox://styles/mapbox/satellite-streets-v12'
+    };
+
+    try {
+      this.map = new mapboxgl.Map({
+        container: 'driver-map',
+        style: styleUrls[this.currentStyle] || styleUrls['streets'],
+        center: center,
+        zoom: 12,
+        pitch: 0 // Top-down flat view
+      });
+
+      this.map.on('load', () => {
+        this.drawRouteOnDriverMap();
+        this.updateDriverMarkerPosition();
+      });
+    } catch (e) {
+      console.error('Gagal memuat peta Mapbox supir:', e);
+    }
+  }
+
+  setMapStyle(style: string) {
+    this.currentStyle = style;
+    const styleUrls: Record<string, string> = {
+      'streets': 'mapbox://styles/mapbox/streets-v12',
+      'dark': 'mapbox://styles/mapbox/dark-v11',
+      'satellite': 'mapbox://styles/mapbox/satellite-streets-v12'
+    };
+    if (this.map) {
+      this.map.setStyle(styleUrls[style]);
+      
+      this.map.once('style.load', () => {
+        this.drawRouteOnDriverMap();
+        this.updateDriverMarkerPosition();
+      });
+    }
+  }
+
+  toggleMapFullscreen() {
+    this.isMapFullscreen = !this.isMapFullscreen;
+    setTimeout(() => {
+      if (this.map) {
+        this.map.resize();
+        if (this.driverMarker) {
+          const coords = this.driverMarker.getLngLat();
+          this.map.flyTo({ center: coords, zoom: this.isMapFullscreen ? 15 : 14 });
+        }
+      }
+    }, 200);
+  }
+
+  drawRouteOnDriverMap() {
+    if (!this.map || !this.currentTrip) return;
+    const start = [this.currentTrip.origin_lng, this.currentTrip.origin_lat];
+    const end = [this.currentTrip.destination_lng, this.currentTrip.destination_lat];
+
+    if (!start[0] || !start[1] || !end[0] || !end[1]) return;
+
+    // Tambah marker terminal asal dan tujuan
+    new mapboxgl.Marker({ color: '#3880ff' }) // Biru untuk asal
+      .setLngLat(start)
+      .addTo(this.map);
+
+    new mapboxgl.Marker({ color: '#10dc60' }) // Hijau untuk tujuan
+      .setLngLat(end)
+      .addTo(this.map);
+
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&overview=full&access_token=${mapboxgl.accessToken}`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.routes[0]) return;
+        const routeCoords = data.routes[0].geometry;
+
+        if (this.map.getSource('route')) {
+          this.map.getSource('route').setData({
+            type: 'Feature',
+            geometry: routeCoords
+          });
+        } else {
+          this.map.addSource('route', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              properties: {},
+              geometry: routeCoords
+            }
+          });
+
+          this.map.addLayer({
+            id: 'route',
+            type: 'line',
+            source: 'route',
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint: {
+              'line-color': '#0066ff',
+              'line-width': 5,
+              'line-opacity': 0.75
+            }
+          });
+        }
+      })
+      .catch(err => console.error('Gagal menggambar rute Mapbox:', err));
+  }
+
+  updateDriverMarkerPosition() {
+    if (!this.map) return;
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      this.setDriverMarker(lat, lng);
+    }, (err) => {
+      if (this.currentTrip && this.currentTrip.origin_lat) {
+        this.setDriverMarker(this.currentTrip.origin_lat, this.currentTrip.origin_lng);
+      }
+    });
+  }
+
+  private setDriverMarker(lat: number, lng: number) {
+    if (!this.map) return;
+
+    if (this.driverMarker) {
+      this.driverMarker.setLngLat([lng, lat]);
+    } else {
+      const el = document.createElement('div');
+      el.style.width = '32px';
+      el.style.height = '32px';
+      el.style.backgroundImage = 'url("https://cdn-icons-png.flaticon.com/512/3448/3448339.png")';
+      el.style.backgroundSize = 'cover';
+      el.style.filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
+
+      this.driverMarker = new mapboxgl.Marker(el)
+        .setLngLat([lng, lat])
+        .addTo(this.map);
+    }
+
+    this.map.flyTo({ center: [lng, lat], zoom: 14, speed: 0.8 });
   }
 
   openManifest() {

@@ -164,7 +164,10 @@ class AdminWebController extends Controller
     }
 
     // LOCATIONS
-    public function locations() { return view('admin.locations', ['locations' => Location::all()]); }
+    public function locations() {
+        $locations = Location::orderByDesc('id')->paginate(15)->withQueryString();
+        return view('admin.locations', compact('locations'));
+    }
     public function storeLocation(Request $request) {
         $validated = $request->validate(['name' => 'required|string|max:255', 'latitude' => 'required|numeric', 'longitude' => 'required|numeric']);
         Location::create($validated);
@@ -193,7 +196,10 @@ class AdminWebController extends Controller
     }
 
     // VEHICLES
-    public function vehicles() { return view('admin.vehicles', ['vehicles' => Vehicle::all()]); }
+    public function vehicles() {
+        $vehicles = Vehicle::orderByDesc('id')->paginate(15)->withQueryString();
+        return view('admin.vehicles', compact('vehicles'));
+    }
     public function storeVehicle(Request $request) {
         $validated = $request->validate([
             'plate_number' => 'required|string|max:20',
@@ -256,7 +262,14 @@ class AdminWebController extends Controller
     }
 
     // ROUTES
-    public function routes() { return view('admin.routes', ['routes' => RouteModel::with(['origin', 'destination'])->get(), 'locations' => Location::all()]); }
+    public function routes() {
+        $routes = RouteModel::with(['origin', 'destination'])
+            ->orderByDesc('id')
+            ->paginate(15)
+            ->withQueryString();
+        $locations = Location::all();
+        return view('admin.routes', compact('routes', 'locations'));
+    }
     public function storeRoute(Request $request) {
         $validated = $request->validate(['origin_location_id' => 'required|exists:locations,id', 'destination_location_id' => 'required|exists:locations,id|different:origin_location_id', 'distance_km' => 'required|numeric|min:0.1', 'price' => 'required|integer|min:0']);
         RouteModel::create($validated);
@@ -285,7 +298,16 @@ class AdminWebController extends Controller
     }
 
     // SCHEDULES
-    public function schedules() { return view('admin.schedules', ['schedules' => Schedule::with(['route.origin', 'route.destination', 'vehicle', 'driver.user'])->get(), 'routes' => RouteModel::with(['origin', 'destination'])->get(), 'vehicles' => Vehicle::all(), 'drivers' => Driver::with('user')->get()]); }
+    public function schedules() {
+        $schedules = Schedule::with(['route.origin', 'route.destination', 'vehicle', 'driver.user'])
+            ->orderByDesc('departure_time')
+            ->paginate(15)
+            ->withQueryString();
+        $routes = RouteModel::with(['origin', 'destination'])->get();
+        $vehicles = Vehicle::all();
+        $drivers = Driver::with('user')->get();
+        return view('admin.schedules', compact('schedules', 'routes', 'vehicles', 'drivers'));
+    }
     public function storeSchedule(Request $request) {
         $validated = $request->validate(['route_id' => 'required|exists:routes,id', 'vehicle_id' => 'required|exists:vehicles,id', 'driver_id' => 'required|exists:drivers,id', 'departure_time' => 'required|date', 'arrival_time' => 'required|date|after:departure_time', 'capacity' => 'required|integer|min:1', 'price' => 'required|numeric|min:0']);
         $validated['status'] = 'scheduled';
@@ -341,10 +363,13 @@ class AdminWebController extends Controller
     }
 
     // DRIVERS
-    public function drivers() { 
-        $drivers = Driver::with(['user', 'vehicle'])->get();
+    public function drivers() {
+        $drivers = Driver::with(['user', 'vehicle'])
+            ->orderByDesc('id')
+            ->paginate(15)
+            ->withQueryString();
         $vehicles = Vehicle::all();
-        return view('admin.drivers', compact('drivers', 'vehicles')); 
+        return view('admin.drivers', compact('drivers', 'vehicles'));
     }
     public function storeDriver(Request $request) {
         $validated = $request->validate([
@@ -544,7 +569,12 @@ class AdminWebController extends Controller
                 });
         }
 
-        return view('admin.customers', ['customers' => Customer::with('user')->get()]);
+        $customers = Customer::with('user')
+            ->orderByDesc('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.customers', compact('customers'));
     }
     public function editCustomer(Customer $customer) { return view('admin.customers_edit', compact('customer')); }
     public function updateCustomer(Request $request, Customer $customer) {
@@ -577,7 +607,13 @@ class AdminWebController extends Controller
     }
 
     // BOOKINGS
-    public function bookings() { return view('admin.bookings', ['bookings' => Booking::with(['customer.user', 'schedule.route'])->get()]); }
+    public function bookings() {
+        $bookings = Booking::with(['customer.user', 'schedule.route'])
+            ->orderByDesc('booking_time')
+            ->paginate(15)
+            ->withQueryString();
+        return view('admin.bookings', compact('bookings'));
+    }
     public function editBooking(Booking $booking) { return view('admin.bookings_edit', compact('booking')); }
     public function updateBooking(Request $request, Booking $booking) {
         $validated = $request->validate(['status' => 'required|string']);
@@ -601,12 +637,12 @@ class AdminWebController extends Controller
             'driver.user',
             'booking.schedule.route.origin',
             'booking.schedule.route.destination',
-        ])->latest()->get();
+        ])->latest()->paginate(15)->withQueryString();
 
         $summary = [
-            'average_rating' => round((float) $reviews->avg('rating'), 1),
-            'review_count' => $reviews->count(),
-            'low_rating_count' => $reviews->where('rating', '<=', 2)->count(),
+            'average_rating' => round((float) Review::avg('rating'), 1),
+            'review_count' => $reviews->total(),
+            'low_rating_count' => Review::where('rating', '<=', 2)->count(),
         ];
 
         return view('admin.reviews', compact('reviews', 'summary'));
@@ -616,7 +652,7 @@ class AdminWebController extends Controller
     public function tracking() { 
         // Mengambil jadwal yang sedang berjalan beserta lokasinya
         $activeSchedules = Schedule::where('status', 'on_the_way')
-            ->with(['vehicle', 'driver.user', 'locations' => function($query) {
+            ->with(['vehicle', 'driver.user', 'route.origin', 'route.destination', 'locations' => function($query) {
                 $query->latest('recorded_at'); // Mengurutkan lokasi terbaru
             }])
             ->get();

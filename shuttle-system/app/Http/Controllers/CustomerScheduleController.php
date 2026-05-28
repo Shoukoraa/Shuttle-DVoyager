@@ -14,7 +14,7 @@ class CustomerScheduleController extends Controller
     public function locations()
     {
         $locations = Cache::remember('locations:all', 300, function () {
-            return Location::all();
+            return Location::all()->toArray();
         });
 
         return response()->json($locations);
@@ -102,7 +102,7 @@ class CustomerScheduleController extends Controller
         }
         // ==============================================
 
-        $query = Schedule::with(['route.origin', 'route.destination', 'vehicle']);
+        $query = Schedule::with(['route.origin', 'route.destination', 'vehicle', 'driver.user']);
 
         if ($request->has('route_id')) {
             $query->where('route_id', $request->route_id);
