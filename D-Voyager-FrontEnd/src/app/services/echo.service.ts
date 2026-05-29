@@ -38,7 +38,7 @@ export class EchoService {
     this.echoInstance = new Echo({
       broadcaster: 'reverb',
       key: 'shuttlereverbkey123',
-      wsHost: 'localhost',
+      wsHost: '127.0.0.1',
       wsPort: 8080,
       wssPort: 8080,
       forceTLS: false,
