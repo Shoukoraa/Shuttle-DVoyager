@@ -201,6 +201,14 @@
                 Live Tracking (Maps)
             </a>
 
+            <!-- Chat CS -->
+            <a href="{{ route('admin.chat') }}" class="group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('admin.chat*') ? 'bg-[#2D2D2D] text-brand-500 border-l-4 border-brand-500 shadow-inner font-semibold' : 'text-gray-400 hover:text-white hover:bg-dark-850' }}">
+                <svg class="w-5 h-5 mr-3 transition-colors {{ request()->routeIs('admin.chat*') ? 'text-brand-500' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                Chat CS
+            </a>
+
         </nav>
 
         <!-- Sidebar Footer -->

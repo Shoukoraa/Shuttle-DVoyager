@@ -15,7 +15,7 @@ export class DriverChatPage implements OnInit, OnDestroy {
   public currentScheduleId: number | null = null;
   public customerChats: any[] = [];
   public csChats = [
-    { name: 'Admin Pusat', message: 'Gunakan tab ini jika ada kendala di jalan.', time: '', unread: 0 },
+    { name: 'Admin Pusat', message: 'Ketuk untuk menghubungi Admin CS.', time: '', unread: 0 },
   ];
 
   isChatOpen = false;
@@ -25,6 +25,9 @@ export class DriverChatPage implements OnInit, OnDestroy {
   isTyping = false;
   typingTimeout: any = null;
   lastTypingSent = 0;
+
+  isCsChatActive = false;
+  csSessionId: string | null = null;
 
   constructor(
     private apiService: ApiService,
@@ -89,14 +92,36 @@ export class DriverChatPage implements OnInit, OnDestroy {
   openChat(customer: any) {
     this.activeChatCustomer = customer;
     this.isChatOpen = true;
+    this.isCsChatActive = false;
     this.loadChatHistory();
     this.subscribeToChat();
+  }
+
+  openCsChat() {
+    this.isCsChatActive = true;
+    this.activeChatCustomer = { name: 'Admin Pusat' };
+    this.isChatOpen = true;
+    this.chatMessages = [];
+    
+    this.apiService.post('chat/connect-admin', {
+      last_category_id: null,
+      last_problem_id: null
+    }).subscribe({
+      next: (res: any) => {
+        this.csSessionId = res.session.id;
+        this.chatMessages = res.messages;
+        this.subscribeToChat();
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   closeChat() {
     this.isChatOpen = false;
     this.unsubscribeFromChat();
     this.activeChatCustomer = null;
+    this.isCsChatActive = false;
+    this.csSessionId = null;
     this.isTyping = false;
     if (this.typingTimeout) {
       clearTimeout(this.typingTimeout);
@@ -114,6 +139,29 @@ export class DriverChatPage implements OnInit, OnDestroy {
   }
 
   subscribeToChat() {
+    if (this.isCsChatActive) {
+      if (!this.csSessionId) return;
+      this.echoService.getEcho()
+        .private(`chat.${this.csSessionId}`)
+        .listen('MessageSent', (e: any) => {
+          if (e.sender_type !== 'user') {
+            this.chatMessages.push(e);
+          }
+        })
+        .listen('SessionStatusChanged', (e: any) => {
+          if (e.status === 'resolved') {
+            this.chatMessages.push({
+              sender_type: 'system',
+              message_content: 'Sesi chat ini telah diselesaikan oleh Admin.',
+              created_at: new Date().toISOString()
+            });
+            this.csSessionId = null;
+            this.echoService.getEcho().leave(`chat.${e.session_id}`);
+          }
+        });
+      return;
+    }
+
     if (!this.currentScheduleId || !this.activeChatCustomer?.customer_id) return;
     
     this.echoService.getEcho()
@@ -144,11 +192,18 @@ export class DriverChatPage implements OnInit, OnDestroy {
   }
 
   unsubscribeFromChat() {
-    if (!this.currentScheduleId || !this.activeChatCustomer?.customer_id) return;
-    this.echoService.getEcho().leave(`chat.${this.currentScheduleId}.${this.activeChatCustomer.customer_id}`);
+    if (this.isCsChatActive) {
+      if (this.csSessionId) {
+        this.echoService.getEcho().leave(`chat.${this.csSessionId}`);
+      }
+    } else {
+      if (!this.currentScheduleId || !this.activeChatCustomer?.customer_id) return;
+      this.echoService.getEcho().leave(`chat.${this.currentScheduleId}.${this.activeChatCustomer.customer_id}`);
+    }
   }
 
   sendTypingEvent() {
+    if (this.isCsChatActive) return; // Disable typing whisper for CS for now
     const now = Date.now();
     if (now - this.lastTypingSent < 1500) return;
     this.lastTypingSent = now;
@@ -161,7 +216,27 @@ export class DriverChatPage implements OnInit, OnDestroy {
   }
 
   sendMessage() {
-    if (!this.newMessage.trim() || !this.currentScheduleId || !this.activeChatCustomer?.customer_id) return;
+    if (!this.newMessage.trim()) return;
+
+    if (this.isCsChatActive) {
+      if (!this.csSessionId) return;
+      const text = this.newMessage.trim();
+      this.newMessage = '';
+      
+      const optimisticMsg = { sender_type: 'user', message_content: text, created_at: new Date().toISOString() };
+      this.chatMessages.push(optimisticMsg);
+      
+      this.apiService.post(`chat/${this.csSessionId}/messages`, { message: text }).subscribe({
+        error: (err) => {
+          console.error(err);
+          this.newMessage = text;
+          this.chatMessages = this.chatMessages.filter(m => m !== optimisticMsg);
+        }
+      });
+      return;
+    }
+
+    if (!this.currentScheduleId || !this.activeChatCustomer?.customer_id) return;
     
     const data = {
       schedule_id: this.currentScheduleId,

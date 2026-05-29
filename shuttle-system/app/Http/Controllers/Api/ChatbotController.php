@@ -8,7 +8,7 @@ use App\Models\ChatSession;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class ChatController extends Controller
+class ChatbotController extends Controller
 {
     public function __construct(protected ChatbotService $chatService) {}
 

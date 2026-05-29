@@ -1,0 +1,97 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/customer-service" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Virtual Assistant</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="endSession()" *ngIf="sessionId" color="danger" class="btn-end">
+        Akhiri
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <div class="chat-status-bar">
+    <div class="bot-info">
+      <div class="avatar-container">
+        <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shuttle&backgroundColor=b6e3f4" class="bot-avatar">
+        <span class="online-dot"></span>
+      </div>
+      <div class="bot-details">
+        <div class="bot-name">Shuttle Bot</div>
+        <div class="bot-status" [class.text-red]="!echoConnected">{{ echoConnected ? '● Online — Siap Membantu' : '● Menghubungkan...' }}</div>
+      </div>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="chat-bg" #chatContent [scrollEvents]="true">
+  <div class="chat-container">
+    
+    <!-- Messages Loop -->
+    <div *ngFor="let msg of messages" class="msg-anim" [ngClass]="{'msg-right': msg.sender_type === 'user', 'msg-left': msg.sender_type !== 'user', 'msg-center': msg.sender_type === 'system'}">
+      
+      <!-- System Message -->
+      <div *ngIf="msg.sender_type === 'system'" class="bubble-system">
+        {{ msg.message_content }}
+      </div>
+      
+      <!-- Bot / Admin Message -->
+      <ng-container *ngIf="msg.sender_type === 'bot' || msg.sender_type === 'admin'">
+        <img *ngIf="msg.sender_type === 'bot'" src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shuttle&backgroundColor=b6e3f4" class="sender-avatar bot">
+        <div *ngIf="msg.sender_type === 'admin'" class="sender-avatar admin">
+          <ion-icon name="headset"></ion-icon>
+        </div>
+        
+        <div class="msg-group">
+          <div *ngIf="msg.sender_type === 'admin'" class="sender-name">Admin CS</div>
+          <div class="bubble-left" [class.bg-bot]="msg.sender_type === 'bot'" [class.bg-admin]="msg.sender_type === 'admin'" [innerHTML]="msg.message_content"></div>
+        </div>
+      </ng-container>
+
+      <!-- User Message -->
+      <ng-container *ngIf="msg.sender_type === 'user'">
+        <div class="bubble-right" [innerHTML]="msg.message_content"></div>
+      </ng-container>
+
+    </div>
+
+    <!-- Typing Indicator -->
+    <div *ngIf="isTyping" class="msg-anim msg-left">
+      <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shuttle&backgroundColor=b6e3f4" class="sender-avatar bot">
+      <div class="bubble-left bg-bot typing-bubble">
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Options (Initial Flow) -->
+    <div *ngIf="categories.length > 0 && !selectedCategory && !sessionId" class="options-container">
+      <button *ngFor="let cat of categories" class="option-btn" (click)="selectCategory(cat)">
+        {{ cat.name }}
+      </button>
+    </div>
+
+    <!-- Problem Options -->
+    <div *ngIf="problems.length > 0 && selectedCategory && !selectedProblem && !sessionId" class="options-container">
+      <button *ngFor="let prob of problems" class="option-btn" (click)="selectProblem(prob)">
+        {{ prob.title }}
+      </button>
+      <button class="option-btn btn-outline" (click)="resetFlow()">Kembali ke Kategori</button>
+    </div>
+
+  </div>
+</ion-content>
+
+<!-- Live Chat Input Footer (only when session is active) -->
+<ion-footer class="ion-no-border" *ngIf="sessionId">
+  <ion-toolbar class="input-toolbar">
+    <div class="input-container">
+      <ion-input [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Ketik pesan di sini..." class="chat-input"></ion-input>
+      <ion-button fill="clear" (click)="sendMessage()" [disabled]="!userInput.trim()" class="btn-send">
+        <ion-icon name="paper-plane" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

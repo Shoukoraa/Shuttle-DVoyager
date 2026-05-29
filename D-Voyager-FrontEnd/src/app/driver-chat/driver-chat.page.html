@@ -50,7 +50,7 @@
     <!-- CS Tab -->
     <div *ngIf="!isLoading && selectedTab === 'cs'">
       <ion-list lines="none" class="chat-list">
-        <ion-item *ngFor="let chat of csChats" class="chat-item" button>
+        <ion-item *ngFor="let chat of csChats" class="chat-item" button (click)="openCsChat()">
           <ion-avatar slot="start">
             <div class="avatar-placeholder cs"><ion-icon name="headset"></ion-icon></div>
           </ion-avatar>
@@ -84,9 +84,11 @@
 
       <ion-content class="chat-room-content">
         <div class="message-list">
-          <div *ngFor="let msg of chatMessages" class="message-wrapper" [class.sent]="msg.sender_type === 'driver'" [class.received]="msg.sender_type === 'customer'">
+          <div *ngFor="let msg of chatMessages" class="message-wrapper" 
+            [class.sent]="(isCsChatActive ? msg.sender_type === 'user' : msg.sender_type === 'driver')" 
+            [class.received]="(isCsChatActive ? (msg.sender_type === 'admin' || msg.sender_type === 'bot' || msg.sender_type === 'system') : msg.sender_type === 'customer')">
             <div class="message-bubble">
-              <p>{{ msg.message }}</p>
+              <p>{{ isCsChatActive ? msg.message_content : msg.message }}</p>
               <span class="message-time">{{ msg.created_at | date:'HH:mm' }}</span>
             </div>
           </div>

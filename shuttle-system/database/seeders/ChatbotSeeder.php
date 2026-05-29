@@ -142,7 +142,7 @@ class ChatbotSeeder extends Seeder
                 'problems' => [
                     [
                         'title' => 'Tidak Bisa Memilih Seat',
-                        'solution_text' => "Jika Anda tidak bisa memilih atau merubah kursi yang diinginkan:\n\n1. Kursi bertanda **abu-abu** menandakan kursi tersebut telah dipesan oleh penumpang lain.\n2. Pemilihan kursi mandiri hanya bisa dilakukan maksimal **1 jam sebelum** keberangkatan.\n3. Cek kembali status tiket Anda, pastikan berstatus terbayar dan aktif.",
+                        'solution_text' => "Jika Anda tidak bisa memilih atau merubah kursi yang diinginkan:\n\n1. Kursi bertanda **abu-abu** menandakan kursi tersebut telah dipesan oleh penumpang lain.\n2. Perubahan atau pemilihan kursi mandiri hanya bisa dilakukan maksimal **1 jam sebelum** keberangkatan.\n3. Cek kembali status tiket Anda, pastikan berstatus terbayar dan aktif.",
                         'additional_solution' => "Jika denah kursi tidak termuat karena kendala teknis aplikasi, hubungi CS kami dengan menyebutkan nomor kursi yang Anda inginkan (jika masih kosong) agar kami alokasikan manual melalui sistem.",
                         'sort_order' => 1,
                     ],
@@ -161,7 +161,7 @@ class ChatbotSeeder extends Seeder
                 'sort_order' => 8,
                 'problems' => [
                     [
-                        'title' => ' Saya Kehilangan Barang di Shuttle',
+                        'title' => 'Saya Kehilangan Barang di Shuttle',
                         'solution_text' => "Jika barang berharga Anda tertinggal di dalam armada shuttle kami:\n\n1. Siapkan **nomor booking**, rincian rute, dan jam keberangkatan Anda.\n2. Rincikan deskripsi barang yang hilang secara detail (misal: Tas punggung warna hitam merk X).\n3. Segera laporkan hal ini kepada CS kami agar kami bisa langsung menahan armada dan menghubungi driver sebelum penumpang trip berikutnya naik.",
                         'additional_solution' => "Kecepatan Anda melapor sangat menentukan. Barang temuan yang berhasil diamankan akan disimpan di kantor Pool tujuan akhir selama maksimal 30 hari untuk Anda ambil.",
                         'sort_order' => 1,

@@ -111,33 +111,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     // TRACKING MAPS
     Route::get('/tracking', [AdminWebController::class, 'tracking'])->name('admin.tracking');
+
+    // CHAT CS
+    Route::get('/chat', [AdminWebController::class, 'chat'])->name('admin.chat');
+    Route::get('/chat/active-sessions', function () {
+        return \App\Models\ChatSession::with(['user', 'lastCategory'])
+            ->where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    });
+    Route::get('/chat/{sessionId}/history', [\App\Http\Controllers\Api\ChatbotController::class, 'getHistory']);
+    Route::post('/chat/{sessionId}/messages', [\App\Http\Controllers\Api\ChatbotController::class, 'sendMessage']);
+    Route::post('/chat/{sessionId}/resolve', [\App\Http\Controllers\Api\ChatbotController::class, 'resolve']);
+
     Route::post('/broadcasting/auth', [\Illuminate\Broadcasting\BroadcastController::class, 'authenticate']);
 
 });
 
 // ==========================================
-// CHATBOT CUSTOMER SERVICE DEMO ROUTES
+// CHATBOT CUSTOMER SERVICE DEMO ROUTES (Removed)
 // ==========================================
-Route::get('/chat-demo', function () {
-    $customerRole = \App\Models\Role::where('name', 'customer')->first();
-    $user = \App\Models\User::firstOrCreate(
-        ['email' => 'test@example.com'],
-        [
-            'name' => 'Test User',
-            'password' => bcrypt('password'),
-            'role_id' => $customerRole ? $customerRole->id : 3,
-            'phone' => '081234567890',
-        ]
-    );
-    \Illuminate\Support\Facades\Auth::login($user);
-
-    return view('chat_demo');
-});
-
-Route::get('/admin/active-sessions', function () {
-    return \App\Models\ChatSession::with(['user', 'lastCategory'])
-        ->where('status', 'active')
-        ->orderBy('created_at', 'desc')
-        ->get();
-});
-

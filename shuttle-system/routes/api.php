@@ -135,6 +135,14 @@ Route::middleware('bearer.auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 
+    // Chatbot & CS Live Chat
+    Route::get('/chatbot/categories', [\App\Http\Controllers\Api\ChatbotController::class, 'getCategories']);
+    Route::get('/chatbot/problems', [\App\Http\Controllers\Api\ChatbotController::class, 'getProblems']);
+    Route::post('/chat/connect-admin', [\App\Http\Controllers\Api\ChatbotController::class, 'connectAdmin']);
+    Route::post('/chat/{sessionId}/messages', [\App\Http\Controllers\Api\ChatbotController::class, 'sendMessage']);
+    Route::get('/chat/{sessionId}/history', [\App\Http\Controllers\Api\ChatbotController::class, 'getHistory']);
+    Route::post('/chat/{sessionId}/resolve', [\App\Http\Controllers\Api\ChatbotController::class, 'resolve']);
+
     /*
     |--------------------------------------------------------------------------
     | CUSTOMER API
@@ -198,6 +206,14 @@ Route::middleware('bearer.auth')->group(function () {
         Route::apiResource('schedules', \App\Http\Controllers\Admin\ScheduleController::class);
         Route::get('bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index']);
         Route::get('reviews', [ReviewController::class, 'adminReviews']);
+        
+        // Chatbot Admin
+        Route::get('/active-sessions', function () {
+            return \App\Models\ChatSession::with(['user', 'lastCategory'])
+                ->where('status', 'active')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        });
     });
 
 });

@@ -87,23 +87,25 @@
         {{ errorMessage }}
       </div>
 
-      <div class="form-divider"></div>
+      <ng-container *ngIf="hasPassword">
+        <div class="form-divider"></div>
 
-      <div class="input-group">
-        <ion-label class="custom-label">Keamanan Akun</ion-label>
-        <div class="password-action-card" routerLink="/change-password" role="button" tabindex="0">
-          <div class="card-icon">
-            <ion-icon name="lock-closed-outline"></ion-icon>
-          </div>
-          <div class="card-content">
-            <h3>Ganti Password</h3>
-            <p>Perbarui kata sandi secara berkala untuk menjaga keamanan akun Anda.</p>
-          </div>
-          <div class="card-arrow">
-            <ion-icon name="chevron-forward-outline"></ion-icon>
+        <div class="input-group">
+          <ion-label class="custom-label">Keamanan Akun</ion-label>
+          <div class="password-action-card" routerLink="/change-password" role="button" tabindex="0">
+            <div class="card-icon">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+            </div>
+            <div class="card-content">
+              <h3>Ganti Password</h3>
+              <p>Perbarui kata sandi secara berkala untuk menjaga keamanan akun Anda.</p>
+            </div>
+            <div class="card-arrow">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </div>
           </div>
         </div>
-      </div>
+      </ng-container>
 
       <ion-button expand="block" type="submit" class="save-btn" [disabled]="isLoading || isSaving || isSavingPassword">
         <ion-spinner *ngIf="isSaving || isSavingPassword" name="crescent"></ion-spinner>

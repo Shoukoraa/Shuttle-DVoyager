@@ -26,6 +26,7 @@ export class DriverProfilePage implements OnInit {
   public isLoggingOut: boolean = false;
   public isUploadingPhoto: boolean = false;
   public isTermsModalOpen: boolean = false;
+  public isLogoutModalOpen: boolean = false;
   public errorMessage: string = '';
 
   private lastProfileRefreshAt: number = 0;
@@ -174,30 +175,16 @@ export class DriverProfilePage implements OnInit {
     });
   }
 
-  async logout() {
+  logout() {
     if (this.isLoggingOut) {
       return;
     }
+    this.isLogoutModalOpen = true;
+  }
 
-    const alert = await this.alertController.create({
-      header: 'Keluar akun?',
-      message: 'Kamu perlu login lagi untuk menerima tugas dan melihat riwayat perjalanan.',
-      buttons: [
-        {
-          text: 'Batal',
-          role: 'cancel',
-        },
-        {
-          text: 'Keluar',
-          role: 'destructive',
-          handler: () => {
-            this.performLogout();
-          },
-        },
-      ],
-    });
-
-    await alert.present();
+  confirmLogout() {
+    this.isLogoutModalOpen = false;
+    this.performLogout();
   }
 
   private async performLogout() {

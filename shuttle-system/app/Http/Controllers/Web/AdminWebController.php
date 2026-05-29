@@ -659,4 +659,9 @@ class AdminWebController extends Controller
             
         return view('admin.tracking', ['activeSchedules' => $activeSchedules]); 
     }
+
+    // CHAT CS
+    public function chat() {
+        return view('admin.chat');
+    }
 }

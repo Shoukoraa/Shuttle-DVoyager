@@ -163,6 +163,23 @@
       </div>
     </ng-template>
   </ion-modal>
+
+  <!-- Premium Logout Confirmation Modal -->
+  <ion-modal [isOpen]="isLogoutModalOpen" (didDismiss)="isLogoutModalOpen = false" class="premium-logout-modal">
+    <ng-template>
+      <div class="logout-modal-wrapper">
+        <div class="alert-icon-wrapper">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </div>
+        <h2>Keluar Akun?</h2>
+        <p>Kamu perlu login lagi untuk menerima tugas dan melihat riwayat perjalanan.</p>
+        <div class="modal-action-buttons">
+          <button class="btn-cancel" (click)="isLogoutModalOpen = false">Batal</button>
+          <button class="btn-confirm" (click)="confirmLogout()">Keluar</button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
 </ion-content>
 
 <!-- Custom Bottom Navigation for Driver -->
