@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { catchError, firstValueFrom, of, timeout } from 'rxjs';
 import { ApiService } from '../services/api.service';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-driver-profile',
@@ -24,6 +25,7 @@ export class DriverProfilePage implements OnInit {
   public isLoadingReviews: boolean = false;
   public isLoggingOut: boolean = false;
   public isUploadingPhoto: boolean = false;
+  public isTermsModalOpen: boolean = false;
   public errorMessage: string = '';
 
   private lastProfileRefreshAt: number = 0;
@@ -235,5 +237,13 @@ export class DriverProfilePage implements OnInit {
     });
 
     await toast.present();
+  }
+
+  openTermsModal() {
+    this.isTermsModalOpen = true;
+  }
+
+  closeTermsModal() {
+    this.isTermsModalOpen = false;
   }
 }

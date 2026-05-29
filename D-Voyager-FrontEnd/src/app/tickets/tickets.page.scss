@@ -1,26 +1,61 @@
+:host {
+  --primary-color: #FFC107; 
+  --accent-color: #FFC107; 
+  --dark-gray: #1E1E1E;
+  --light-gray: #E5E7EB; 
+  --bg-color: #F8F9FA; 
+  --card-bg: #FFFFFF;
+  --text-main: #1E1E1E;
+  --text-sub: #6B7280;
+}
+
 .custom-bg {
   --background: var(--bg-color);
 }
 
-.custom-header {
-  ion-toolbar {
-    --background: var(--white);
-    --padding-top: 10px;
+.modern-header {
+  padding: 40px 20px 20px 20px;
+  background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+  border-bottom: 1px solid var(--light-gray);
+  position: relative;
+  overflow: hidden;
+
+  .bg-icon {
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    font-size: 140px;
+    color: var(--primary-color);
+    opacity: 0.15;
+    z-index: 0;
   }
 
-  ion-title {
-    font-size: 20px;
+  h1 {
+    font-size: 28px;
     font-weight: 800;
     color: var(--dark-gray);
+    margin: 0 0 4px 0;
+    letter-spacing: -0.5px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  p {
+    font-size: 14px;
+    color: var(--text-sub);
+    margin: 0 0 16px 0;
+    position: relative;
+    z-index: 1;
   }
 
   .segment-container {
-    background: var(--white);
-    padding: 10px 24px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: transparent;
+    padding: 0;
+    position: relative;
+    z-index: 1;
 
     ion-segment {
-      background: var(--bg-color);
+      background: rgba(0, 0, 0, 0.05);
       padding: 4px;
       border-radius: 12px;
 

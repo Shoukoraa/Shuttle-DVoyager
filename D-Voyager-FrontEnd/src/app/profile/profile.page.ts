@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { catchError, firstValueFrom, of, timeout } from 'rxjs';
 import { ApiService } from '../services/api.service';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +21,7 @@ export class ProfilePage implements OnInit {
   isLoading: boolean = true;
   isLoggingOut: boolean = false;
   isLogoutModalOpen: boolean = false;
+  isTermsModalOpen: boolean = false;
   private isRefreshingProfile: boolean = false;
   private lastProfileRefreshAt: number = 0;
 
@@ -153,5 +155,13 @@ export class ProfilePage implements OnInit {
     await toast.present();
 
     this.router.navigate(['/login'], { replaceUrl: true });
+  }
+
+  openTermsModal() {
+    this.isTermsModalOpen = true;
+  }
+
+  closeTermsModal() {
+    this.isTermsModalOpen = false;
   }
 }

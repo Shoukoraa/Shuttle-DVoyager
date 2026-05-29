@@ -50,8 +50,9 @@
       align-items: center;
       overflow: hidden;
       text-decoration: none;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
       flex-shrink: 0;
+      border: 2px solid var(--white);
 
       ion-icon {
         font-size: 24px;
@@ -63,6 +64,7 @@
         height: 100%;
         object-fit: cover;
         display: block;
+        border-radius: 50%;
       }
     }
   }

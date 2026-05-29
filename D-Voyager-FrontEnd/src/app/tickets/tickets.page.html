@@ -1,20 +1,21 @@
-<ion-header class="ion-no-border custom-header">
-  <ion-toolbar>
-    <ion-title>Pesanan Saya</ion-title>
-  </ion-toolbar>
-  <div class="segment-container">
-    <ion-segment [(ngModel)]="selectedTab" value="aktif" mode="ios">
-      <ion-segment-button value="aktif">
-        <ion-label>Aktif</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="riwayat">
-        <ion-label>Riwayat</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </div>
-</ion-header>
-
 <ion-content class="custom-bg">
+  <div class="modern-header">
+    <ion-icon name="ticket" class="bg-icon"></ion-icon>
+    <h1>Pesanan Saya</h1>
+    <p>Daftar tiket perjalanan Anda</p>
+    
+    <div class="segment-container">
+      <ion-segment [(ngModel)]="selectedTab" value="aktif" mode="ios">
+        <ion-segment-button value="aktif">
+          <ion-label>Aktif</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="riwayat">
+          <ion-label>Riwayat</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+
   <div class="tickets-container">
     
     <div class="loading-state" *ngIf="isLoading" style="text-align: center; margin-top: 50px;">

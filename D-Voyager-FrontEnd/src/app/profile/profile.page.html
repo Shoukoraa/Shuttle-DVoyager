@@ -68,7 +68,7 @@
         
         <div class="setting-divider"></div>
         
-        <div class="setting-item">
+        <div class="setting-item" (click)="openTermsModal()">
           <div class="icon-box success">
             <ion-icon name="document-text-outline"></ion-icon>
           </div>
@@ -101,6 +101,52 @@
         <div class="modal-action-buttons">
           <button class="btn-cancel" (click)="isLogoutModalOpen = false">Batal</button>
           <button class="btn-confirm" (click)="confirmLogout()">Keluar</button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Syarat & Ketentuan Modal -->
+  <ion-modal [isOpen]="isTermsModalOpen" (didDismiss)="closeTermsModal()" class="terms-modal">
+    <ng-template>
+      <div class="terms-modal-wrapper">
+        <div class="terms-header">
+          <h2>📝 Syarat & Ketentuan (Terms & Conditions)</h2>
+          <button class="close-btn" (click)="closeTermsModal()">
+            <ion-icon name="close"></ion-icon>
+          </button>
+        </div>
+        
+        <div class="terms-content">
+          <div class="terms-section">
+            <h3>1. KETENTUAN PENGGUNAAN LAYANAN</h3>
+            <p>Dengan mengakses website dominic.my.id atau mengunduh aplikasi mobile D-Voyager, Anda setuju untuk terikat oleh Syarat dan Ketentuan penggunaan ini. Jika Anda tidak menyetujui bagian mana pun dari ketentuan ini, Anda dilarang menggunakan layanan kami.</p>
+          </div>
+
+          <div class="terms-section">
+            <h3>2. PEMESANAN TIKET & BATAS USIA</h3>
+            <p>Pengguna diwajibkan memberikan informasi identitas yang benar, akurat, dan terbaru saat melakukan transaksi tiket. Anda harus berusia minimal 17 tahun atau memiliki pengawasan orang tua saat melakukan transaksi pemesanan tiket shuttle digital.</p>
+          </div>
+
+          <div class="terms-section">
+            <h3>3. KETENTUAN PEMBAYARAN AMAN</h3>
+            <p>Seluruh transaksi tiket di D-Voyager wajib diselesaikan secara lunas menggunakan metode pembayaran resmi yang tersedia di portal checkout. Pembayaran digital diproses secara instan melalui sistem terintegrasi <strong>DompetX Payment Gateway</strong>.</p>
+            <p>D-Voyager tidak memungut biaya tambahan di luar rincian biaya yang tertera pada invoice resmi saat Anda menekan tombol bayar.</p>
+          </div>
+
+          <div class="terms-section">
+            <h3>4. HAK & KEWAJIBAN PENUMPANG</h3>
+            <p>Penumpang wajib hadir di lokasi penjemputan (titik asal) minimal 15 menit sebelum waktu keberangkatan yang dijadwalkan pada tiket elektronik. Penumpang wajib menjaga ketertiban umum dan dilarang membawa barang berbahaya.</p>
+          </div>
+
+          <div class="terms-section">
+            <h3>5. PERUBAHAN SYARAT KETENTUAN</h3>
+            <p>PT D-Voyager Shuttle Indonesia berhak mengubah Syarat & Ketentuan ini sewaktu-waktu tanpa pemberitahuan sebelumnya. Perubahan akan berlaku segera setelah dipublikasikan pada halaman website dominic.my.id ini.</p>
+          </div>
+        </div>
+
+        <div class="terms-footer">
+          <button class="btn-understand" (click)="closeTermsModal()">Saya Mengerti</button>
         </div>
       </div>
     </ng-template>

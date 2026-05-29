@@ -172,7 +172,11 @@ export class DriverHomePage implements OnInit {
   }
 
   private applyUserToView(user: any) {
-    this.driverName = user?.name || user?.full_name || this.driverName;
+    let name = user?.name || user?.full_name || this.driverName;
+    if (name && name.length > 50) {
+      name = name.substring(0, 50) + '...';
+    }
+    this.driverName = name;
     this.vehiclePlate = user?.vehicle?.plate || user?.vehicle_plate || this.vehiclePlate;
     this.profilePhotoUrl = user?.profile_photo_url || null;
   }

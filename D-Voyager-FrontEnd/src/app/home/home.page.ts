@@ -78,7 +78,11 @@ export class HomePage implements OnInit {
 
     try {
       const userData = JSON.parse(userDataRaw);
-      this.userName = userData?.name || this.userName;
+      let name = userData?.name || this.userName;
+      if (name && name.length > 50) {
+        name = name.substring(0, 50) + '...';
+      }
+      this.userName = name;
       this.profilePhotoUrl = userData?.profile_photo_url || '';
     } catch (error) {
       console.error('Failed to parse user_data from localStorage:', error);
@@ -97,7 +101,11 @@ export class HomePage implements OnInit {
 
     this.apiService.getUserProfile().subscribe({
       next: (response) => {
-        this.userName = response?.name || this.userName;
+        let name = response?.name || this.userName;
+        if (name && name.length > 50) {
+          name = name.substring(0, 50) + '...';
+        }
+        this.userName = name;
         this.profilePhotoUrl = response?.profile_photo_url || this.profilePhotoUrl;
 
         localStorage.setItem('user_data', JSON.stringify({
