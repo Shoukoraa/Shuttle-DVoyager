@@ -690,7 +690,7 @@
                             <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20">📍</div>
                             <div>
                                 <span class="block font-extrabold text-dark-900 text-sm">Alamat Kantor Pusat</span>
-                                <span class="text-dark-500 text-xs sm:text-sm">Gedung D-Voyager Shuttle, Jl. Kuningan Mulia No. 18, Jakarta Selatan, DKI Jakarta 12920</span>
+                                <span class="text-dark-500 text-xs sm:text-sm">Perumahan Telagasari Indah, Jl. Arjuna, Karawang, Jawa Barat 41381</span>
                             </div>
                         </div>
 
@@ -699,7 +699,7 @@
                             <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20">📞</div>
                             <div>
                                 <span class="block font-extrabold text-dark-900 text-sm">Telepon / WhatsApp</span>
-                                <span class="text-dark-500 text-xs sm:text-sm">+62 812-3456-7890 (Customer Service)</span>
+                                <span class="text-dark-500 text-xs sm:text-sm">+62 895-3243-54052 (Customer Service)</span>
                             </div>
                         </div>
 
@@ -708,7 +708,7 @@
                             <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20">✉️</div>
                             <div>
                                 <span class="block font-extrabold text-dark-900 text-sm">Email Resmi</span>
-                                <span class="text-dark-500 text-xs sm:text-sm">support@dominic.my.id</span>
+                                <span class="text-dark-500 text-xs sm:text-sm">domiini1c.id@gmail.com</span>
                             </div>
                         </div>
                     </div>
