@@ -35,6 +35,62 @@
             <button id="btnSatellite" onclick="setMapStyle('satellite')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors">Satelit</button>
             <button id="btnDark" onclick="setMapStyle('dark')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-dark-900 transition-colors">Malam</button>
         </div>
+
+        <!-- Custom Map Navigation & Zoom Controls (Floating D-Pad) -->
+        <div class="absolute bottom-8 right-8 z-20 w-[188px] h-[140px] select-none pointer-events-none">
+            <!-- Collapsible Menu -->
+            <div id="dpad-menu" class="absolute inset-0 pointer-events-none transition-all duration-300 ease-out opacity-0 scale-90 translate-x-12 translate-y-12 origin-bottom-right">
+                <!-- Up Button -->
+                <button type="button" onclick="panMap('up')" class="absolute top-0 left-[48px] pointer-events-auto w-11 h-11 rounded-full bg-white border border-gray-200/80 shadow-md flex items-center justify-center hover:bg-gray-50 hover:text-dark-900 active:scale-95 transition-all text-gray-700 focus:outline-none" title="Geser Atas">
+                    <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
+                    </svg>
+                </button>
+                
+                <!-- Plus Button (Zoom In) -->
+                <button type="button" onclick="zoomMap('in')" class="absolute top-0 left-[96px] pointer-events-auto w-11 h-11 rounded-full bg-white border border-gray-200/80 shadow-md flex items-center justify-center hover:bg-gray-50 hover:text-dark-900 active:scale-95 transition-all text-gray-700 focus:outline-none" title="Perbesar (+)">
+                    <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                    </svg>
+                </button>
+
+                <!-- Left Button -->
+                <button type="button" onclick="panMap('left')" class="absolute top-[48px] left-0 pointer-events-auto w-11 h-11 rounded-full bg-white border border-gray-200/80 shadow-md flex items-center justify-center hover:bg-gray-50 hover:text-dark-900 active:scale-95 transition-all text-gray-700 focus:outline-none" title="Geser Kiri">
+                    <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+                    </svg>
+                </button>
+
+                <!-- Right Button -->
+                <button type="button" onclick="panMap('right')" class="absolute top-[48px] left-[96px] pointer-events-auto w-11 h-11 rounded-full bg-white border border-gray-200/80 shadow-md flex items-center justify-center hover:bg-gray-50 hover:text-dark-900 active:scale-95 transition-all text-gray-700 focus:outline-none" title="Geser Kanan">
+                    <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                    </svg>
+                </button>
+
+                <!-- Down Button -->
+                <button type="button" onclick="panMap('down')" class="absolute top-[96px] left-[48px] pointer-events-auto w-11 h-11 rounded-full bg-white border border-gray-200/80 shadow-md flex items-center justify-center hover:bg-gray-50 hover:text-dark-900 active:scale-95 transition-all text-gray-700 focus:outline-none" title="Geser Bawah">
+                    <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                    </svg>
+                </button>
+
+                <!-- Minus Button (Zoom Out) -->
+                <button type="button" onclick="zoomMap('out')" class="absolute top-[96px] left-[96px] pointer-events-auto w-11 h-11 rounded-full bg-white border border-gray-200/80 shadow-md flex items-center justify-center hover:bg-gray-50 hover:text-dark-900 active:scale-95 transition-all text-gray-700 focus:outline-none" title="Perkecil (-)">
+                    <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Toggle Button (Always Visible in bottom-right corner) -->
+            <button type="button" id="dpad-toggle-btn" onclick="toggleDpadMenu()" class="absolute top-[96px] left-[144px] pointer-events-auto w-11 h-11 rounded-full bg-white border border-gray-200/80 shadow-md flex items-center justify-center hover:bg-gray-50 hover:text-dark-900 active:scale-95 transition-all text-gray-700 focus:outline-none" title="Tampilkan/Sembunyikan Navigasi">
+                <svg id="dpad-toggle-icon" class="w-5 h-5 stroke-[2.5] transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- 4 arrows pointing outwards -->
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75v4.5m0-4.5h-4.5m4.5 0L15 9m5.25 11.25v-4.5m0 4.5h-4.5m4.5 0L15 15"/>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- Detail Data Kendaraan Table Panel -->
@@ -144,6 +200,7 @@
     var terminalMarkers = [];
     var activeSchedules = @json($activeSchedules);
     var currentStyle = 'dark';
+    var currentBounds = null;
 
     // 1. Inisialisasi Mapbox GL JS
     function initMap() {
@@ -152,7 +209,8 @@
             style: 'mapbox://styles/mapbox/dark-v11',
             center: [110.3785, -7.7970], // Default Yogyakarta
             zoom: 7,
-            pitch: 35
+            pitch: 35,
+            scrollZoom: false // Disable zoom on scroll wheel to let website scroll
         });
 
         map.on('load', function() {
@@ -249,7 +307,68 @@
         });
 
         if (hasPoints) {
+            currentBounds = bounds;
             map.fitBounds(bounds, { padding: 80, maxZoom: 12 });
+        }
+    }
+
+    // 4.1. Fungsi Control Navigasi D-Pad Kustom
+    function toggleDpadMenu() {
+        var menu = document.getElementById('dpad-menu');
+        var toggleIcon = document.getElementById('dpad-toggle-icon');
+        if (!menu || !toggleIcon) return;
+
+        if (menu.classList.contains('opacity-0')) {
+            // Expand
+            menu.classList.remove('opacity-0', 'scale-90', 'translate-x-12', 'translate-y-12', 'pointer-events-none');
+            menu.classList.add('opacity-100', 'scale-100', 'translate-x-0', 'translate-y-0', 'pointer-events-auto');
+            // Change toggle icon to close (X)
+            toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />';
+            toggleIcon.classList.add('rotate-90');
+        } else {
+            // Collapse
+            menu.classList.add('opacity-0', 'scale-90', 'translate-x-12', 'translate-y-12', 'pointer-events-none');
+            menu.classList.remove('opacity-100', 'scale-100', 'translate-x-0', 'translate-y-0', 'pointer-events-auto');
+            // Change toggle icon back to 4-arrows
+            toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75v4.5m0-4.5h-4.5m4.5 0L15 9m5.25 11.25v-4.5m0 4.5h-4.5m4.5 0L15 15"/>';
+            toggleIcon.classList.remove('rotate-90');
+        }
+    }
+
+    function panMap(direction) {
+        if (!map) return;
+        var amount = 150; // Jarak geser dalam pixel
+        var options = {
+            duration: 600, // 600ms transition time for smooth panning
+            essential: true
+        };
+        if (direction === 'up') {
+            map.panBy([0, -amount], options);
+        } else if (direction === 'down') {
+            map.panBy([0, amount], options);
+        } else if (direction === 'left') {
+            map.panBy([-amount, 0], options);
+        } else if (direction === 'right') {
+            map.panBy([amount, 0], options);
+        }
+    }
+
+    function zoomMap(type) {
+        if (!map) return;
+        var currentZoom = map.getZoom();
+        var targetZoom = type === 'in' ? currentZoom + 1 : currentZoom - 1;
+        map.easeTo({
+            zoom: targetZoom,
+            duration: 600, // 600ms transition time for smooth zooming
+            essential: true
+        });
+    }
+
+    function fitMapBounds() {
+        if (map && currentBounds) {
+            map.fitBounds(currentBounds, { padding: 80, maxZoom: 12, duration: 800 });
+        } else {
+            drawAllRoutesAndTerminals();
         }
     }
 
