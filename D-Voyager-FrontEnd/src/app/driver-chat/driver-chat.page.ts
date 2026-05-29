@@ -42,11 +42,21 @@ export class DriverChatPage implements OnInit, OnDestroy {
     this.unsubscribeFromChat();
   }
 
+  private getDateKey(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   loadData() {
     this.isLoading = true;
     this.apiService.getDriverSchedules().subscribe({
       next: (schedules: any[]) => {
-        const activeSchedules = schedules.filter(s => s.status !== 'completed');
+        const todayKey = this.getDateKey(new Date());
+        const activeSchedules = schedules.filter(s => {
+          return s.status !== 'completed' && this.getDateKey(new Date(s.departure_time)) === todayKey;
+        });
         if (activeSchedules && activeSchedules.length > 0) {
           this.currentScheduleId = activeSchedules[0].id;
           this.loadPassengers(this.currentScheduleId!);
@@ -108,7 +118,7 @@ export class DriverChatPage implements OnInit, OnDestroy {
     
     this.echoService.getEcho()
       .private(`chat.${this.currentScheduleId}.${this.activeChatCustomer.customer_id}`)
-      .listen('DriverCustomerMessageSent', (e: any) => {
+      .listen('.App\\\\Events\\\\DriverCustomerMessageSent', (e: any) => {
         const isDuplicate = this.chatMessages.some(m => 
           m.id === e.id || 
           (!m.id && m.message === e.message && m.sender_type === e.sender_type)
