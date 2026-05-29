@@ -76,7 +76,7 @@ export class SchedulePage implements OnInit {
       return 'BUS';
     }
 
-    const capacity = Number(schedule?.vehicle?.capacity || schedule?.capacity || 0);
+    const capacity = Number(schedule?.capacity || schedule?.vehicle?.capacity || 0);
 
     if (capacity <= 8) {
       return 'Mobil Keluarga';
@@ -94,7 +94,7 @@ export class SchedulePage implements OnInit {
   }
 
   getVehicleCapacity(schedule: any): number | string {
-    return schedule?.vehicle?.capacity || schedule?.capacity || '-';
+    return schedule?.capacity || schedule?.vehicle?.capacity || '-';
   }
 
   getArrivalTime(schedule: any): string {
