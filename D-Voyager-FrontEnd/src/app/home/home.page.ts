@@ -23,11 +23,7 @@ export class HomePage implements OnInit {
   public asalSearch = '';
   public tujuanSearch = '';
 
-  public promos = [
-    { title: 'Diskon 10%', subtitle: 'Rute Bus', color: '#FFC107', icon: 'ticket-outline' },
-    { title: 'Cashback 20%', subtitle: 'Rute Shuttle', color: '#6CCD76', icon: 'cash-outline' },
-    { title: 'Gratis 1x', subtitle: 'Pengguna Baru', color: '#FF7676', icon: 'gift-outline' }
-  ];
+  public promos: any[] = [];
 
   constructor(private router: Router, private apiService: ApiService) {}
 
@@ -47,6 +43,7 @@ export class HomePage implements OnInit {
 
     this.loadCachedUserProfile();
     this.refreshUserProfile();
+    this.loadHomePromos();
 
     this.apiService.getLocations().subscribe({
       next: (res) => {
@@ -226,6 +223,31 @@ export class HomePage implements OnInit {
         origin_id: this.asalId,
         destination_id: this.tujuanId,
         date: formattedDate
+      }
+    });
+  }
+
+  loadHomePromos() {
+    this.apiService.getVouchers().subscribe({
+      next: (res) => {
+        this.promos = (res || []).map((v: any) => {
+          let title = v.title;
+          const words = v.title.split(' ');
+          if (words[1] === 'Rp' && words[2]) {
+            title = words[0] + ' ' + words[1] + ' ' + words[2];
+          } else if (words[0] && words[1]) {
+            title = words[0] + ' ' + words[1];
+          }
+          return {
+            title: title,
+            subtitle: v.badge_text || 'Promo',
+            color: v.theme_color || '#FFC107',
+            icon: v.icon || 'gift-outline'
+          };
+        });
+      },
+      error: (err) => {
+        console.error('Failed to load home promos:', err);
       }
     });
   }

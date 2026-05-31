@@ -24,6 +24,8 @@ export class PaymentPage implements OnInit, OnDestroy {
   totalFare = 0;
   ticketTotal = 0;
   serviceFee = environment.serviceFee;
+  appliedPromoCode = '';
+  promoDiscount = 0;
   selectedMethodId: string | null = null;
   scheduleId: number | null = null;
   selectedSeats: string[] = [];
@@ -126,8 +128,14 @@ export class PaymentPage implements OnInit, OnDestroy {
         this.serviceFee = savedServiceFee;
       }
 
+      this.appliedPromoCode = state.appliedPromoCode || '';
+      this.promoDiscount = Number(state.promoDiscount) || 0;
+
       this.ticketTotal = seats.length * pricePerSeat;
-      this.totalFare = this.ticketTotal + this.serviceFee;
+      this.totalFare = this.ticketTotal + this.serviceFee - this.promoDiscount;
+      if (this.totalFare < 0) {
+        this.totalFare = 0;
+      }
     } catch (error) {
       console.error('Error parsing bookingSummaryState:', error);
       this.totalFare = this.serviceFee;
@@ -141,7 +149,10 @@ export class PaymentPage implements OnInit, OnDestroy {
 
         if (!Number.isNaN(serviceFee) && serviceFee >= 0) {
           this.serviceFee = serviceFee;
-          this.totalFare = this.ticketTotal + this.serviceFee;
+          this.totalFare = this.ticketTotal + this.serviceFee - this.promoDiscount;
+          if (this.totalFare < 0) {
+            this.totalFare = 0;
+          }
           this.saveServiceFeeToSummary();
         }
       },
@@ -221,7 +232,8 @@ export class PaymentPage implements OnInit, OnDestroy {
       seats: this.selectedSeats,
       passenger_name: passengerData.name,
       passenger_phone: passengerData.phone,
-      passenger_email: passengerData.email
+      passenger_email: passengerData.email,
+      promo_code: this.appliedPromoCode || null
     }).subscribe({
       next: (bookingRes) => {
         this.apiService.payTicket(bookingRes.booking_id, {

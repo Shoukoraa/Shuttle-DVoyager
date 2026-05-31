@@ -223,6 +223,10 @@ export class ApiService {
     return this.http.get(`${this.apiUrl}/locations`);
   }
 
+  getVouchers(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/vouchers`);
+  }
+
   searchSchedules(originId: number, destinationId: number, date: string): Observable<any> {
     // using generic GET but no auth needed actually, just query params
     return this.http.get(`${this.apiUrl}/schedules?origin_id=${originId}&destination_id=${destinationId}&date=${date}`);
