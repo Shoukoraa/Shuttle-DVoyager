@@ -1,0 +1,135 @@
+<ion-content [forceOverscroll]="false">
+  <div class="welcome-container">
+    <!-- Header Area -->
+    <div class="welcome-header">
+      <div class="logo-wrapper">
+        <span class="logo-text">D-VOYAGER</span>
+      </div>
+      <button class="skip-btn" (click)="skip()" *ngIf="currentSlide < slides.length - 1">
+        Lewati
+      </button>
+    </div>
+
+    <!-- Carousel Viewport -->
+    <div class="carousel-viewport">
+      <div class="carousel-wrapper" [style.transform]="'translateX(-' + (currentSlide * 100) + '%)'">
+        
+        <!-- Slide 1 -->
+        <div class="carousel-slide">
+          <div class="illustration-container">
+            <svg viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="floating-svg">
+              <circle cx="150" cy="110" r="85" fill="#FFF8E1"/>
+              <circle cx="150" cy="110" r="70" fill="#FFE082" opacity="0.4"/>
+              <!-- Main Bus Graphic -->
+              <rect x="75" y="70" width="150" height="75" rx="16" fill="#1E1E1E" />
+              <rect x="75" y="115" width="150" height="20" fill="#FFC107" />
+              <!-- Windows -->
+              <rect x="85" y="80" width="30" height="25" rx="4" fill="#FFFFFF" opacity="0.9" />
+              <rect x="122" y="80" width="30" height="25" rx="4" fill="#FFFFFF" opacity="0.9" />
+              <rect x="159" y="80" width="30" height="25" rx="4" fill="#FFFFFF" opacity="0.9" />
+              <rect x="196" y="80" width="19" height="25" rx="4" fill="#FFFFFF" opacity="0.9" />
+              <!-- Wheels -->
+              <circle cx="110" cy="145" r="16" fill="#111111" />
+              <circle cx="110" cy="145" r="7" fill="#CCCCCC" />
+              <circle cx="190" cy="145" r="16" fill="#111111" />
+              <circle cx="190" cy="145" r="7" fill="#CCCCCC" />
+              <!-- Headlights -->
+              <rect x="70" y="118" width="6" height="12" rx="3" fill="#FFF9C4" />
+              <rect x="224" y="118" width="6" height="12" rx="3" fill="#FF7043" />
+              <!-- Road Lines -->
+              <line x1="40" y1="180" x2="260" y2="180" stroke="#E0E0E0" stroke-width="4" stroke-linecap="round"/>
+              <line x1="80" y1="180" x2="120" y2="180" stroke="#FFC107" stroke-width="4" stroke-linecap="round"/>
+              <line x1="160" y1="180" x2="200" y2="180" stroke="#FFC107" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="text-container">
+            <h2>{{ slides[0].title }}</h2>
+            <p>{{ slides[0].description }}</p>
+          </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="carousel-slide">
+          <div class="illustration-container">
+            <svg viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="floating-svg">
+              <circle cx="150" cy="110" r="85" fill="#E8F5E9"/>
+              <path d="M70 160 C 100 80, 200 80, 230 160" stroke="#C8E6C9" stroke-width="6" stroke-dasharray="6 6"/>
+              <!-- Pin Pulse -->
+              <circle cx="150" cy="75" r="18" fill="#FFC107" opacity="0.3" class="pulsing-ring" />
+              <circle cx="150" cy="75" r="8" fill="#FFC107" />
+              <!-- Map Card -->
+              <rect x="90" y="95" width="120" height="75" rx="14" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2" />
+              <!-- Tiny roads inside map -->
+              <line x1="90" y1="130" x2="210" y2="130" stroke="#EEEEEE" stroke-width="8" />
+              <line x1="150" y1="95" x2="150" y2="170" stroke="#EEEEEE" stroke-width="8" />
+              <line x1="90" y1="130" x2="210" y2="130" stroke="#FFD54F" stroke-width="4" />
+              <!-- Mini bus pin -->
+              <rect x="135" y="118" width="30" height="18" rx="6" fill="#1E1E1E" />
+              <circle cx="143" cy="136" r="3.5" fill="#FFC107" />
+              <circle cx="157" cy="136" r="3.5" fill="#FFC107" />
+              <!-- Radar lines -->
+              <path d="M 120 70 A 35 35 0 0 1 180 70" stroke="#FFC107" stroke-width="2" stroke-linecap="round" fill="none" />
+              <path d="M 130 75 A 20 20 0 0 1 170 75" stroke="#FFC107" stroke-width="2" stroke-linecap="round" fill="none" />
+            </svg>
+          </div>
+          <div class="text-container">
+            <h2>{{ slides[1].title }}</h2>
+            <p>{{ slides[1].description }}</p>
+          </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="carousel-slide">
+          <div class="illustration-container">
+            <svg viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="floating-svg">
+              <circle cx="150" cy="110" r="85" fill="#FFF3E0"/>
+              <!-- Shield / Quality symbol -->
+              <path d="M150 45 L200 65 V110 C200 145, 170 170, 150 178 C130 170, 100 145, 100 110 V65 L150 45 Z" fill="#FFE0B2" opacity="0.6"/>
+              <path d="M150 53 L190 69 V107 C190 136, 166 158, 150 165 C134 158, 110 136, 110 107 V69 L150 53 Z" fill="#FFB74D" opacity="0.3"/>
+              <!-- Star reviews -->
+              <g transform="translate(100, 125)">
+                <polygon points="10,0 13,7 20,7 15,12 17,19 10,15 3,19 5,12 0,7 7,7" fill="#FFC107"/>
+                <polygon points="30,0 33,7 40,7 35,12 37,19 30,15 23,19 25,12 20,7 27,7" fill="#FFC107"/>
+                <polygon points="50,0 53,7 60,7 55,12 57,19 50,15 43,19 45,12 40,7 47,7" fill="#FFC107"/>
+                <polygon points="70,0 73,7 80,7 75,12 77,19 70,15 63,19 65,12 60,7 67,7" fill="#FFC107"/>
+                <polygon points="90,0 93,7 100,7 95,12 97,19 90,15 83,19 85,12 80,7 87,7" fill="#FFC107"/>
+              </g>
+              <!-- Driver profile badge -->
+              <circle cx="150" cy="85" r="28" fill="#1E1E1E" />
+              <!-- Safe drive checkmark -->
+              <path d="M142 85 L147 90 L158 79" stroke="#FFC107" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="text-container">
+            <h2>{{ slides[2].title }}</h2>
+            <p>{{ slides[2].description }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer Action Area -->
+    <div class="welcome-footer">
+      <!-- Dots Indicator -->
+      <div class="dots-container">
+        <span *ngFor="let s of slides; let i = index" 
+              class="dot" 
+              [class.active]="currentSlide === i"
+              (click)="goToSlide(i)">
+        </span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions-wrapper">
+        <button class="btn-prev" (click)="prevSlide()" *ngIf="currentSlide > 0">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <button class="btn-next" [class.full-width]="currentSlide === 0" [class.finish-button]="currentSlide === slides.length - 1" (click)="nextSlide()">
+          <span class="btn-text">{{ currentSlide === slides.length - 1 ? 'Mulai Sekarang' : 'Lanjut' }}</span>
+          <ion-icon [name]="currentSlide === slides.length - 1 ? 'checkmark-done-outline' : 'chevron-forward-outline'"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>

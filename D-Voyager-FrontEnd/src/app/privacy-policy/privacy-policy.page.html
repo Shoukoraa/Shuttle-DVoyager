@@ -1,0 +1,78 @@
+<ion-content [forceOverscroll]="false">
+  <div class="policy-container">
+    <!-- Header with Back Button (or brand decoration) -->
+    <div class="policy-header">
+      <div class="logo-wrapper">
+        <span class="logo-text">D-VOYAGER</span>
+      </div>
+      <div class="badge-label">PRIVASI</div>
+    </div>
+
+    <!-- Scrollable Document Content -->
+    <div class="document-body" (scroll)="onScroll($event)">
+      <div class="intro-card">
+        <h3>Selamat datang di Shuttle D-Voyager</h3>
+        <p>Sebelum kita mulai perjalanan Anda, mohon luangkan waktu sejenak untuk membaca dan menyetujui Kebijakan Privasi dan Ketentuan Penggunaan aplikasi kami.</p>
+      </div>
+
+      <div class="card-section">
+        <div class="section-title">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <h4>1. Pengumpulan Informasi</h4>
+        </div>
+        <p>Kami mengumpulkan informasi yang Anda berikan secara langsung seperti nama, alamat email, nomor telepon, serta informasi pembayaran untuk kebutuhan pemesanan tiket shuttle yang aman.</p>
+      </div>
+
+      <div class="card-section">
+        <div class="section-title">
+          <ion-icon name="location-outline"></ion-icon>
+          <h4>2. Data Lokasi (GPS)</h4>
+        </div>
+        <p>Untuk mengaktifkan fitur pelacakan shuttle real-time, kami memerlukan akses ke lokasi perangkat Anda. Ini membantu memperkirakan kedatangan shuttle di titik penjemputan Anda secara akurat.</p>
+      </div>
+
+      <div class="card-section">
+        <div class="section-title">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <h4>3. Penggunaan & Keamanan Data</h4>
+        </div>
+        <p>Semua transaksi dan data pribadi Anda dilindungi dengan enkripsi tingkat tinggi. Kami tidak akan pernah menjual, menyewakan, atau menyebarkan data pribadi Anda kepada pihak ketiga untuk kepentingan iklan.</p>
+      </div>
+
+      <div class="card-section">
+        <div class="section-title">
+          <ion-icon name="options-outline"></ion-icon>
+          <h4>4. Kontrol Anda</h4>
+        </div>
+        <p>Anda memegang kendali penuh atas informasi akun Anda. Anda dapat memperbarui profil, mengatur izin pelacakan lokasi, atau meminta penghapusan akun secara permanen melalui pengaturan profil.</p>
+      </div>
+
+      <div class="footer-note">
+        <p>Dengan menekan tombol setuju, Anda menyatakan bahwa Anda telah membaca dan memahami seluruh isi Kebijakan Privasi serta menyetujui penggunaan data tersebut demi kenyamanan layanan.</p>
+      </div>
+    </div>
+
+    <!-- Interactive Footer Action Area -->
+    <div class="policy-footer">
+      <!-- Scroll Hint with bouncing arrow micro-animation -->
+      <div class="scroll-hint" *ngIf="!hasScrolledToBottom">
+        <ion-icon name="arrow-down-outline" class="bounce-arrow"></ion-icon>
+        <span>Harap baca dokumen hingga selesai sebelum menyetujui</span>
+      </div>
+
+      <div class="checkbox-container" [class.disabled]="!hasScrolledToBottom" (click)="toggleAgreement()">
+        <div class="custom-checkbox" [class.checked]="isAgreed" [class.disabled-box]="!hasScrolledToBottom">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" *ngIf="isAgreed">
+            <path d="M5 12L10 17L20 7" stroke="#1E1E1E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="checkbox-label" [class.disabled-label]="!hasScrolledToBottom">Saya menyetujui Kebijakan Privasi & Ketentuan Layanan</span>
+      </div>
+
+      <button class="btn-agree" [disabled]="!isAgreed || !hasScrolledToBottom" [class.active]="isAgreed && hasScrolledToBottom" (click)="agreeAndContinue()">
+        <span>Setuju & Lanjutkan</span>
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+</ion-content>
