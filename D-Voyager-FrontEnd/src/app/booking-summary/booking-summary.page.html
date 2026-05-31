@@ -74,10 +74,118 @@
         </div>
       </div>
 
+      <!-- Divider -->
+      <div class="accordion-divider"></div>
+
+      <!-- Section 3: Voucher -->
+      <div class="accordion-section">
+        <div class="section-header">
+          <div class="step-circle">3</div>
+          <h2>Voucher & Promo</h2>
+        </div>
+        
+        <div class="section-content">
+          <div class="promo-trigger-card" (click)="openPromoModal()">
+            <div class="trigger-left">
+              <ion-icon name="pricetag" class="promo-icon" [class.active]="isPromoApplied"></ion-icon>
+              
+              <div class="trigger-info" *ngIf="!isPromoApplied">
+                <strong>Pakai Voucher / Kode Promo</strong>
+                <span>Pilih promo terbaik untuk menghemat biaya</span>
+              </div>
+              
+              <div class="trigger-info active-info animate-fade-in" *ngIf="isPromoApplied">
+                <strong>Promo {{ appliedPromoCode }} Aktif!</strong>
+                <span class="discount-text">Hemat Rp {{ promoDiscount | number:'1.0-0' }} berhasil digunakan</span>
+              </div>
+            </div>
+            
+            <div class="trigger-right">
+              <span class="change-link" *ngIf="isPromoApplied">Ubah</span>
+              <ion-icon name="chevron-forward-outline" class="chevron-icon" *ngIf="!isPromoApplied"></ion-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
 </ion-content>
+
+<!-- Bottom Sheet Modal Voucher & Promo -->
+<ion-modal [isOpen]="isPromoModalOpen" (didDismiss)="isPromoModalOpen = false" [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85, 1.0]" class="custom-modal promo-bottom-sheet">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="modal-toolbar">
+        <ion-title>Pakai Voucher & Promo</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="isPromoModalOpen = false" class="close-btn" style="font-weight: 800; color: var(--primary-dark);">Tutup</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content class="modal-bg-color">
+      <div class="modal-promo-container">
+        
+        <!-- Opsi B: Input Manual -->
+        <div class="modal-section-title">Punya kode promo lain?</div>
+        <div class="voucher-input-group" style="background: var(--white); border: 1px solid var(--light-gray); border-radius: 12px; padding: 4px 8px 4px 16px; display: flex; align-items: center; gap: 10px;">
+          <ion-input type="text" placeholder="Masukkan kode promo (e.g. VOYAGERNEW)" [(ngModel)]="promoCodeInput" style="text-transform: uppercase; --background: transparent; flex: 1;"></ion-input>
+          <button type="button" class="apply-btn" [class.applied]="isPromoApplied" (click)="applyPromoCodeFromModal()" style="border: none; outline: none; font-weight: 800; font-size: 13px; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: var(--primary-color); color: var(--dark-gray); box-shadow: 0 4px 10px rgba(255, 193, 7, 0.25);">
+            {{ isPromoApplied ? 'Hapus' : 'Pakai' }}
+          </button>
+        </div>
+        
+        <!-- Opsi A: Pilih Langsung -->
+        <div class="modal-section-title promo-list-title">Voucher yang Tersedia</div>
+        <div class="promo-scroll-list">
+          
+          <!-- Empty State Modal -->
+          <div *ngIf="vouchers.length === 0" style="text-align: center; padding: 24px; color: #9ca3af; font-weight: bold; font-size: 13px;">
+            Tidak ada voucher yang tersedia saat ini.
+          </div>
+
+          <!-- Card list -->
+          <div class="selectable-promo-card modal-card-style" 
+               *ngFor="let voucher of vouchers"
+               [class.selected]="isPromoApplied && appliedPromoCode === voucher.code"
+               (click)="selectPromoDirectlyFromModal(voucher.code)">
+            
+            <div class="promo-card-left">
+              <ion-icon [name]="voucher.icon || 'gift-outline'" class="gift-icon" 
+                        [style.color]="isPromoApplied && appliedPromoCode === voucher.code ? '#10dc60' : voucher.theme_color"
+                        [style.background]="isPromoApplied && appliedPromoCode === voucher.code ? 'rgba(16, 220, 96, 0.1)' : 'rgba(' + hexToRgb(voucher.theme_color) + ', 0.12)'"></ion-icon>
+              
+              <div class="promo-badge-mini" 
+                   [style.background]="voucher.theme_color || '#FFC107'">
+                {{ voucher.badge_text || 'PROMO' }}
+              </div>
+            </div>
+            
+            <div class="promo-card-main">
+              <h3>{{ voucher.title }}</h3>
+              <p>Kode: <strong>{{ voucher.code }}</strong></p>
+              <span class="promo-expiry">Berakhir: {{ getFormattedExpiry(voucher.expiry_date) }}</span>
+            </div>
+            
+            <div class="promo-card-action">
+              <button type="button" class="select-badge-btn" 
+                      [class.active]="isPromoApplied && appliedPromoCode === voucher.code"
+                      [style.background]="isPromoApplied && appliedPromoCode === voucher.code ? '#10dc60' : 'white'"
+                      [style.color]="isPromoApplied && appliedPromoCode === voucher.code ? 'white' : '#6b7280'"
+                      [style.borderColor]="isPromoApplied && appliedPromoCode === voucher.code ? '#10dc60' : '#E5E7EB'">
+                {{ isPromoApplied && appliedPromoCode === voucher.code ? 'Aktif' : 'Gunakan' }}
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
 
 <!-- Sticky Floating Footer for Price -->
 <ion-footer class="ion-no-border">
@@ -90,6 +198,10 @@
       <div class="fare-row" *ngIf="fareDetails.fee > 0">
         <span>Biaya Layanan</span>
         <span>Rp {{ fareDetails.fee | number:'1.0-0' }}</span>
+      </div>
+      <div class="fare-row" *ngIf="promoDiscount > 0" style="color: #10dc60; font-weight: bold;">
+        <span>Diskon Promo ({{ appliedPromoCode }})</span>
+        <span>-Rp {{ promoDiscount | number:'1.0-0' }}</span>
       </div>
       <div class="toll-included-note">
         <ion-icon name="checkmark-circle"></ion-icon>

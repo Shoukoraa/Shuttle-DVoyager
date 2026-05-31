@@ -17,6 +17,7 @@
       <div class="payment-breakdown">
         <span>Tiket: Rp {{ ticketTotal | number:'1.0-0' }}</span>
         <span *ngIf="serviceFee > 0">Biaya layanan: Rp {{ serviceFee | number:'1.0-0' }}</span>
+        <span *ngIf="promoDiscount > 0" style="color: #10dc60; font-weight: bold;">Promo ({{ appliedPromoCode }}): -Rp {{ promoDiscount | number:'1.0-0' }}</span>
       </div>
       <div class="timer">
         Selesaikan dalam <strong>{{ displayTimer }}</strong>

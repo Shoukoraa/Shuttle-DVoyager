@@ -57,6 +57,7 @@ class BookingController extends Controller
             'passenger_name' => 'nullable|string|max:255',
             'passenger_phone' => 'nullable|string|max:20',
             'passenger_email' => 'nullable|email|max:255',
+            'promo_code' => 'nullable|string',
         ]);
 
         return DB::transaction(function () use ($request) {
@@ -91,7 +92,59 @@ class BookingController extends Controller
             // Calculate totals
             $pricePerSeat = $schedule->price;
             $serviceFee = (float) config('dvoyager.service_fee', 2500);
-            $totalPrice = ($pricePerSeat * count($seats)) + $serviceFee;
+            
+            $subtotal = $pricePerSeat * count($seats);
+            $discount = 0;
+
+            if ($request->filled('promo_code')) {
+                $code = strtoupper(trim($request->promo_code));
+                
+                // Ambil voucher secara dinamis dari database
+                $voucher = \App\Models\Voucher::where('code', $code)->first();
+                if (!$voucher) {
+                    abort(400, "Kode voucher tidak valid.");
+                }
+
+                // Cek Batas Waktu Expired Promo
+                $expiryDate = new \Carbon\Carbon($voucher->expiry_date);
+                if (now()->greaterThan($expiryDate)) {
+                    abort(400, "Voucher {$code} telah kedaluwarsa.");
+                }
+
+                // Cek Minimal Transaksi
+                if ($subtotal < (float) $voucher->min_transaction) {
+                    abort(400, "Transaksi minimal untuk voucher ini adalah Rp " . number_format($voucher->min_transaction, 0, ',', '.'));
+                }
+
+                // Cek Aturan Sekali Pakai (One-Time / New User)
+                $alreadyUsed = Booking::where('customer_id', $customer->id)
+                    ->where('promo_code', $code)
+                    ->whereIn('status', ['paid', 'completed'])
+                    ->exists();
+                
+                if ($alreadyUsed) {
+                    if ($voucher->is_new_user_only) {
+                        abort(400, "Voucher {$code} hanya berlaku untuk perjalanan pertama Anda.");
+                    } else {
+                        abort(400, "Voucher {$code} sudah pernah Anda gunakan sebelumnya.");
+                    }
+                }
+
+                // Hitung potongan secara dinamis berdasarkan tipe voucher
+                if ($voucher->type === 'percentage') {
+                    $discount = (float) round($subtotal * ((float) $voucher->value / 100));
+                    if ($voucher->max_discount && $discount > (float) $voucher->max_discount) {
+                        $discount = (float) $voucher->max_discount;
+                    }
+                } elseif ($voucher->type === 'flat') {
+                    $discount = $subtotal >= (float) $voucher->value ? (float) $voucher->value : (float) $subtotal;
+                }
+            }
+
+            $totalPrice = $subtotal + $serviceFee - $discount;
+            if ($totalPrice < 0) {
+                $totalPrice = 0;
+            }
 
             $booking = Booking::create([
                 'customer_id' => $customer->id,
@@ -104,6 +157,7 @@ class BookingController extends Controller
                 'price_per_seat' => $pricePerSeat,
                 'total_price' => $totalPrice,
                 'service_fee' => $serviceFee,
+                'promo_code' => $request->filled('promo_code') ? strtoupper(trim($request->promo_code)) : null,
                 'status' => 'booked'
             ]);
 

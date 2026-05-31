@@ -17,7 +17,8 @@ class Booking extends Model
         'passenger_email',
         'price_per_seat',
         'total_price',
-        'service_fee'
+        'service_fee',
+        'promo_code'
     ];
 
     public function customer()

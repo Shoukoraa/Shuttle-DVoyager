@@ -11,6 +11,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +111,7 @@ Route::get('/locations', [\App\Http\Controllers\CustomerScheduleController::clas
 Route::get('/schedules', [\App\Http\Controllers\CustomerScheduleController::class, 'index']);
 Route::get('/schedules/{id}/seats', [\App\Http\Controllers\CustomerScheduleController::class, 'seats']);
 Route::post('/payments/dompetx/webhook', [PaymentController::class, 'webhook']);
+Route::get('/vouchers', [VoucherController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------

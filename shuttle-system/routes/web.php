@@ -124,6 +124,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/chat/{sessionId}/messages', [\App\Http\Controllers\Api\ChatbotController::class, 'sendMessage']);
     Route::post('/chat/{sessionId}/resolve', [\App\Http\Controllers\Api\ChatbotController::class, 'resolve']);
 
+    // VOUCHERS & PROMOS
+    Route::get('/vouchers', [AdminWebController::class, 'vouchers'])->name('admin.vouchers');
+    Route::post('/vouchers', [AdminWebController::class, 'storeVoucher'])->name('admin.vouchers.store');
+    Route::get('/vouchers/{voucher}/edit', [AdminWebController::class, 'editVoucher'])->name('admin.vouchers.edit');
+    Route::put('/vouchers/{voucher}', [AdminWebController::class, 'updateVoucher'])->name('admin.vouchers.update');
+    Route::delete('/vouchers/{voucher}', [AdminWebController::class, 'deleteVoucher'])->name('admin.vouchers.delete');
+
     Route::post('/broadcasting/auth', [\Illuminate\Broadcasting\BroadcastController::class, 'authenticate']);
 
 });

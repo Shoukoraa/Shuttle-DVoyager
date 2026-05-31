@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Exports\MonthlyReportExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{Location, Vehicle, Route as RouteModel, Schedule, Driver, Customer, Booking, User, Role, Review};
+use App\Models\{Location, Vehicle, Route as RouteModel, Schedule, Driver, Customer, Booking, User, Role, Review, Voucher};
 use App\Models\Seat;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -663,5 +663,100 @@ class AdminWebController extends Controller
     // CHAT CS
     public function chat() {
         return view('admin.chat');
+    }
+
+    // VOUCHERS
+    public function vouchers() {
+        $vouchers = Voucher::orderByDesc('id')->paginate(15)->withQueryString();
+        return view('admin.vouchers', compact('vouchers'));
+    }
+
+    public function storeVoucher(Request $request) {
+        if ($request->filled('expiry_date_day') && $request->filled('expiry_time')) {
+            $expiryDate = $request->input('expiry_date_day') . ' ' . $request->input('expiry_time') . ':00';
+            $request->merge(['expiry_date' => $expiryDate]);
+        }
+
+        $validated = $request->validate([
+            'code' => 'required|string|unique:vouchers,code|max:50',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'type' => 'required|in:percentage,flat',
+            'value' => 'required|numeric|min:0.01',
+            'max_discount' => 'nullable|numeric|min:0',
+            'min_transaction' => 'nullable|numeric|min:0',
+            'expiry_date' => 'required|date',
+            'is_new_user_only' => 'nullable|boolean',
+            'badge_text' => 'nullable|string|max:50',
+            'icon' => 'nullable|string|max:100',
+            'theme_color' => 'nullable|string|max:7',
+        ]);
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+        $validated['is_new_user_only'] = $request->has('is_new_user_only') || $request->input('is_new_user_only') == 1;
+
+        if (empty($validated['icon'])) {
+            $validated['icon'] = 'gift-outline';
+        }
+        if (empty($validated['theme_color'])) {
+            $validated['theme_color'] = '#FFC107';
+        }
+        if (!isset($validated['min_transaction'])) {
+            $validated['min_transaction'] = 0;
+        }
+
+        Voucher::create($validated);
+        return back()->with('success', 'Voucher berhasil ditambahkan!');
+    }
+
+    public function editVoucher(Voucher $voucher) {
+        return view('admin.vouchers_edit', compact('voucher'));
+    }
+
+    public function updateVoucher(Request $request, Voucher $voucher) {
+        if ($request->filled('expiry_date_day') && $request->filled('expiry_time')) {
+            $expiryDate = $request->input('expiry_date_day') . ' ' . $request->input('expiry_time') . ':00';
+            $request->merge(['expiry_date' => $expiryDate]);
+        }
+
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'max:50', Rule::unique('vouchers', 'code')->ignore($voucher->id)],
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'type' => 'required|in:percentage,flat',
+            'value' => 'required|numeric|min:0.01',
+            'max_discount' => 'nullable|numeric|min:0',
+            'min_transaction' => 'nullable|numeric|min:0',
+            'expiry_date' => 'required|date',
+            'is_new_user_only' => 'nullable|boolean',
+            'badge_text' => 'nullable|string|max:50',
+            'icon' => 'nullable|string|max:100',
+            'theme_color' => 'nullable|string|max:7',
+        ]);
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+        $validated['is_new_user_only'] = $request->has('is_new_user_only') || $request->input('is_new_user_only') == 1;
+
+        if (empty($validated['icon'])) {
+            $validated['icon'] = 'gift-outline';
+        }
+        if (empty($validated['theme_color'])) {
+            $validated['theme_color'] = '#FFC107';
+        }
+        if (!isset($validated['min_transaction'])) {
+            $validated['min_transaction'] = 0;
+        }
+
+        $voucher->update($validated);
+        return redirect()->route('admin.vouchers')->with('success', 'Voucher berhasil diperbarui!');
+    }
+
+    public function deleteVoucher(Voucher $voucher) {
+        try {
+            $voucher->delete();
+            return back()->with('success', 'Voucher berhasil dihapus!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus voucher.');
+        }
     }
 }
