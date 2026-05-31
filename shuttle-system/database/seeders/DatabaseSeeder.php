@@ -25,11 +25,11 @@ class DatabaseSeeder extends Seeder
 
         // 2. Setup Admin
         User::firstOrCreate(
-            ['email' => 'admin@shuttle.com'],
+            ['email' => env('ADMIN_EMAIL', 'admin@shuttle.com')],
             [
                 'name' => 'Super Admin',
-                'password' => Hash::make('password123'),
-                'phone' => '0811111111',
+                'password' => Hash::make(env('ADMIN_PASSWORD', 'password123')),
+                'phone' => '085289692234',
                 'role_id' => $adminRole->id
             ]
         );

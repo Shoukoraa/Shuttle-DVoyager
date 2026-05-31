@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.shuttlesystem.com/api',
+  apiUrl: 'https://dominic.my.id/api',
   serviceFee: 0
 };
