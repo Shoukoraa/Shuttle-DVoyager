@@ -50,14 +50,7 @@
             }
         }
     </script>
-    <style>
-        .split-left-bg {
-            background-color: #1E1E1E;
-            background-image: 
-                radial-gradient(circle at 80% 20%, rgba(251, 192, 45, 0.08) 0%, transparent 60%),
-                radial-gradient(circle at 20% 80%, rgba(251, 192, 45, 0.04) 0%, transparent 60%);
-        }
-    </style>
+    <link href="{{ asset('css/admin-custom.css') }}" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-dark-900 font-sans min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 

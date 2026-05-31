@@ -1,0 +1,163 @@
+/* ==========================================================================
+   Admin Panel Custom CSS
+   ========================================================================== */
+
+/* Layout Scrollbar Customization */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #FBC02D;
+}
+
+/* Premium Modern Flatpickr Styling */
+.flatpickr-calendar {
+    border-radius: 16px !important;
+    border: 1px solid #F3F4F6 !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    font-family: 'Outfit', sans-serif !important;
+    padding: 4px !important;
+    background: #FFFFFF !important;
+}
+.flatpickr-months .flatpickr-month {
+    color: #1E1E1E !important;
+}
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-weight: 700 !important;
+}
+.flatpickr-day {
+    border-radius: 8px !important;
+    color: #374151 !important;
+    font-weight: 500 !important;
+}
+.flatpickr-day:hover {
+    background: #F3F4F6 !important;
+}
+.flatpickr-day.today {
+    border-color: #FFC107 !important;
+    color: #1E1E1E !important;
+    font-weight: 700 !important;
+}
+.flatpickr-day.selected, .flatpickr-day.selected:hover, .flatpickr-day.selected:focus {
+    background: #FFC107 !important;
+    border-color: #FFC107 !important;
+    color: #1E1E1E !important;
+    font-weight: 800 !important;
+}
+.flatpickr-time {
+    border-top: 1px solid #F3F4F6 !important;
+    border-radius: 0 0 16px 16px !important;
+}
+.flatpickr-time input:hover, .flatpickr-time .numInputWrapper:hover {
+    background: #F9FAFB !important;
+}
+.flatpickr-time input:focus {
+    background: #FFFBEB !important;
+}
+
+/* Login Page Background */
+.split-left-bg {
+    background-color: #1E1E1E;
+    background-image: 
+        radial-gradient(circle at 80% 20%, rgba(251, 192, 45, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 20% 80%, rgba(251, 192, 45, 0.04) 0%, transparent 60%);
+}
+
+/* ==========================================================================
+   Live Tracking Custom CSS
+   ========================================================================== */
+.marker-vehicle {
+    width: 32px;
+    height: 32px;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/3448/3448339.png');
+    background-size: cover;
+    cursor: pointer;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: transform 0.2s ease-out;
+}
+.marker-terminal {
+    width: 24px;
+    height: 24px;
+    background-color: #3880ff;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ==========================================================================
+   Chat CS Custom CSS
+   ========================================================================== */
+.chat-scroll::-webkit-scrollbar { width: 4px; }
+.chat-scroll::-webkit-scrollbar-track { background: transparent; }
+.chat-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+
+.bubble-user {
+    background: #f1f5f9;
+    color: #1e293b;
+    border-radius: 4px 14px 14px 14px;
+    padding: 9px 13px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.bubble-admin {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    border-radius: 14px 4px 14px 14px;
+    padding: 9px 13px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.bubble-bot {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    border-radius: 14px 4px 14px 14px;
+    padding: 9px 13px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.bubble-system {
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 12px;
+    border: 1px solid #fde68a;
+    font-size: 11px;
+    text-align: center;
+    padding: 6px 12px;
+    align-self: center;
+}
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.msg-anim { animation: fadeSlideUp 0.3s ease both; }
+
+.admin-session-item {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 8px;
+}
+.admin-session-item:hover { border-color: #3b82f6; background: #eff6ff; }
+.admin-session-item.active { border-color: #3b82f6; background: #eff6ff; }
+
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.pulse-dot { animation: pulse-dot 2s infinite; }

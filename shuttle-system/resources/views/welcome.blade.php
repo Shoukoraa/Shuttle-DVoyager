@@ -588,7 +588,7 @@
                 <div class="font-outfit font-bold text-dark-700 bg-white border border-slate-300 px-4 py-2 rounded-xl">Bank BRI</div>
                 
                 <!-- E-wallet mock -->
-                <div class="font-outfit font-bold text-dark-900 bg-brand-100 border border-brand-200/50 px-4 py-2 rounded-xl">GOPAY / OVO / DANA</div>
+                <div class="font-outfit font-bold text-dark-900 bg-brand-100 border border-brand-200/50 px-4 py-2 rounded-xl">QRIS</div>
             </div>
             
             <div class="mt-6 text-dark-500 text-xs">

@@ -14,7 +14,7 @@
         <div class="vehicle-badge">{{ vehiclePlate }}</div>
       </div>
       <a class="profile-avatar driver-avatar" routerLink="/driver-profile" aria-label="Buka profil pengguna">
-        <img *ngIf="profilePhotoUrl; else avatarFallback" [src]="profilePhotoUrl" alt="Foto profil akun">
+        <img *ngIf="profilePhotoUrl; else avatarFallback" [src]="profilePhotoUrl" alt="Foto profil akun" referrerpolicy="no-referrer">
         <ng-template #avatarFallback>
           <ion-icon name="person"></ion-icon>
         </ng-template>

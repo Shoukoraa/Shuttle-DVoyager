@@ -78,8 +78,10 @@ export class DriverHomePage implements OnInit {
           this.nextTrip = null;
           this.nextTripDate = null;
           
-          if (this.tripStatus === 'on_the_way') {
+          if (this.tripStatus === 'on_the_way' || this.tripStatus === 'scheduled') {
             this.startTracking();
+          }
+          if (this.tripStatus === 'on_the_way') {
             setTimeout(() => this.initDriverMap(), 500);
           }
         } else {

@@ -3,52 +3,6 @@
 @section('content')
 <!-- Flatpickr CSS & Fonts -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<style>
-    /* Premium Modern Flatpickr Styling */
-    .flatpickr-calendar {
-        border-radius: 16px !important;
-        border: 1px solid #F3F4F6 !important;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-        font-family: 'Outfit', sans-serif !important;
-        padding: 4px !important;
-        background: #FFFFFF !important;
-    }
-    .flatpickr-months .flatpickr-month {
-        color: #1E1E1E !important;
-    }
-    .flatpickr-current-month .flatpickr-monthDropdown-months {
-        font-weight: 700 !important;
-    }
-    .flatpickr-day {
-        border-radius: 8px !important;
-        color: #374151 !important;
-        font-weight: 500 !important;
-    }
-    .flatpickr-day:hover {
-        background: #F3F4F6 !important;
-    }
-    .flatpickr-day.today {
-        border-color: #FFC107 !important;
-        color: #1E1E1E !important;
-        font-weight: 700 !important;
-    }
-    .flatpickr-day.selected, .flatpickr-day.selected:hover, .flatpickr-day.selected:focus {
-        background: #FFC107 !important;
-        border-color: #FFC107 !important;
-        color: #1E1E1E !important;
-        font-weight: 800 !important;
-    }
-    .flatpickr-time {
-        border-top: 1px solid #F3F4F6 !important;
-        border-radius: 0 0 16px 16px !important;
-    }
-    .flatpickr-time input:hover, .flatpickr-time .numInputWrapper:hover {
-        background: #F9FAFB !important;
-    }
-    .flatpickr-time input:focus {
-        background: #FFFBEB !important;
-    }
-</style>
 
 <div class="max-w-xl mx-auto space-y-8 animate-fade-in">
     

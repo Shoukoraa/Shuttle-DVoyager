@@ -166,7 +166,7 @@ export class DriverChatPage implements OnInit, OnDestroy {
     
     this.echoService.getEcho()
       .private(`chat.${this.currentScheduleId}.${this.activeChatCustomer.customer_id}`)
-      .listen('.App\\\\Events\\\\DriverCustomerMessageSent', (e: any) => {
+      .listen('DriverCustomerMessageSent', (e: any) => {
         const isDuplicate = this.chatMessages.some(m => 
           m.id === e.id || 
           (!m.id && m.message === e.message && m.sender_type === e.sender_type)

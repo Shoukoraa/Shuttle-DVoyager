@@ -8,7 +8,7 @@
         <h2>{{ userName }} 👋</h2>
       </div>
       <a *ngIf="isLoggedIn" class="profile-avatar" routerLink="/profile" aria-label="Buka profil pengguna">
-        <img *ngIf="profilePhotoUrl; else avatarFallback" [src]="profilePhotoUrl" alt="Foto profil akun">
+        <img *ngIf="profilePhotoUrl; else avatarFallback" [src]="profilePhotoUrl" alt="Foto profil akun" referrerpolicy="no-referrer">
         <ng-template #avatarFallback>
           <ion-icon name="person"></ion-icon>
         </ng-template>

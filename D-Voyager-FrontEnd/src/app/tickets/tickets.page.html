@@ -86,7 +86,7 @@
             <ion-icon name="chatbubbles" slot="start"></ion-icon>
             Chat
           </ion-button>
-          <ion-button expand="block" color="warning" (click)="openTracking(ticket)" style="flex: 1; margin: 0; --border-radius: 8px;" *ngIf="ticket.status === 'on_the_way'">
+          <ion-button expand="block" color="warning" (click)="openTracking(ticket)" style="flex: 1; margin: 0; --border-radius: 8px;">
             <ion-icon name="map" slot="start"></ion-icon>
             Lacak Supir
           </ion-button>
@@ -277,7 +277,21 @@
           </p>
         </div>
 
-        <div id="customer-map" style="width: 100%; height: 75%; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); z-index: 10;"></div>
+        <div class="map-wrapper" [class.fullscreen-map-wrapper]="isMapFullscreen">
+          <div id="customer-map" [class.fullscreen-map]="isMapFullscreen"></div>
+          
+          <!-- Map Style Switcher (Floating on Map) -->
+          <div class="map-style-switcher">
+            <button (click)="setMapStyle('streets')" [class.active-style]="currentStyle === 'streets'">Terang</button>
+            <button (click)="setMapStyle('dark')" [class.active-style]="currentStyle === 'dark'">Malam</button>
+            <button (click)="setMapStyle('satellite')" [class.active-style]="currentStyle === 'satellite'">Satelit</button>
+          </div>
+
+          <!-- Fullscreen Toggle Button (Floating on Map) -->
+          <button class="map-toggle-btn" (click)="toggleMapFullscreen()" aria-label="Toggle Fullscreen Map">
+            <ion-icon [name]="isMapFullscreen ? 'contract-outline' : 'expand-outline'"></ion-icon>
+          </button>
+        </div>
       </ion-content>
     </ng-template>
   </ion-modal>

@@ -6,71 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<style>
-    /* ─── SCROLLBAR ─── */
-    .chat-scroll::-webkit-scrollbar { width: 4px; }
-    .chat-scroll::-webkit-scrollbar-track { background: transparent; }
-    .chat-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-
-    /* ─── CHAT BUBBLES ─── */
-    .bubble-user {
-        background: #f1f5f9;
-        color: #1e293b;
-        border-radius: 4px 14px 14px 14px;
-        padding: 9px 13px;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-    .bubble-admin {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: #fff;
-        border-radius: 14px 4px 14px 14px;
-        padding: 9px 13px;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-    .bubble-bot {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        color: #fff;
-        border-radius: 14px 4px 14px 14px;
-        padding: 9px 13px;
-        font-size: 13px;
-        line-height: 1.5;
-    }
-    .bubble-system {
-        background: #fef3c7;
-        color: #92400e;
-        border-radius: 12px;
-        border: 1px solid #fde68a;
-        font-size: 11px;
-        text-align: center;
-        padding: 6px 12px;
-        align-self: center;
-    }
-
-    /* ─── ANIMATIONS ─── */
-    @keyframes fadeSlideUp {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    .msg-anim { animation: fadeSlideUp 0.3s ease both; }
-
-    /* ─── ADMIN PANEL ─── */
-    .admin-session-item {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 12px;
-        cursor: pointer;
-        transition: all 0.15s;
-        margin-bottom: 8px;
-    }
-    .admin-session-item:hover { border-color: #3b82f6; background: #eff6ff; }
-    .admin-session-item.active { border-color: #3b82f6; background: #eff6ff; }
-    
-    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.5} }
-    .pulse-dot { animation: pulse-dot 2s infinite; }
-</style>
+<!-- CSS Tambahan untuk Chat sudah dipindah ke admin-custom.css -->
 
 <div class="h-[calc(100vh-140px)] flex bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
 

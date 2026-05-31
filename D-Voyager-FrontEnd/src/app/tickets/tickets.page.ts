@@ -313,7 +313,7 @@ export class TicketsPage implements OnInit, OnDestroy {
 
     this.echoService.getEcho()
       .private(`chat.${scheduleId}.${customerId}`)
-      .listen('.App\\\\Events\\\\DriverCustomerMessageSent', (e: any) => {
+      .listen('DriverCustomerMessageSent', (e: any) => {
         const isDuplicate = this.chatMessages.some(m => 
           m.id === e.id || 
           (!m.id && m.message === e.message && m.sender_type === e.sender_type)
@@ -407,7 +407,7 @@ export class TicketsPage implements OnInit, OnDestroy {
     const scheduleId = ticket.schedule_id;
     this.echoService.getEcho()
       .private(`schedules.${scheduleId}`)
-      .listen('.App\\Events\\DriverLocationUpdated', (e: any) => {
+      .listen('DriverLocationUpdated', (e: any) => {
         console.log('Update lokasi supir real-time diterima:', e);
         this.updateDriverTrackingPosition(e.latitude, e.longitude);
       });
@@ -430,6 +430,9 @@ export class TicketsPage implements OnInit, OnDestroy {
     this.trackingTicket = null;
   }
 
+  public currentStyle: string = 'dark';
+  public isMapFullscreen: boolean = false;
+
   initTrackingMap() {
     mapboxgl.accessToken = 'pk.eyJ1IjoibW9yZW4tNjciLCJhIjoiY21vam1pbWxuMDA0bDJxb2xkZTBnM2s3cSJ9.wUfxEG062R3T-AZr_m9Fvw';
     if (!this.trackingTicket) return;
@@ -450,10 +453,16 @@ export class TicketsPage implements OnInit, OnDestroy {
       center = [Number(origin.longitude), Number(origin.latitude)];
     }
 
+    const styleUrls: Record<string, string> = {
+      'streets': 'mapbox://styles/mapbox/streets-v12',
+      'dark': 'mapbox://styles/mapbox/dark-v11',
+      'satellite': 'mapbox://styles/mapbox/satellite-streets-v12'
+    };
+
     try {
       this.trackingMap = new mapboxgl.Map({
         container: 'customer-map',
-        style: 'mapbox://styles/mapbox/dark-v11', // Tema gelap premium sesuai aplikasi
+        style: styleUrls[this.currentStyle] || styleUrls['dark'], // Tema default
         center: center,
         zoom: 10,
         pitch: 35
@@ -477,6 +486,40 @@ export class TicketsPage implements OnInit, OnDestroy {
     } catch (e) {
       console.error('Gagal memuat peta Mapbox customer:', e);
     }
+  }
+
+  setMapStyle(style: string) {
+    this.currentStyle = style;
+    const styleUrls: Record<string, string> = {
+      'streets': 'mapbox://styles/mapbox/streets-v12',
+      'dark': 'mapbox://styles/mapbox/dark-v11',
+      'satellite': 'mapbox://styles/mapbox/satellite-streets-v12'
+    };
+    if (this.trackingMap) {
+      this.trackingMap.setStyle(styleUrls[style]);
+      
+      this.trackingMap.once('style.load', () => {
+        this.drawRouteOnCustomerMap();
+        if (this.driverTrackingMarker) {
+          const coords = this.driverTrackingMarker.getLngLat();
+          // Force redraw driver marker without moving camera
+          this.updateDriverTrackingPosition(coords.lat, coords.lng, false);
+        }
+      });
+    }
+  }
+
+  toggleMapFullscreen() {
+    this.isMapFullscreen = !this.isMapFullscreen;
+    setTimeout(() => {
+      if (this.trackingMap) {
+        this.trackingMap.resize();
+        if (this.driverTrackingMarker) {
+          const coords = this.driverTrackingMarker.getLngLat();
+          this.trackingMap.flyTo({ center: coords, zoom: this.isMapFullscreen ? 14 : 10 });
+        }
+      }
+    }, 200);
   }
 
   drawRouteOnCustomerMap() {
@@ -555,7 +598,7 @@ export class TicketsPage implements OnInit, OnDestroy {
       .catch(err => console.error('Gagal mengambil rute:', err));
   }
 
-  updateDriverTrackingPosition(lat: number, lng: number) {
+  updateDriverTrackingPosition(lat: number, lng: number, moveCamera: boolean = true) {
     if (!this.trackingMap) return;
 
     if (this.driverTrackingMarker) {
@@ -575,6 +618,8 @@ export class TicketsPage implements OnInit, OnDestroy {
     }
 
     // Gerakkan kamera mengikuti supir dengan zoom yang pas
-    this.trackingMap.easeTo({ center: [lng, lat], zoom: 13, duration: 1000 });
+    if (moveCamera) {
+      this.trackingMap.easeTo({ center: [lng, lat], zoom: this.isMapFullscreen ? 14 : 13, duration: 1000 });
+    }
   }
 }

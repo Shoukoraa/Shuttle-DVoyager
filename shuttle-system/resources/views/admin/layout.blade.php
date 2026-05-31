@@ -55,29 +55,14 @@
             }
         }
     </script>
-    <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #1e1e1e;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #4b5563;
-            border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #FBC02D;
-        }
-    </style>
+    <link href="{{ asset('css/admin-custom.css') }}" rel="stylesheet">
 </head>
 <body class="bg-[#F9FAFB] text-dark-800 font-sans antialiased overflow-x-hidden min-h-screen flex flex-col md:flex-row">
 
     <!-- Mobile Header -->
     <header class="md:hidden w-full bg-dark-900 border-b border-dark-800 text-white flex items-center justify-between px-5 py-4 z-50">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('assets/Logo_Dvoyager.png') }}" alt="Logo" class="h-8 w-auto object-contain" onerror="this.src='https://placehold.co/100x100?text=DV'">
+            <img src="{{ asset('assets/Logo_Dvoyager.png') }}" alt="Logo" class="h-8 w-auto object-contain rounded-lg" onerror="this.src='https://placehold.co/100x100?text=DV'">
             <span class="font-outfit font-bold text-lg text-brand-500 tracking-wide">D-Voyager</span>
         </div>
         <button id="mobile-menu-btn" class="text-white hover:text-brand-500 focus:outline-none transition-colors">
@@ -93,7 +78,7 @@
         <!-- Sidebar Branding -->
         <div class="px-6 py-6 border-b border-dark-850 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('assets/Logo_Dvoyager.png') }}" alt="Logo" class="h-10 w-auto object-contain" onerror="this.src='https://placehold.co/100x100?text=DV'">
+                <img src="{{ asset('assets/Logo_Dvoyager.png') }}" alt="Logo" class="h-10 w-auto object-contain rounded-lg" onerror="this.src='https://placehold.co/100x100?text=DV'">
                 <div class="flex flex-col">
                     <span class="font-outfit font-extrabold text-lg text-brand-500 leading-none tracking-wide">D-VOYAGER</span>
                     <span class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-semibold">Admin Panel</span>

@@ -11,7 +11,7 @@
   <div class="edit-container">
     <div class="profile-summary">
       <label class="avatar-circle" for="profilePhotoInput">
-        <img *ngIf="profilePhotoUrl" [src]="profilePhotoUrl" alt="Foto profil">
+        <img *ngIf="profilePhotoUrl" [src]="profilePhotoUrl" alt="Foto profil" referrerpolicy="no-referrer">
         <ion-icon *ngIf="!profilePhotoUrl" name="person"></ion-icon>
         <span class="photo-action" *ngIf="!isUploadingPhoto">
           <ion-icon name="camera"></ion-icon>

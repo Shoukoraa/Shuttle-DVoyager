@@ -164,33 +164,7 @@
 
 </div>
 
-<!-- CSS Tambahan untuk Marker Mapbox -->
-<style>
-    .marker-vehicle {
-        width: 32px;
-        height: 32px;
-        background-image: url('https://cdn-icons-png.flaticon.com/512/3448/3448339.png');
-        background-size: cover;
-        cursor: pointer;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        transition: transform 0.2s ease-out;
-    }
-    .marker-terminal {
-        width: 24px;
-        height: 24px;
-        background-color: #3880ff;
-        border: 3px solid white;
-        border-radius: 50%;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.25);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 10px;
-        font-weight: bold;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-</style>
+<!-- CSS Tambahan untuk Marker Mapbox sudah dipindah ke admin-custom.css -->
 
 <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoibW9yZW4tNjciLCJhIjoiY21vam1pbWxuMDA0bDJxb2xkZTBnM2s3cSJ9.wUfxEG062R3T-AZr_m9Fvw';

@@ -5,7 +5,7 @@
     <div class="header-curve"></div>
     <div class="profile-info">
       <div class="avatar-container" routerLink="/edit-profile">
-        <img *ngIf="userData.profile_photo_url" [src]="userData.profile_photo_url" alt="Foto profil">
+        <img *ngIf="userData.profile_photo_url" [src]="userData.profile_photo_url" alt="Foto profil" referrerpolicy="no-referrer">
         <ion-icon *ngIf="!userData.profile_photo_url" name="person"></ion-icon>
         <div class="edit-badge">
           <ion-icon name="camera"></ion-icon>

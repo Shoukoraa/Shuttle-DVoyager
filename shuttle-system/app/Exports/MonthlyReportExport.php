@@ -13,6 +13,6 @@ class MonthlyReportExport implements FromView
 
     public function view(): View
     {
-        return view('admin.reports.monthly', $this->reportData);
+        return view('admin.reports.monthly_excel', $this->reportData);
     }
 }

@@ -1,6 +1,9 @@
 @extends('admin.layout')
 
 @section('content')
+<!-- Flatpickr CSS & Fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <div class="space-y-8 animate-fade-in">
     
     <!-- Header Title -->
@@ -85,15 +88,21 @@
                 </div>
 
                 <!-- Departure Time -->
-                <div class="flex flex-col gap-1.5">
+                <div class="flex flex-col gap-1.5 relative">
                     <label for="departure_time" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Waktu Keberangkatan</label>
-                    <input type="datetime-local" name="departure_time" id="departure_time" required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2.5 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium">
+                    <div class="relative">
+                        <input type="text" name="departure_time" id="departure_time" placeholder="Pilih tanggal & jam..." required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl pl-4 pr-10 py-2.5 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-semibold cursor-pointer">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">📅</span>
+                    </div>
                 </div>
 
                 <!-- Arrival Time -->
-                <div class="flex flex-col gap-1.5">
+                <div class="flex flex-col gap-1.5 relative">
                     <label for="arrival_time" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Estimasi Jam Tiba</label>
-                    <input type="datetime-local" name="arrival_time" id="arrival_time" required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2.5 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium">
+                    <div class="relative">
+                        <input type="text" name="arrival_time" id="arrival_time" placeholder="Pilih tanggal & jam..." required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl pl-4 pr-10 py-2.5 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-semibold cursor-pointer">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">🕒</span>
+                    </div>
                 </div>
 
                 <!-- Capacity -->
@@ -270,8 +279,34 @@
     </div>
 </div>
 
+<!-- Flatpickr Script Initialization -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // Flatpickr setup
+        flatpickr("#departure_time", {
+            enableTime: true,
+            locale: "id",
+            dateFormat: "Y-m-d H:i",
+            altInput: true,
+            altFormat: "d F Y, H:i",
+            minDate: "today",
+            time_24hr: true,
+            disableMobile: "true"
+        });
+
+        flatpickr("#arrival_time", {
+            enableTime: true,
+            locale: "id",
+            dateFormat: "Y-m-d H:i",
+            altInput: true,
+            altFormat: "d F Y, H:i",
+            minDate: "today",
+            time_24hr: true,
+            disableMobile: "true"
+        });
+
         const selectAll = document.getElementById('selectAllSchedules');
         const checkboxes = Array.from(document.querySelectorAll('.schedule-checkbox'));
         const selectedCount = document.getElementById('selectedCount');
