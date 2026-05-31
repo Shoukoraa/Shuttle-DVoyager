@@ -36,13 +36,10 @@ export class EchoService {
     (window as any).Pusher = Pusher;
 
     this.echoInstance = new Echo({
-      broadcaster: 'reverb',
-      key: 'shuttlereverbkey123',
-      wsHost: '127.0.0.1',
-      wsPort: 8080,
-      wssPort: 8080,
-      forceTLS: false,
-      enabledTransports: ['ws', 'wss'],
+      broadcaster: 'pusher',
+      key: '3d489e6e4b5731da6c86', // Key Pusher Anda
+      cluster: 'ap1',
+      forceTLS: true,
       authEndpoint: `${environment.apiUrl}/broadcasting/auth`,
       auth: {
         headers: {
