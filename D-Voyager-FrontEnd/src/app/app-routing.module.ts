@@ -2,11 +2,13 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
+import { WelcomeGuard } from './guards/welcome.guard';
 
 const routes: Routes = [
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule),
+    canActivate: [WelcomeGuard]
   },
   {
     path: '',
@@ -14,12 +16,22 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'welcome',
+    loadChildren: () => import('./welcome/welcome.module').then( m => m.WelcomePageModule)
+  },
+  {
+    path: 'privacy-policy',
+    loadChildren: () => import('./privacy-policy/privacy-policy.module').then( m => m.PrivacyPolicyPageModule)
+  },
+  {
     path: 'login',
-    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule),
+    canActivate: [WelcomeGuard]
   },
   {
     path: 'signup',
-    loadChildren: () => import('./signup/signup.module').then( m => m.SignupPageModule)
+    loadChildren: () => import('./signup/signup.module').then( m => m.SignupPageModule),
+    canActivate: [WelcomeGuard]
   },
   {
     path: 'otp',
@@ -100,11 +112,11 @@ const routes: Routes = [
     loadChildren: () => import('./driver-profile/driver-profile.module').then( m => m.DriverProfilePageModule),
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'driver' }
-  },  {
+  },
+  {
     path: 'chatbot',
     loadChildren: () => import('./chatbot/chatbot.module').then( m => m.ChatbotPageModule)
-  },
-
+  }
 ];
 
 @NgModule({

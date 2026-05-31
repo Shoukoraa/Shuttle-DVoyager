@@ -1,0 +1,246 @@
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(135deg, #FFFDF0 0%, #FFFFFF 100%);
+  padding: env(safe-area-inset-top) 24px env(safe-area-inset-bottom);
+  overflow: hidden;
+  font-family: 'Outfit', sans-serif;
+}
+
+.welcome-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  width: 100%;
+  margin-top: 16px;
+
+  .logo-text {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--dark-gray);
+    letter-spacing: 1px;
+    
+    &::after {
+      content: '.';
+      color: var(--primary-color);
+    }
+  }
+
+  .skip-btn {
+    background: transparent;
+    border: none;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #888888;
+    padding: 8px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+
+    &:active {
+      background: rgba(0, 0, 0, 0.04);
+      color: var(--dark-gray);
+    }
+  }
+}
+
+.carousel-viewport {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.carousel-slide {
+  width: 100vw;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 24px;
+  box-sizing: border-box;
+  margin-left: -24px; // Account for the welcome-container padding so slides extend fully
+  margin-right: -24px;
+
+  .illustration-container {
+    width: 100%;
+    max-width: 280px;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 32px;
+
+    .floating-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.04));
+      animation: floatIllustration 4s ease-in-out infinite;
+    }
+  }
+
+  .text-container {
+    text-align: center;
+    padding: 0 16px;
+
+    h2 {
+      font-size: 24px;
+      font-weight: 850;
+      color: var(--dark-gray);
+      line-height: 1.35;
+      margin: 0 0 16px 0;
+      letter-spacing: -0.5px;
+    }
+
+    p {
+      font-size: 14.5px;
+      color: #6B7280;
+      line-height: 1.6;
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+}
+
+.welcome-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 24px;
+  width: 100%;
+
+  .dots-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 36px;
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #E5E7EB;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &.active {
+        width: 24px;
+        border-radius: 4px;
+        background: var(--primary-color);
+        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+      }
+    }
+  }
+
+  .actions-wrapper {
+    display: flex;
+    width: 100%;
+    gap: 16px;
+    height: 56px;
+
+    button {
+      border: none;
+      outline: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Outfit', sans-serif;
+
+      &:active {
+        transform: scale(0.97);
+      }
+    }
+
+    .btn-prev {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background: #F3F4F6;
+      color: var(--dark-gray);
+      font-size: 22px;
+
+      &:active {
+        background: #E5E7EB;
+      }
+    }
+
+    .btn-next {
+      flex: 1;
+      height: 56px;
+      border-radius: 18px;
+      background: var(--dark-gray);
+      color: #FFFFFF;
+      gap: 8px;
+
+      &.full-width {
+        flex: 1;
+      }
+
+      .btn-text {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+      }
+
+      ion-icon {
+        font-size: 18px;
+      }
+
+      &:active {
+        background: #111111;
+      }
+
+      &.finish-button {
+        background: var(--primary-color) !important;
+        color: var(--dark-gray) !important;
+        box-shadow: 0 8px 24px rgba(255, 193, 7, 0.25) !important;
+        
+        &:active {
+          background: var(--primary-dark) !important;
+        }
+      }
+    }
+  }
+}
+
+@keyframes floatIllustration {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.pulsing-ring {
+  animation: pulseRadar 2s infinite ease-out;
+  transform-origin: 150px 75px;
+}
+
+@keyframes pulseRadar {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
