@@ -32,6 +32,10 @@ export class HomePage implements OnInit {
     if (role === 'driver') {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
     }
+    
+    // Refresh profil dan status login setiap kali tab Beranda dibuka
+    this.loadCachedUserProfile();
+    this.refreshUserProfile();
   }
 
   ngOnInit() {

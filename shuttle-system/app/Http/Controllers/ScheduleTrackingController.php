@@ -40,7 +40,7 @@ class ScheduleTrackingController extends Controller
             $schedule = Schedule::findOrFail($id);
             $driver = \App\Models\Driver::where('user_id', auth()->id())->first();
 
-            if ($schedule->driver_id !== $driver->id) {
+            if ((int) $schedule->driver_id !== (int) $driver->id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
 
@@ -64,7 +64,7 @@ class ScheduleTrackingController extends Controller
             $schedule = Schedule::with('bookings')->findOrFail($id);
             $driver = \App\Models\Driver::where('user_id', auth()->id())->first();
 
-            if ($schedule->driver_id !== $driver->id) {
+            if ((int) $schedule->driver_id !== (int) $driver->id) {
                 return response()->json(['message' => 'Unauthorized'], 403);
             }
 

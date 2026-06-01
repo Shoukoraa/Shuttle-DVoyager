@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Platform, ToastController } from '@ionic/angular';
@@ -17,7 +17,8 @@ export class AppComponent {
   constructor(
     private router: Router,
     private platform: Platform,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private zone: NgZone
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
@@ -34,6 +35,38 @@ export class AppComponent {
   initializeApp() {
     this.platform.ready().then(() => {
       this.setupBackButtonBehavior();
+      this.setupDeepLinks();
+    });
+  }
+
+  setupDeepLinks() {
+    App.addListener('appUrlOpen', (event: any) => {
+      const url = event.url;
+      // Menangkap callback dari Google Auth (Custom Scheme)
+      if (url && url.includes('shuttle://auth/callback')) {
+        
+        // Tutup in-app browser
+        import('@capacitor/browser').then(({ Browser }) => {
+          Browser.close();
+        }).catch(err => console.log(err));
+
+        // Ekstrak token dan data dari URL query parameters
+        const queryParamsStr = url.split('?')[1];
+        if (queryParamsStr) {
+          const searchParams = new URLSearchParams(queryParamsStr);
+          const oauth = searchParams.get('oauth');
+          const token = searchParams.get('token');
+          const role = searchParams.get('role');
+          const oauthError = searchParams.get('oauth_error');
+
+          // Arahkan ke halaman login (Angular Router butuh NgZone untuk update view)
+          this.zone.run(() => {
+            this.router.navigate(['/login'], {
+              queryParams: { oauth, token, role, oauth_error: oauthError }
+            });
+          });
+        }
+      }
     });
   }
 

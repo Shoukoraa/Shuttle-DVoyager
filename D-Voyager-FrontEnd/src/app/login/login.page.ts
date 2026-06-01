@@ -112,10 +112,23 @@ export class LoginPage implements OnInit {
     });
   }
 
-  loginWithGoogle() {
+  async loginWithGoogle() {
     this.errorMessage = '';
-    const frontendCallbackUrl = `${window.location.origin}/login`;
+    let frontendCallbackUrl = `${window.location.origin}/login`;
+    
+    // Jika berjalan di platform native (Android/iOS), gunakan custom scheme
+    const { Capacitor } = await import('@capacitor/core');
+    if (Capacitor.isNativePlatform()) {
+      frontendCallbackUrl = 'shuttle://auth/callback';
+    }
+
     const oauthUrl = this.apiService.getGoogleOAuthRedirectUrl(frontendCallbackUrl);
-    window.location.href = oauthUrl;
+    
+    if (Capacitor.isNativePlatform()) {
+      const { Browser } = await import('@capacitor/browser');
+      await Browser.open({ url: oauthUrl });
+    } else {
+      window.location.href = oauthUrl;
+    }
   }
 }

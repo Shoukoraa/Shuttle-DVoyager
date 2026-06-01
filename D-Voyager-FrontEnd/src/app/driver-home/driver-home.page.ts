@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastController } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 
 declare var mapboxgl: any;
@@ -35,7 +36,7 @@ export class DriverHomePage implements OnInit {
   manifestData: any[] = [];
   isLoadingManifest = false;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private toastController: ToastController) { }
 
   ngOnInit() {
     this.loadCachedUserData();
@@ -193,7 +194,16 @@ export class DriverHomePage implements OnInit {
         this.startTracking();
         setTimeout(() => this.initDriverMap(), 500);
       },
-      error: (err) => console.error('Gagal memulai perjalanan', err)
+      error: async (err) => {
+        console.error('Gagal memulai perjalanan', err);
+        const toast = await this.toastController.create({
+          message: 'Gagal memulai perjalanan: ' + (err.error?.message || 'Kesalahan Server'),
+          duration: 3000,
+          color: 'danger',
+          position: 'top'
+        });
+        await toast.present();
+      }
     });
   }
 
@@ -210,10 +220,18 @@ export class DriverHomePage implements OnInit {
           this.map = null;
         }
         this.driverMarker = null;
-        // Load next schedule if any
         setTimeout(() => this.loadSchedule(), 2000);
       },
-      error: (err) => console.error('Gagal menyelesaikan perjalanan', err)
+      error: async (err) => {
+        console.error('Gagal menyelesaikan perjalanan', err);
+        const toast = await this.toastController.create({
+          message: 'Gagal menyelesaikan perjalanan: ' + (err.error?.message || 'Kesalahan Server'),
+          duration: 3000,
+          color: 'danger',
+          position: 'top'
+        });
+        await toast.present();
+      }
     });
   }
 

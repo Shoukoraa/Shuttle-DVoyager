@@ -9,22 +9,10 @@
     
     <!-- Profile Header -->
     <div class="profile-header">
-      <label class="avatar-lg" for="driverProfilePhotoInput">
+      <div class="avatar-lg">
         <img *ngIf="profilePhotoUrl" [src]="profilePhotoUrl" alt="Foto profil driver" referrerpolicy="no-referrer">
         <ion-icon *ngIf="!profilePhotoUrl" name="person"></ion-icon>
-        <span class="photo-action" *ngIf="!isUploadingPhoto">
-          <ion-icon name="camera"></ion-icon>
-        </span>
-        <ion-spinner *ngIf="isUploadingPhoto" name="crescent"></ion-spinner>
-      </label>
-      <input
-        id="driverProfilePhotoInput"
-        name="driverProfilePhoto"
-        class="photo-input"
-        type="file"
-        accept="image/png,image/jpeg,image/webp"
-        (change)="uploadProfilePhoto($event)"
-        [disabled]="isUploadingPhoto">
+      </div>
       <h2>{{ driverName }}</h2>
       <p>Email: {{ driverEmail || driverId }}</p>
 
