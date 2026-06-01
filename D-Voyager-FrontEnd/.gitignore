@@ -77,3 +77,9 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Keystores and signing credentials
+*.jks
+*.keystore
+keystore-credentials.txt
+

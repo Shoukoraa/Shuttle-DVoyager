@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.DVoyage.app"
+    namespace = "com.dvoyager.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.DVoyage.app"
+        applicationId "com.dvoyager.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +16,30 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            def keystorePropertiesFile = rootProject.file("local.properties")
+            def keystoreProperties = new Properties()
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+            }
+
+            if (keystoreProperties.containsKey('signing.storeFile') &&
+                keystoreProperties.containsKey('signing.storePassword') &&
+                keystoreProperties.containsKey('signing.keyAlias') &&
+                keystoreProperties.containsKey('signing.keyPassword')) {
+
+                storeFile = file(keystoreProperties['signing.storeFile'])
+                storePassword = keystoreProperties['signing.storePassword']
+                keyAlias = keystoreProperties['signing.keyAlias']
+                keyPassword = keystoreProperties['signing.keyPassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

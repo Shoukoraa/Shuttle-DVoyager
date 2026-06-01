@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.DVoyager.app',
+  appId: 'com.dvoyager.app',
   appName: 'D-Voyager',
   webDir: 'www'
 };
