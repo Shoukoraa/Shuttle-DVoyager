@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
+import { Geolocation } from '@capacitor/geolocation';
 
 declare var mapboxgl: any;
 
@@ -237,57 +238,72 @@ export class DriverHomePage implements OnInit {
 
   private watchId: any = null;
 
-  startTracking() {
-    if (navigator.geolocation) {
-      // 1. Dapatkan posisi saat ini secara instan dan kirim ke backend
-      navigator.geolocation.getCurrentPosition((position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        
-        this.setDriverMarker(lat, lng);
-
-        if (this.currentTrip && this.currentTrip.id) {
-          this.apiService.updateLocation({
-            schedule_id: this.currentTrip.id,
-            latitude: lat,
-            longitude: lng
-          }).subscribe({
-            next: (loc) => console.log('Lokasi GPS awal berhasil dikirim:', loc),
-            error: (err) => console.error('Gagal mengirim lokasi GPS awal:', err)
-          });
-        }
-      }, (err) => {
-        console.error('Gagal mengambil lokasi awal GPS:', err);
-      }, { enableHighAccuracy: true });
-
-      // 2. Bersihkan watch lama jika ada agar tidak duplikat
-      if (this.watchId !== null) {
-        navigator.geolocation.clearWatch(this.watchId);
+  async startTracking() {
+    try {
+      // 1. Minta izin secara eksplisit (Sangat Penting untuk Android 6+)
+      const permissions = await Geolocation.requestPermissions();
+      if (permissions.location !== 'granted') {
+        console.error('Izin lokasi ditolak oleh pengguna');
+        const toast = await this.toastController.create({
+          message: 'Izin lokasi (GPS) ditolak. Live Tracking tidak akan berfungsi.',
+          duration: 3000,
+          color: 'warning'
+        });
+        toast.present();
+        return;
       }
 
-      // 3. Mulai watch posisi untuk mendeteksi pergerakan
-      this.watchId = navigator.geolocation.watchPosition((position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+      // 2. Dapatkan posisi saat ini secara instan dan kirim ke backend
+      const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      
+      this.setDriverMarker(lat, lng);
+
+      if (this.currentTrip && this.currentTrip.id) {
+        this.apiService.updateLocation({
+          schedule_id: this.currentTrip.id,
+          latitude: lat,
+          longitude: lng
+        }).subscribe({
+          next: (loc) => console.log('Lokasi GPS awal berhasil dikirim:', loc),
+          error: (err) => console.error('Gagal mengirim lokasi GPS awal:', err)
+        });
+      }
+
+      // 3. Bersihkan watch lama jika ada agar tidak duplikat
+      if (this.watchId !== null) {
+        await Geolocation.clearWatch({ id: this.watchId });
+      }
+
+      // 4. Mulai watch posisi secara background/terus-menerus
+      this.watchId = await Geolocation.watchPosition({ enableHighAccuracy: true }, (pos, err) => {
+        if (err || !pos) {
+          console.error('GPS tracking error', err);
+          return;
+        }
+
+        const currentLat = pos.coords.latitude;
+        const currentLng = pos.coords.longitude;
         
-        this.setDriverMarker(lat, lng);
+        this.setDriverMarker(currentLat, currentLng);
 
         if (this.currentTrip && this.currentTrip.id) {
           this.apiService.updateLocation({
             schedule_id: this.currentTrip.id,
-            latitude: lat,
-            longitude: lng
+            latitude: currentLat,
+            longitude: currentLng
           }).subscribe();
         }
-      }, (err) => {
-        console.error('GPS tracking error', err);
-      }, { enableHighAccuracy: true });
+      });
+    } catch (e) {
+      console.error('Gagal mengambil atau melacak lokasi GPS:', e);
     }
   }
 
-  stopTracking() {
-    if (this.watchId !== null && navigator.geolocation) {
-      navigator.geolocation.clearWatch(this.watchId);
+  async stopTracking() {
+    if (this.watchId !== null) {
+      await Geolocation.clearWatch({ id: this.watchId });
       this.watchId = null;
     }
   }
@@ -420,18 +436,19 @@ export class DriverHomePage implements OnInit {
       .catch(err => console.error('Gagal menggambar rute Mapbox:', err));
   }
 
-  updateDriverMarkerPosition() {
+  async updateDriverMarkerPosition() {
     if (!this.map) return;
 
-    navigator.geolocation.getCurrentPosition((position) => {
+    try {
+      const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
       this.setDriverMarker(lat, lng);
-    }, (err) => {
+    } catch (err) {
       if (this.currentTrip && this.currentTrip.origin_lat) {
         this.setDriverMarker(this.currentTrip.origin_lat, this.currentTrip.origin_lng);
       }
-    });
+    }
   }
 
   private setDriverMarker(lat: number, lng: number) {
