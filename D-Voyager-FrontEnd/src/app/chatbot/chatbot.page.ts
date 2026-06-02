@@ -122,9 +122,8 @@ export class ChatbotPage implements OnInit {
       this.scrollToBottom();
       setTimeout(() => {
         this.isTyping = false;
-        this.appendBotMsg('Anda dapat menghubungkan langsung ke Admin CS Live Chat atau menghubungi kami via WhatsApp:');
+        this.appendBotMsg('Anda dapat menghubungi tim Customer Service kami secara langsung via WhatsApp:');
         this.problems = [
-          { title: 'Hubungkan ke Admin CS Live', isConnect: true },
           { title: 'Hubungi via WhatsApp', isWhatsApp: true }
         ];
         this.scrollToBottom();
@@ -141,8 +140,8 @@ export class ChatbotPage implements OnInit {
         const res = await this.apiService.get(`chatbot/problems?category_id=${cat.id}`).toPromise();
         this.problems = res;
         if (this.problems.length === 0) {
-          // If no problems defined, connect to admin directly
-          this.connectToAdmin();
+          // If no problems defined, fallback to whatsapp directly
+          this.openWhatsApp();
         } else {
           this.appendBotMsg(`Baik, terkait <b>${cat.name}</b>, spesifiknya apa yang ingin Anda tanyakan?`);
         }
@@ -189,7 +188,6 @@ export class ChatbotPage implements OnInit {
         
         // Show connect options immediately instead of satisfaction survey
         this.problems = [
-          { title: 'Hubungkan ke Admin CS Live', isConnect: true },
           { title: 'Hubungi via WhatsApp', isWhatsApp: true }
         ];
         this.scrollToBottom();
@@ -221,9 +219,8 @@ export class ChatbotPage implements OnInit {
         this.scrollToBottom();
         setTimeout(() => {
           this.isTyping = false;
-          this.appendBotMsg('Untuk kendala ini, silakan hubungi langsung ke Admin CS Live Chat atau WhatsApp kami:');
+          this.appendBotMsg('Untuk kendala ini, silakan hubungi langsung Admin Customer Service kami via WhatsApp:');
           this.problems = [
-            { title: 'Hubungkan ke Admin CS Live', isConnect: true },
             { title: 'Hubungi via WhatsApp', isWhatsApp: true }
           ];
           this.scrollToBottom();
