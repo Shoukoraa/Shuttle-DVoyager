@@ -115,6 +115,22 @@ export class ChatbotPage implements OnInit {
     this.selectedCategory = cat;
     this.appendUserMsg(`Pilih Kategori: ${cat.name}`);
     this.categories = []; // Hide options
+
+    const catNameLower = cat.name.toLowerCase();
+    if (catNameLower.includes('customer service') || catNameLower.includes('hubungi')) {
+      this.isTyping = true;
+      this.scrollToBottom();
+      setTimeout(() => {
+        this.isTyping = false;
+        this.appendBotMsg('Anda dapat menghubungkan langsung ke Admin CS Live Chat atau menghubungi kami via WhatsApp:');
+        this.problems = [
+          { title: 'Hubungkan ke Admin CS Live', isConnect: true },
+          { title: 'Hubungi via WhatsApp', isWhatsApp: true }
+        ];
+        this.scrollToBottom();
+      }, 600);
+      return;
+    }
     
     this.isTyping = true;
     this.scrollToBottom();
@@ -141,26 +157,97 @@ export class ChatbotPage implements OnInit {
     this.selectedProblem = prob;
     this.appendUserMsg(prob.title);
     this.problems = []; // Hide options
+
+    if (prob.isConnect) {
+      this.connectToAdmin();
+      return;
+    }
+
+    if (prob.isWhatsApp) {
+      this.openWhatsApp();
+      return;
+    }
+
+    if (prob.isFeedback) {
+      this.handleFeedback(prob.value);
+      return;
+    }
     
     this.isTyping = true;
     this.scrollToBottom();
     
     setTimeout(() => {
       this.isTyping = false;
-      const solution = prob.solution.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+      const solution = (prob.solution_text || '').replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\"/g, '<b>$1</b>');
       this.appendBotMsg(`Berikut adalah solusi untuk kendala Anda:<br><br><div style="padding:10px;background:rgba(255,255,255,0.2);border-radius:8px;border-left:3px solid #60a5fa;margin:8px 0;">${solution}</div>`);
       
       this.isTyping = true;
       this.scrollToBottom();
       setTimeout(() => {
         this.isTyping = false;
-        this.appendBotMsg('Apakah informasi di atas sudah menjawab pertanyaan Anda? Jika belum, saya dapat menyambungkan Anda ke <b>Admin CS Live</b>.');
+        this.appendBotMsg('Apakah Anda sudah puas dengan layanan kami?');
         
-        // Show connect option
-        this.problems = [{ title: 'Hubungkan ke Admin CS Live', isConnect: true }];
+        // Show satisfaction options
+        this.problems = [
+          { title: 'Saya puas', isFeedback: true, value: 'yes' },
+          { title: 'Saya tidak puas', isFeedback: true, value: 'no' }
+        ];
         this.scrollToBottom();
       }, 1000);
     }, 600);
+  }
+
+  handleFeedback(value: string) {
+    if (value === 'yes') {
+      this.appendUserMsg('Saya puas ✅');
+      this.isTyping = true;
+      this.scrollToBottom();
+      setTimeout(() => {
+        this.isTyping = false;
+        this.appendBotMsg('Terima kasih, senang membantu Anda! 😊');
+        setTimeout(() => {
+          this.resetFlow();
+        }, 1500);
+      }, 800);
+    } else {
+      this.appendUserMsg('Saya tidak puas ❌');
+      this.isTyping = true;
+      this.scrollToBottom();
+      setTimeout(() => {
+        this.isTyping = false;
+        this.appendBotMsg('Mohon maaf atas ketidaknyamanannya. 🙏');
+        
+        this.isTyping = true;
+        this.scrollToBottom();
+        setTimeout(() => {
+          this.isTyping = false;
+          this.appendBotMsg('Untuk kendala ini, silakan hubungi langsung ke Admin CS Live Chat atau WhatsApp kami:');
+          this.problems = [
+            { title: 'Hubungkan ke Admin CS Live', isConnect: true },
+            { title: 'Hubungi via WhatsApp', isWhatsApp: true }
+          ];
+          this.scrollToBottom();
+        }, 1000);
+      }, 800);
+    }
+  }
+
+  openWhatsApp() {
+    this.appendUserMsg('Hubungi via WhatsApp 📱');
+    const waNumber = '62895324354052';
+    const waMessage = 'Halo Admin, saya butuh bantuan terkait aplikasi Shuttle System.';
+    const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
+    window.open(waUrl, '_blank');
+    
+    this.isTyping = true;
+    this.scrollToBottom();
+    setTimeout(() => {
+      this.isTyping = false;
+      this.appendBotMsg('Apakah ada hal lain yang bisa saya bantu?');
+      this.problems = [];
+      this.startBot();
+    }, 1500);
   }
 
   resetFlow() {
@@ -183,7 +270,7 @@ export class ChatbotPage implements OnInit {
     try {
       const payload = {
         last_category_id: this.selectedCategory ? this.selectedCategory.id : null,
-        last_problem_id: this.selectedProblem && !this.selectedProblem.isConnect ? this.selectedProblem.id : null
+        last_problem_id: this.selectedProblem && !this.selectedProblem.isConnect && !this.selectedProblem.isFeedback && !this.selectedProblem.isWhatsApp ? this.selectedProblem.id : null
       };
       
       const res: any = await this.apiService.post('chat/connect-admin', payload).toPromise();

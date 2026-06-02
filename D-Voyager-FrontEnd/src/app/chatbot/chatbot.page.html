@@ -74,7 +74,7 @@
     </div>
 
     <!-- Problem Options -->
-    <div *ngIf="problems.length > 0 && selectedCategory && !selectedProblem && !sessionId" class="options-container">
+    <div *ngIf="problems.length > 0 && selectedCategory && !sessionId" class="options-container">
       <button *ngFor="let prob of problems" class="option-btn" (click)="selectProblem(prob)">
         {{ prob.title }}
       </button>
