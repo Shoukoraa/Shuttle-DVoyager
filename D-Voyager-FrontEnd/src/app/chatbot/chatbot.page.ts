@@ -186,12 +186,11 @@ export class ChatbotPage implements OnInit {
       this.scrollToBottom();
       setTimeout(() => {
         this.isTyping = false;
-        this.appendBotMsg('Apakah Anda sudah puas dengan layanan kami?');
         
-        // Show satisfaction options
+        // Show connect options immediately instead of satisfaction survey
         this.problems = [
-          { title: 'Saya puas', isFeedback: true, value: 'yes' },
-          { title: 'Saya tidak puas', isFeedback: true, value: 'no' }
+          { title: 'Hubungkan ke Admin CS Live', isConnect: true },
+          { title: 'Hubungi via WhatsApp', isWhatsApp: true }
         ];
         this.scrollToBottom();
       }, 1000);
