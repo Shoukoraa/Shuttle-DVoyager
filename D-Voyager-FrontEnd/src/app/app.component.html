@@ -1,3 +1,10 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <div *ngIf="showSplash" class="splash-overlay">
+    <div class="splash-content">
+      <img src="assets/splash_dvoyager.png" class="splash-logo" alt="Logo D-Voyager">
+      <h1 class="splash-text">D-Voyager</h1>
+    </div>
+  </div>
+
+  <ion-router-outlet *ngIf="!showSplash"></ion-router-outlet>
 </ion-app>

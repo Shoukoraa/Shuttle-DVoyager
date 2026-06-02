@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+
+.splash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffd214; // Warna dasar permintaan Anda
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; // Memastikan berada di lapisan paling atas
+}
+
+.splash-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.splash-logo {
+  width: 160px;
+  height: auto;
+  // Animasi logo membesar mulus selama 1 detik saat muncul
+  animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.splash-text {
+  font-family: 'Outfit', sans-serif;
+  color: #0f2027; // Warna gelap dari logo Anda
+  font-size: 36px;
+  font-weight: 900; // Extra bold untuk kesan premium/modern
+  text-transform: uppercase; // Huruf kapital untuk tampilan brand yang lebih kuat
+  margin-top: 24px;
+  letter-spacing: 4px; // Spasi huruf yang lebih lebar agar terkesan modern
+  text-shadow: 0px 4px 12px rgba(15, 32, 39, 0.15); // Shadow halus agar lebih timbul
+  opacity: 0;
+  // Animasi teks muncul perlahan setelah logo selesai bergerak (delay 0.6 detik)
+  animation: fadeIn 1.2s ease-out 0.6s forwards;
+}
+
+// Definikan pergerakan animasi
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Platform, ToastController } from '@ionic/angular';
 import { App } from '@capacitor/app';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,8 @@ import { App } from '@capacitor/app';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  showSplash = true;
   private lastBackPress = 0;
   private timePeriodToExit = 2000;
 
@@ -29,6 +31,21 @@ export class AppComponent {
       });
 
     this.initializeApp();
+  }
+
+  ngOnInit() {
+    this.initializeSplashScreen();
+  }
+
+  async initializeSplashScreen() {
+    try {
+      await SplashScreen.hide();
+    } catch (err) {
+      console.warn('Native SplashScreen plugin is not available or failed to hide:', err);
+    }
+    setTimeout(() => {
+      this.showSplash = false;
+    }, 5000);
   }
 
   initializeApp() {
