@@ -419,10 +419,10 @@
         var echoConfig = {
             broadcaster: 'reverb',
             key: '{{ env("REVERB_APP_KEY") }}',
-            wsHost: '{{ env("REVERB_HOST", "localhost") }}',
-            wsPort: {{ env("REVERB_PORT", 8080) }},
-            wssPort: {{ env("REVERB_PORT", 8080) }},
-            forceTLS: false,
+            wsHost: '{{ env("VITE_REVERB_HOST", "localhost") }}',
+            wsPort: {{ env("VITE_REVERB_PORT", 8080) }},
+            wssPort: {{ env("VITE_REVERB_PORT", 8080) }},
+            forceTLS: (window.location.protocol === 'https:' || '{{ env("VITE_REVERB_SCHEME") }}' === 'https'),
             enabledTransports: ['ws', 'wss'],
             authEndpoint: '/admin/broadcasting/auth',
             auth: {
