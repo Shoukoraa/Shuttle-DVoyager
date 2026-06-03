@@ -121,11 +121,14 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="actions-wrapper">
-        <button class="btn-prev" (click)="prevSlide()" *ngIf="currentSlide > 0">
+      <div class="actions-wrapper" [class.has-prev]="currentSlide > 0">
+        <button class="btn-prev" [class.animating]="isAnimatingPrev" (click)="prevSlide()">
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
-        <button class="btn-next" [class.full-width]="currentSlide === 0" [class.finish-button]="currentSlide === slides.length - 1" (click)="nextSlide()">
+        <button class="btn-next" 
+                [class.finish-button]="currentSlide === slides.length - 1" 
+                [class.animating]="isAnimating"
+                (click)="nextSlide()">
           <span class="btn-text">{{ currentSlide === slides.length - 1 ? 'Mulai Sekarang' : 'Lanjut' }}</span>
           <ion-icon [name]="currentSlide === slides.length - 1 ? 'checkmark-done-outline' : 'chevron-forward-outline'"></ion-icon>
         </button>

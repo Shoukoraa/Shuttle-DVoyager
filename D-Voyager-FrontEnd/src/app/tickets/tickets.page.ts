@@ -46,13 +46,29 @@ export class TicketsPage implements OnInit, OnDestroy {
     }
   }
 
+  public slideDistance = '0px';
+
   ionViewWillEnter() {
+    this.initTabSlideAnimation(1);
+
     const role = localStorage.getItem('user_role');
     if (role === 'driver') {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
       return;
     }
     this.fetchMyBookings();
+  }
+
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('active_tab_index', currentTabIndex.toString());
   }
 
   fetchMyBookings() {

@@ -25,6 +25,9 @@ export class WelcomePage implements OnInit {
     }
   ];
 
+  isAnimating = false;
+  isAnimatingPrev = false;
+
   constructor(private router: Router) {}
 
   ngOnInit() {
@@ -35,17 +38,29 @@ export class WelcomePage implements OnInit {
   }
 
   nextSlide() {
-    if (this.currentSlide < this.slides.length - 1) {
-      this.currentSlide++;
-    } else {
-      this.finish();
-    }
+    if (this.isAnimating) return;
+    this.isAnimating = true;
+
+    setTimeout(() => {
+      this.isAnimating = false;
+      if (this.currentSlide < this.slides.length - 1) {
+        this.currentSlide++;
+      } else {
+        this.finish();
+      }
+    }, 350); // Matches the bounce animation duration slightly
   }
 
   prevSlide() {
-    if (this.currentSlide > 0) {
-      this.currentSlide--;
-    }
+    if (this.isAnimatingPrev) return;
+    this.isAnimatingPrev = true;
+
+    setTimeout(() => {
+      this.isAnimatingPrev = false;
+      if (this.currentSlide > 0) {
+        this.currentSlide--;
+      }
+    }, 350);
   }
 
   goToSlide(index: number) {

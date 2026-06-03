@@ -25,9 +25,13 @@ export class HomePage implements OnInit {
 
   public promos: any[] = [];
 
+  public slideDistance = '0px';
+
   constructor(private router: Router, private apiService: ApiService) {}
 
   ionViewWillEnter() {
+    this.initTabSlideAnimation(0);
+
     const role = localStorage.getItem('user_role');
     if (role === 'driver') {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
@@ -36,6 +40,18 @@ export class HomePage implements OnInit {
     // Refresh profil dan status login setiap kali tab Beranda dibuka
     this.loadCachedUserProfile();
     this.refreshUserProfile();
+  }
+
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('active_tab_index', currentTabIndex.toString());
   }
 
   ngOnInit() {

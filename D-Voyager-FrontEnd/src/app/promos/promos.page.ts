@@ -10,8 +10,25 @@ import { ApiService } from '../services/api.service';
 export class PromosPage implements OnInit {
   public vouchers: any[] = [];
   public isLoading = true;
+  public slideDistance = '0px';
 
   constructor(private apiService: ApiService) { }
+
+  ionViewWillEnter() {
+    this.initTabSlideAnimation(2);
+  }
+
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('active_tab_index', currentTabIndex.toString());
+  }
 
   ngOnInit() {
     this.loadVouchers();
