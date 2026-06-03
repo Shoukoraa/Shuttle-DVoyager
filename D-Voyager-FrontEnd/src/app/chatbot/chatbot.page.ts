@@ -157,6 +157,11 @@ export class ChatbotPage implements OnInit {
     this.appendUserMsg(prob.title);
     this.problems = []; // Hide options
 
+    if (prob.isReset) {
+      this.resetFlow();
+      return;
+    }
+
     if (prob.isConnect) {
       this.connectToAdmin();
       return;
@@ -178,15 +183,44 @@ export class ChatbotPage implements OnInit {
     setTimeout(() => {
       this.isTyping = false;
 
-      const solution = (prob.solution_text || '').replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\"/g, '<b>$1</b>');
-      this.appendBotMsg(`Berikut adalah solusi untuk kendala Anda:<br><br><div style="padding:10px;background:rgba(255,255,255,0.2);border-radius:8px;border-left:3px solid #60a5fa;margin:8px 0;">${solution}</div>`);
+      const catName = this.selectedCategory ? this.selectedCategory.name.toLowerCase() : '';
+      
+      // Akun & Keamanan (Lupa Password)
+      if (catName.includes('akun') || catName.includes('keamanan') || prob.title.toLowerCase().includes('password')) {
+        const solution = (prob.solution_text || '').replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\"/g, '<b>$1</b>');
+        this.appendBotMsg(`Berikut adalah solusi untuk kendala Anda:<br><br><div style="padding:10px;background:rgba(255,255,255,0.2);border-radius:8px;border-left:3px solid #60a5fa;margin:8px 0;">${solution}</div>`);
+        
+        this.isTyping = true;
+        this.scrollToBottom();
+        setTimeout(() => {
+          this.isTyping = false;
+          this.appendBotMsg('Apakah Anda sudah puas dengan layanan kami?');
+          
+          this.problems = [
+            { title: 'Saya puas', isFeedback: true, value: 'yes' },
+            { title: 'Saya tidak puas', isFeedback: true, value: 'no' }
+          ];
+          this.scrollToBottom();
+        }, 1000);
+        return;
+      }
+
+      // Semua kategori lainnya:
+      let csMessage = 'Berikut adalah solusi untuk kendala Anda:<br><br>Kami akan menyambungkan Anda ke Customer Service untuk memproses kendala Anda.';
+      if (catName.includes('pembatalan') || catName.includes('refund')) {
+        csMessage = 'Berikut adalah solusi untuk kendala Anda:<br><br>Kami akan menyambungkan Anda ke Customer Service untuk memproses Pembatalan Tiket Anda.';
+      } else if (catName.includes('pembayaran') || catName.includes('biaya')) {
+        csMessage = 'Berikut adalah solusi untuk kendala Anda:<br><br>Kami akan menyambungkan Anda ke Customer Service untuk memproses Kendala Pembayaran Anda.';
+      } else if (catName.includes('barang') || catName.includes('tertinggal') || catName.includes('hilang')) {
+        csMessage = 'Berikut adalah solusi untuk kendala Anda:<br><br>Kami akan menyambungkan Anda ke Customer Service untuk memproses laporan Barang Tertinggal Anda.';
+      }
+
+      this.appendBotMsg(csMessage);
       
       this.isTyping = true;
       this.scrollToBottom();
       setTimeout(() => {
         this.isTyping = false;
-        
-        // Show connect options immediately instead of satisfaction survey
         this.problems = [
           { title: 'Hubungi via WhatsApp', isWhatsApp: true }
         ];
@@ -202,10 +236,17 @@ export class ChatbotPage implements OnInit {
       this.scrollToBottom();
       setTimeout(() => {
         this.isTyping = false;
-        this.appendBotMsg('Terima kasih, senang membantu Anda! 😊');
+        this.appendBotMsg('Terima kasih telah menghubungi Customer Service Shuttle System. Senang dapat membantu Anda hari ini. Semoga permasalahan Anda telah terselesaikan. Selamat melanjutkan aktivitas dan semoga perjalanan Anda menyenangkan.');
+        
+        this.isTyping = true;
+        this.scrollToBottom();
         setTimeout(() => {
-          this.resetFlow();
-        }, 1500);
+          this.isTyping = false;
+          this.problems = [
+            { title: 'Akhiri Pembicaraan', isReset: true }
+          ];
+          this.scrollToBottom();
+        }, 1000);
       }, 800);
     } else {
       this.appendUserMsg('Saya tidak puas ❌');
@@ -213,13 +254,12 @@ export class ChatbotPage implements OnInit {
       this.scrollToBottom();
       setTimeout(() => {
         this.isTyping = false;
-        this.appendBotMsg('Mohon maaf atas ketidaknyamanannya. 🙏');
+        this.appendBotMsg('Mohon maaf atas ketidaknyamanannya. Terkait permasalahan tersebut, silakan hubungi Customer Service kami via WhatsApp di nomor berikut: +62 895-3243-54052.');
         
         this.isTyping = true;
         this.scrollToBottom();
         setTimeout(() => {
           this.isTyping = false;
-          this.appendBotMsg('Untuk kendala ini, silakan hubungi langsung Admin Customer Service kami via WhatsApp:');
           this.problems = [
             { title: 'Hubungi via WhatsApp', isWhatsApp: true }
           ];
@@ -240,9 +280,17 @@ export class ChatbotPage implements OnInit {
     this.scrollToBottom();
     setTimeout(() => {
       this.isTyping = false;
-      this.appendBotMsg('Apakah ada hal lain yang bisa saya bantu?');
-      this.problems = [];
-      this.startBot();
+      this.appendBotMsg('Terima kasih telah menghubungi Customer Service Shuttle System. Senang dapat membantu Anda hari ini. Semoga permasalahan Anda telah terselesaikan. Selamat melanjutkan aktivitas dan semoga perjalanan Anda menyenangkan.');
+      
+      this.isTyping = true;
+      this.scrollToBottom();
+      setTimeout(() => {
+        this.isTyping = false;
+        this.problems = [
+          { title: 'Akhiri Pembicaraan', isReset: true }
+        ];
+        this.scrollToBottom();
+      }, 1000);
     }, 1500);
   }
 
