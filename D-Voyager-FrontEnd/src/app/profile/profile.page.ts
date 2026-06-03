@@ -21,6 +21,8 @@ export class ProfilePage implements OnInit {
   isLoading: boolean = true;
   isLoggingOut: boolean = false;
   isLogoutModalOpen: boolean = false;
+  isDeletingAccount: boolean = false;
+  isDeleteAccountModalOpen: boolean = false;
   isTermsModalOpen: boolean = false;
   private isRefreshingProfile: boolean = false;
   private lastProfileRefreshAt: number = 0;
@@ -136,6 +138,50 @@ export class ProfilePage implements OnInit {
   confirmLogout() {
     this.isLogoutModalOpen = false;
     this.performLogout();
+  }
+
+  openDeleteAccountModal() {
+    if (this.isDeletingAccount || this.isLoggingOut) {
+      return;
+    }
+    this.isDeleteAccountModalOpen = true;
+  }
+
+  confirmDeleteAccount() {
+    this.isDeleteAccountModalOpen = false;
+    this.performDeleteAccount();
+  }
+
+  private async performDeleteAccount() {
+    this.isDeletingAccount = true;
+
+    const loading = await this.loadingController.create({
+      message: 'Menghapus akun...',
+      spinner: 'crescent',
+    });
+
+    await loading.present();
+
+    await firstValueFrom(
+      this.apiService.deleteAccount().pipe(
+        timeout({ first: 5000 }),
+        catchError((error) => {
+          console.error('Delete Account API error:', error);
+          return of(null);
+        })
+      )
+    );
+
+    await loading.dismiss();
+    this.isDeletingAccount = false;
+    
+    // Hapus sisa data Auth
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
+    localStorage.removeItem('user_role');
+    
+    // Redirect ke landing page
+    this.router.navigate(['/landing'], { replaceUrl: true });
   }
 
   private async performLogout() {

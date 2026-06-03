@@ -159,6 +159,14 @@ export class ApiService {
     );
   }
 
+  deleteAccount(): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/me`, { headers: this.getHeaders() }).pipe(
+      tap(() => {
+        this.clearAuthSession();
+      })
+    );
+  }
+
   // Helper method to get headers with Bearer token
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('auth_token');

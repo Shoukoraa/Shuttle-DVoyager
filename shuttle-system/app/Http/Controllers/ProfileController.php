@@ -97,4 +97,21 @@ class ProfileController extends Controller
             'message' => $hasPassword ? 'Password berhasil diperbarui.' : 'Password berhasil dibuat.',
         ]);
     }
+
+    public function destroy(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        // Cabut semua token pengguna
+        $user->tokens()->delete();
+
+        // Soft delete user (karena ada softDeletes di model User)
+        $user->delete();
+
+        return response()->json(['message' => 'Akun berhasil dihapus.']);
+    }
 }

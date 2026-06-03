@@ -70,8 +70,14 @@
       </div>
     </div>
 
+    <!-- Hapus Akun Button -->
+    <button class="delete-account-btn" (click)="openDeleteAccountModal()" [disabled]="isLoggingOut || isDeletingAccount">
+      <ion-icon [name]="isDeletingAccount ? 'hourglass-outline' : 'trash-outline'"></ion-icon>
+      {{ isDeletingAccount ? 'Menghapus...' : 'Hapus Akun' }}
+    </button>
+
     <!-- Log Out Button -->
-    <button class="logout-btn" (click)="logout()" [disabled]="isLoggingOut">
+    <button class="logout-btn" (click)="logout()" [disabled]="isLoggingOut || isDeletingAccount">
       <ion-icon [name]="isLoggingOut ? 'hourglass-outline' : 'log-out-outline'"></ion-icon>
       {{ isLoggingOut ? 'Keluar...' : 'Keluar Akun' }}
     </button>
@@ -90,6 +96,23 @@
         <div class="modal-action-buttons">
           <button class="btn-cancel" (click)="isLogoutModalOpen = false">Batal</button>
           <button class="btn-confirm" (click)="confirmLogout()">Keluar</button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Delete Account Confirmation Modal -->
+  <ion-modal [isOpen]="isDeleteAccountModalOpen" (didDismiss)="isDeleteAccountModalOpen = false" class="premium-logout-modal delete-account-modal">
+    <ng-template>
+      <div class="logout-modal-wrapper">
+        <div class="alert-icon-wrapper delete-icon">
+          <ion-icon name="trash-outline"></ion-icon>
+        </div>
+        <h2>Hapus Akun?</h2>
+        <p>Semua data tiket dan informasi akun akan dihapus secara permanen dan tidak dapat dikembalikan.</p>
+        <div class="modal-action-buttons">
+          <button class="btn-cancel" (click)="isDeleteAccountModalOpen = false">Batal</button>
+          <button class="btn-confirm delete-btn" (click)="confirmDeleteAccount()">Hapus</button>
         </div>
       </div>
     </ng-template>

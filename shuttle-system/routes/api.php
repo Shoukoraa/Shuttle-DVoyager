@@ -132,6 +132,7 @@ Route::middleware('bearer.auth')->group(function () {
     Route::put('/me', [ProfileController::class, 'update']);
     Route::post('/me/profile-photo', [ProfileController::class, 'updatePhoto']);
     Route::put('/me/password', [ProfileController::class, 'updatePassword']);
+    Route::delete('/me', [ProfileController::class, 'destroy']);
 
     // Notifikasi (Semua User)
     Route::get('/notifications', [NotificationController::class, 'index']);
