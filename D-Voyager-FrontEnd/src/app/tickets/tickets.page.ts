@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController, AlertController } from '@ionic/angular';
+import { ToastController, AlertController, Platform } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 import { EchoService } from '../services/echo.service';
+import { Subscription } from 'rxjs';
 
 declare var mapboxgl: any;
 
@@ -19,6 +20,7 @@ export class TicketsPage implements OnInit, OnDestroy {
   trackingTicket: any = null;
   private trackingMap: any = null;
   private driverTrackingMarker: any = null;
+  private backButtonSubscription: Subscription | null = null;
 
   hasTickets: boolean = false;
   tickets: any[] = [];
@@ -36,7 +38,8 @@ export class TicketsPage implements OnInit, OnDestroy {
     private router: Router,
     private toastController: ToastController,
     private alertController: AlertController,
-    private echoService: EchoService
+    private echoService: EchoService,
+    private platform: Platform
   ) { }
 
   ngOnInit() {
@@ -57,6 +60,13 @@ export class TicketsPage implements OnInit, OnDestroy {
       return;
     }
     this.fetchMyBookings();
+  }
+
+  ionViewWillLeave() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+      this.backButtonSubscription = null;
+    }
   }
 
   private initTabSlideAnimation(currentTabIndex: number) {
@@ -294,6 +304,10 @@ export class TicketsPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unsubscribeFromChat();
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+      this.backButtonSubscription = null;
+    }
   }
 
   openChat(ticket: any) {
@@ -430,6 +444,11 @@ export class TicketsPage implements OnInit, OnDestroy {
   }
 
   closeTracking() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+      this.backButtonSubscription = null;
+    }
+
     if (this.trackingTicket) {
       const scheduleId = this.trackingTicket.schedule_id;
       this.echoService.getEcho().leave(`schedules.${scheduleId}`);
@@ -444,6 +463,7 @@ export class TicketsPage implements OnInit, OnDestroy {
     this.driverTrackingMarker = null;
     this.isTrackingOpen = false;
     this.trackingTicket = null;
+    this.isMapFullscreen = false;
   }
 
   public currentStyle: string = 'dark';
@@ -527,6 +547,18 @@ export class TicketsPage implements OnInit, OnDestroy {
 
   toggleMapFullscreen() {
     this.isMapFullscreen = !this.isMapFullscreen;
+
+    if (this.isMapFullscreen) {
+      this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(9999, () => {
+        this.toggleMapFullscreen();
+      });
+    } else {
+      if (this.backButtonSubscription) {
+        this.backButtonSubscription.unsubscribe();
+        this.backButtonSubscription = null;
+      }
+    }
+
     setTimeout(() => {
       if (this.trackingMap) {
         this.trackingMap.resize();

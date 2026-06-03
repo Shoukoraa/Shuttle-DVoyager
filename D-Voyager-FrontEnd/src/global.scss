@@ -411,4 +411,24 @@ ion-toast {
   100% {
     transform: scale(1);
   }
-}
+}
+
+/* Global Custom Header Styles */
+.custom-header {
+  ion-toolbar {
+    --background: var(--white);
+    --border-color: transparent;
+    padding: 10px 0;
+  }
+
+  ion-back-button {
+    color: var(--dark-gray);
+  }
+
+  ion-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--dark-gray);
+  }
+}
+

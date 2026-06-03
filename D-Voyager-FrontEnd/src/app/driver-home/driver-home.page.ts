@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ToastController, Platform } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 import { Geolocation } from '@capacitor/geolocation';
+import { Subscription } from 'rxjs';
 
 declare var mapboxgl: any;
 
@@ -11,7 +12,7 @@ declare var mapboxgl: any;
   styleUrls: ['./driver-home.page.scss'],
   standalone: false
 })
-export class DriverHomePage implements OnInit {
+export class DriverHomePage implements OnInit, OnDestroy {
   public driverName: string = 'Driver';
   public vehiclePlate: string = '';
   public profilePhotoUrl: string | null = null;
@@ -37,7 +38,13 @@ export class DriverHomePage implements OnInit {
   manifestData: any[] = [];
   isLoadingManifest = false;
 
-  constructor(private apiService: ApiService, private toastController: ToastController) { }
+  private backButtonSubscription: Subscription | null = null;
+
+  constructor(
+    private apiService: ApiService,
+    private toastController: ToastController,
+    private platform: Platform
+  ) { }
 
   ngOnInit() {
     this.loadCachedUserData();
@@ -46,6 +53,21 @@ export class DriverHomePage implements OnInit {
   ionViewWillEnter() {
     this.refreshUserData();
     this.loadSchedule();
+  }
+
+  ionViewWillLeave() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+      this.backButtonSubscription = null;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+      this.backButtonSubscription = null;
+    }
+    this.stopTracking();
   }
 
   loadSchedule() {
@@ -367,6 +389,18 @@ export class DriverHomePage implements OnInit {
 
   toggleMapFullscreen() {
     this.isMapFullscreen = !this.isMapFullscreen;
+
+    if (this.isMapFullscreen) {
+      this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(9999, () => {
+        this.toggleMapFullscreen();
+      });
+    } else {
+      if (this.backButtonSubscription) {
+        this.backButtonSubscription.unsubscribe();
+        this.backButtonSubscription = null;
+      }
+    }
+
     setTimeout(() => {
       if (this.map) {
         this.map.resize();

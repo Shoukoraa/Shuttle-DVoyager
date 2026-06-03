@@ -3,6 +3,7 @@ import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Platform, ToastController } from '@ionic/angular';
 import { App } from '@capacitor/app';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,7 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.setupBackButtonBehavior();
       this.setupDeepLinks();
+      this.setupStatusBar();
     });
   }
 
@@ -111,5 +113,17 @@ export class AppComponent {
       color: 'dark'
     });
     await toast.present();
+  }
+
+  private async setupStatusBar() {
+    if (this.platform.is('cordova') || this.platform.is('capacitor')) {
+      try {
+        await StatusBar.setOverlaysWebView({ overlay: false });
+        await StatusBar.setBackgroundColor({ color: '#ffffff' });
+        await StatusBar.setStyle({ style: Style.Light });
+      } catch (err) {
+        console.warn('Failed to configure StatusBar:', err);
+      }
+    }
   }
 }
