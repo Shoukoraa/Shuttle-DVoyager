@@ -283,11 +283,16 @@ export class TicketsPage implements OnInit, OnDestroy {
   }
 
   private async presentToast(message: string, color: string = 'medium') {
+    const icon = color === 'success' ? 'checkmark-circle' :
+                 color === 'danger' ? 'close-circle' :
+                 color === 'warning' ? 'warning' : 'information-circle';
+
     const toast = await this.toastController.create({
       message,
-      duration: 2200,
-      color,
-      position: 'top'
+      duration: 1100,
+      cssClass: `premium-toast toast-${color}`,
+      position: 'top',
+      icon
     });
 
     await toast.present();

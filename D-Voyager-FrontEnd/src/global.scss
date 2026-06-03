@@ -59,15 +59,20 @@
   .material-nav {
     display: flex;
     justify-content: space-around;
-    padding: 8px 0 12px;
+    padding: 8px 12px 12px;
+    background: var(--white);
+    position: relative;
 
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: #6b7280;
+      color: #64748b;
       cursor: pointer;
       flex: 1;
+      position: relative;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
 
       .icon-container {
         width: 64px;
@@ -75,27 +80,37 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: 16px;
+        border-radius: 20px;
         margin-bottom: 4px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
 
         ion-icon {
           font-size: 24px;
+          transition: transform 0.3s ease;
         }
       }
 
       span {
         font-size: 12px;
         font-weight: 600;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.2px;
         transition: all 0.3s;
+        opacity: 1; /* Ensure text is not hidden */
+      }
+
+      &:active {
+        transform: scale(0.92);
+        opacity: 0.7;
       }
 
       &.active {
         color: var(--dark-gray);
 
         .icon-container {
-          background: rgba(255, 193, 7, 0.3); /* Primary pill shape */
+          background: rgba(255, 193, 7, 1); /* Solid primary for clearer state */
+          box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
           color: var(--dark-gray);
           animation: slidePill 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           
@@ -106,10 +121,40 @@
 
         span {
           font-weight: 800;
+          opacity: 1;
+          color: var(--dark-gray);
         }
       }
     }
   }
+}
+
+/* Smooth Page Transitions & Stability */
+ion-router-outlet {
+  background: var(--bg-color);
+  /* Override default animation to a cross-fade for stability */
+  --ion-transition-duration: 300ms;
+}
+
+/* Eliminate horizontal "shaking" during transitions */
+.ion-page {
+  background: var(--bg-color);
+  /* Eliminate horizontal "shaking" during transitions */
+  contain: size layout style;
+  transition-property: opacity, transform !important;
+  will-change: opacity, transform;
+}
+
+.custom-footer {
+  position: relative;
+  z-index: 100;
+  background: var(--white);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.03);
+  /* Prevent footer jump */
+  contain: layout;
+  will-change: transform;
 }
 
 /* ==========================================================================
@@ -232,29 +277,61 @@
 }
 
 /* ==========================================================================
-   Premium Ionic Toasts
+   Premium Ionic Toasts (.premium-toast)
    ========================================================================== */
-ion-toast {
-  --border-radius: 16px !important;
-  --box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25) !important;
+ion-toast.premium-toast {
+  --background: rgba(255, 255, 255, 0.9) !important;
+  --color: #1E293B !important;
+  --border-radius: 60px !important;
+  --box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
   font-family: 'Outfit', sans-serif;
-  font-weight: 600;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   
-  &::part(button) {
-    font-weight: 800;
+  &::part(container) {
+    margin: 12px auto !important;
+    border-radius: 60px !important;
+    padding: 2px 18px 2px 4px !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: 90% !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   &::part(message) {
-    font-size: 14px;
-    line-height: 1.4;
-    padding: 16px 20px;
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    padding: 6px 0 6px 6px !important;
+    color: #0F172A !important;
+    text-align: center;
   }
   
-  &::part(container) {
-    margin: 20px !important;
-    border-radius: 16px !important;
-    width: calc(100% - 40px) !important;
-    min-width: 0 !important;
+  &::part(icon) {
+    color: var(--toast-accent, #10B981) !important;
+    font-size: 24px !important;
+    padding-inline-start: 8px !important;
+    padding-inline-end: 2px !important;
+  }
+
+  &::part(button) {
+    font-weight: 800;
+  }
+
+  /* Variations */
+  &.toast-success {
+    --toast-accent: #10B981;
+  }
+
+  &.toast-error {
+    --toast-accent: #EF4444;
+  }
+
+  &.toast-warning {
+    --toast-accent: #F59E0B;
   }
 }
 

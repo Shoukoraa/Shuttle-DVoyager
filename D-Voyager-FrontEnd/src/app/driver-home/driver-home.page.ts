@@ -221,9 +221,10 @@ export class DriverHomePage implements OnInit, OnDestroy {
         console.error('Gagal memulai perjalanan', err);
         const toast = await this.toastController.create({
           message: 'Gagal memulai perjalanan: ' + (err.error?.message || 'Kesalahan Server'),
-          duration: 3000,
-          color: 'danger',
-          position: 'top'
+          duration: 1100,
+          cssClass: 'premium-toast toast-danger',
+          position: 'top',
+          icon: 'close-circle'
         });
         await toast.present();
       }
@@ -249,9 +250,10 @@ export class DriverHomePage implements OnInit, OnDestroy {
         console.error('Gagal menyelesaikan perjalanan', err);
         const toast = await this.toastController.create({
           message: 'Gagal menyelesaikan perjalanan: ' + (err.error?.message || 'Kesalahan Server'),
-          duration: 3000,
-          color: 'danger',
-          position: 'top'
+          duration: 1100,
+          cssClass: 'premium-toast toast-danger',
+          position: 'top',
+          icon: 'close-circle'
         });
         await toast.present();
       }
@@ -263,34 +265,52 @@ export class DriverHomePage implements OnInit, OnDestroy {
   async startTracking() {
     try {
       // 1. Minta izin secara eksplisit (Sangat Penting untuk Android 6+)
-      const permissions = await Geolocation.requestPermissions();
-      if (permissions.location !== 'granted') {
+      let permissionState = 'granted';
+      try {
+        const permissions = await Geolocation.requestPermissions();
+        permissionState = permissions.location;
+      } catch (err) {
+        console.warn('Geolocation.requestPermissions not supported or failed, checking permissions:', err);
+        try {
+          const check = await Geolocation.checkPermissions();
+          permissionState = check.location;
+        } catch (checkErr) {
+          console.warn('Geolocation.checkPermissions also failed:', checkErr);
+        }
+      }
+
+      if (permissionState === 'denied') {
         console.error('Izin lokasi ditolak oleh pengguna');
         const toast = await this.toastController.create({
           message: 'Izin lokasi (GPS) ditolak. Live Tracking tidak akan berfungsi.',
-          duration: 3000,
-          color: 'warning'
+          duration: 1100,
+          cssClass: 'premium-toast toast-warning',
+          icon: 'warning'
         });
-        toast.present();
+        await toast.present();
         return;
       }
 
       // 2. Dapatkan posisi saat ini secara instan dan kirim ke backend
-      const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      
-      this.setDriverMarker(lat, lng);
+      try {
+        const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        this.setDriverMarker(lat, lng);
 
-      if (this.currentTrip && this.currentTrip.id) {
-        this.apiService.updateLocation({
-          schedule_id: this.currentTrip.id,
-          latitude: lat,
-          longitude: lng
-        }).subscribe({
-          next: (loc) => console.log('Lokasi GPS awal berhasil dikirim:', loc),
-          error: (err) => console.error('Gagal mengirim lokasi GPS awal:', err)
-        });
+        if (this.currentTrip && this.currentTrip.id) {
+          this.apiService.updateLocation({
+            schedule_id: this.currentTrip.id,
+            latitude: lat,
+            longitude: lng
+          }).subscribe({
+            next: (loc) => console.log('Lokasi GPS awal berhasil dikirim:', loc),
+            error: (err) => console.error('Gagal mengirim lokasi GPS awal:', err)
+          });
+        }
+      } catch (posErr) {
+        console.warn('Gagal mendapatkan lokasi GPS awal:', posErr);
       }
 
       // 3. Bersihkan watch lama jika ada agar tidak duplikat
@@ -299,7 +319,7 @@ export class DriverHomePage implements OnInit, OnDestroy {
       }
 
       // 4. Mulai watch posisi secara background/terus-menerus
-      this.watchId = await Geolocation.watchPosition({ enableHighAccuracy: true }, (pos, err) => {
+      this.watchId = await Geolocation.watchPosition({ enableHighAccuracy: true }, (pos: any, err: any) => {
         if (err || !pos) {
           console.error('GPS tracking error', err);
           return;

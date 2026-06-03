@@ -215,12 +215,17 @@ export class DriverProfilePage implements OnInit {
     this.router.navigate(['/login'], { replaceUrl: true });
   }
 
-  private async showToast(message: string, color: string = 'success', duration: number = 1800) {
+  private async showToast(message: string, color: string = 'success', duration: number = 1100) {
+    const icon = color === 'success' ? 'checkmark-circle' :
+                 color === 'danger' ? 'close-circle' :
+                 color === 'warning' ? 'warning' : 'information-circle';
+
     const toast = await this.toastController.create({
       message,
       duration,
       position: 'top',
-      color,
+      cssClass: `premium-toast toast-${color}`,
+      icon,
     });
 
     await toast.present();

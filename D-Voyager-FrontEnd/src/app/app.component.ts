@@ -73,33 +73,31 @@ export class AppComponent {
   }
 
   setupBackButtonBehavior() {
-    this.platform.backButton.subscribeWithPriority(10, async () => {
+    this.platform.backButton.subscribeWithPriority(9999, async () => {
       const currentUrl = this.router.url.split('?')[0];
+      
+      // Halaman yang dianggap "Root" atau halaman awal di mana tombol back harus memicu konfirmasi keluar
       const rootUrls = [
         '/home',
         '/tickets',
         '/promos',
         '/profile',
         '/driver-home',
-        '/driver-history',
-        '/driver-chat',
-        '/driver-profile',
-        '/login'
+        '/login',
+        '/'
       ];
 
+      // Jika berada di salah satu halaman utama/root
       if (rootUrls.includes(currentUrl)) {
         const now = Date.now();
         if (now - this.lastBackPress < this.timePeriodToExit) {
-          try {
-            await App.exitApp();
-          } catch (err) {
-            console.error('Error exiting app:', err);
-          }
+          App.exitApp();
         } else {
           this.lastBackPress = now;
           await this.showExitToast();
         }
       } else {
+        // Jika sedang di sub-halaman (seperti edit-profil), jangan keluar aplikasi, tapi balik ke halaman sebelumnya
         window.history.back();
       }
     });
@@ -107,10 +105,11 @@ export class AppComponent {
 
   private async showExitToast() {
     const toast = await this.toastController.create({
-      message: 'Tekan tombol kembali sekali lagi untuk keluar aplikasi.',
+      message: 'Tekan sekali lagi untuk keluar aplikasi',
       duration: 2000,
-      position: 'bottom',
-      color: 'dark'
+      position: 'top',
+      cssClass: 'premium-toast toast-warning',
+      icon: 'warning'
     });
     await toast.present();
   }

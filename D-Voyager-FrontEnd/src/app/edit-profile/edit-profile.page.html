@@ -1,14 +1,11 @@
-<ion-header class="ion-no-border custom-header">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/profile" icon="arrow-back" text=""></ion-back-button>
-    </ion-buttons>
-    <ion-title>Edit Profil</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="custom-bg">
-  <div class="edit-container">
+<ion-content class="custom-bg" [fullscreen]="true">
+  <div class="profile-header">
+    <div class="header-curve"></div>
+    <div class="header-nav">
+      <ion-back-button defaultHref="/profile" icon="arrow-back" text="" class="back-btn"></ion-back-button>
+      <h2>Edit Profil</h2>
+    </div>
+    
     <div class="profile-summary">
       <label class="avatar-circle" for="profilePhotoInput">
         <img *ngIf="profilePhotoUrl" [src]="profilePhotoUrl" alt="Foto profil" referrerpolicy="no-referrer">
@@ -28,7 +25,9 @@
       <h1>{{ name || 'User' }}</h1>
       <p>{{ email || 'Email tidak tersedia' }}</p>
     </div>
+  </div>
 
+  <div class="edit-container">
     <form class="edit-form" (ngSubmit)="saveChanges()">
       <div class="input-group">
         <ion-label class="custom-label">Nama Lengkap</ion-label>

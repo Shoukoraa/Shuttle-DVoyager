@@ -229,15 +229,16 @@ export class EditProfilePage implements OnInit {
     this.isSaving = false;
     this.isSavingPassword = false;
     await this.showToast(message);
-    this.router.navigate(['/profile']);
+    // Redirection removed as per user request to stay on page after save
   }
 
   private async showToast(message: string) {
     const toast = await this.toastController.create({
       message,
-      duration: 1800,
+      duration: 1100,
       position: 'top',
-      color: 'success',
+      cssClass: 'premium-toast toast-success',
+      icon: 'checkmark-circle',
     });
 
     await toast.present();

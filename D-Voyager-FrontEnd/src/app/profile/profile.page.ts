@@ -164,9 +164,10 @@ export class ProfilePage implements OnInit {
 
     const toast = await this.toastController.create({
       message: 'Kamu sudah keluar dari akun.',
-      duration: 1400,
+      duration: 1100,
       position: 'top',
-      color: 'success',
+      cssClass: 'premium-toast toast-success',
+      icon: 'checkmark-circle',
     });
     await toast.present();
 
