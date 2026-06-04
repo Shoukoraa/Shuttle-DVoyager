@@ -63,10 +63,7 @@ export class TicketsPage implements OnInit, OnDestroy {
   }
 
   ionViewWillLeave() {
-    if (this.backButtonSubscription) {
-      this.backButtonSubscription.unsubscribe();
-      this.backButtonSubscription = null;
-    }
+    this.clearBackButtonHandler();
   }
 
   private initTabSlideAnimation(currentTabIndex: number) {
@@ -309,6 +306,17 @@ export class TicketsPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unsubscribeFromChat();
+    this.clearBackButtonHandler();
+  }
+
+  private registerBackButtonHandler(handler: () => void) {
+    this.clearBackButtonHandler();
+    this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(10001, () => {
+      handler();
+    });
+  }
+
+  private clearBackButtonHandler() {
     if (this.backButtonSubscription) {
       this.backButtonSubscription.unsubscribe();
       this.backButtonSubscription = null;
@@ -320,6 +328,7 @@ export class TicketsPage implements OnInit, OnDestroy {
     this.isChatOpen = true;
     this.loadChatHistory();
     this.subscribeToChat();
+    this.registerBackButtonHandler(() => this.closeChat());
   }
 
   closeChat() {
@@ -330,6 +339,7 @@ export class TicketsPage implements OnInit, OnDestroy {
     if (this.typingTimeout) {
       clearTimeout(this.typingTimeout);
     }
+    this.clearBackButtonHandler();
   }
 
   loadChatHistory() {
@@ -434,6 +444,7 @@ export class TicketsPage implements OnInit, OnDestroy {
   openTracking(ticket: any) {
     this.trackingTicket = ticket;
     this.isTrackingOpen = true;
+    this.registerBackButtonHandler(() => this.closeTracking());
 
     // Mulai inisialisasi peta
     setTimeout(() => this.initTrackingMap(), 500);
@@ -449,10 +460,7 @@ export class TicketsPage implements OnInit, OnDestroy {
   }
 
   closeTracking() {
-    if (this.backButtonSubscription) {
-      this.backButtonSubscription.unsubscribe();
-      this.backButtonSubscription = null;
-    }
+    this.clearBackButtonHandler();
 
     if (this.trackingTicket) {
       const scheduleId = this.trackingTicket.schedule_id;
@@ -554,13 +562,12 @@ export class TicketsPage implements OnInit, OnDestroy {
     this.isMapFullscreen = !this.isMapFullscreen;
 
     if (this.isMapFullscreen) {
-      this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(9999, () => {
-        this.toggleMapFullscreen();
-      });
+      this.registerBackButtonHandler(() => this.toggleMapFullscreen());
     } else {
-      if (this.backButtonSubscription) {
-        this.backButtonSubscription.unsubscribe();
-        this.backButtonSubscription = null;
+      if (this.isTrackingOpen) {
+        this.registerBackButtonHandler(() => this.closeTracking());
+      } else {
+        this.clearBackButtonHandler();
       }
     }
 

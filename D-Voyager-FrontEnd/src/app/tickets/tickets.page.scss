@@ -406,6 +406,32 @@ ion-modal ion-toolbar {
   }
 }
 
+.modal-hero-toolbar {
+  --background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+  --color: var(--dark-gray);
+  position: relative;
+  overflow: hidden;
+
+  ion-title {
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+
+  ion-button {
+    --color: var(--dark-gray);
+  }
+
+  .modal-hero-icon {
+    position: absolute;
+    right: -12px;
+    bottom: -20px;
+    font-size: 110px;
+    color: var(--primary-color);
+    opacity: 0.16;
+    pointer-events: none;
+  }
+}
+
 .chat-room-content {
   --background: #F8F9FA;
 
@@ -615,6 +641,38 @@ ion-modal ion-toolbar {
   }
 }
 
+/* Tracking Modal */
+.tracking-content {
+  --background: var(--bg-color);
+}
+
+.route-info-card {
+  background: var(--card-bg);
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--light-gray);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+  h4 {
+    margin: 0 0 6px;
+    font-weight: 800;
+    color: var(--dark-gray);
+    font-size: 16px;
+    letter-spacing: -0.2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-sub);
+  }
+
+  b {
+    color: var(--dark-gray);
+  }
+}
+
 /* Map Wrapper & Map Styles */
 .map-wrapper {
   position: relative;
@@ -641,7 +699,7 @@ ion-modal ion-toolbar {
   border-radius: 16px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  z-index: 10;
+  z-index: 1;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.fullscreen-map {
@@ -709,6 +767,29 @@ ion-modal ion-toolbar {
   ion-icon {
     font-size: 18px;
     color: #1e1e1e;
+  }
+}
+
+.map-controls-fixed {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  pointer-events: none;
+
+  .map-toggle-btn,
+  .map-style-switcher {
+    pointer-events: auto;
+    position: fixed;
+  }
+
+  .map-toggle-btn {
+    top: 16px;
+    left: 12px;
+  }
+
+  .map-style-switcher {
+    top: 16px;
+    right: 12px;
   }
 }
 

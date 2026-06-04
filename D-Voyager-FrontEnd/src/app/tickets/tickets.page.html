@@ -132,13 +132,14 @@
   <ion-modal [isOpen]="isChatOpen" (didDismiss)="closeChat()">
     <ng-template>
       <ion-header class="ion-no-border">
-        <ion-toolbar color="primary">
+        <ion-toolbar class="modal-hero-toolbar">
           <ion-buttons slot="start">
             <ion-button (click)="closeChat()">
               <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
           </ion-buttons>
           <ion-title>Chat dengan Driver</ion-title>
+          <ion-icon name="chatbubbles" class="modal-hero-icon"></ion-icon>
         </ion-toolbar>
       </ion-header>
 
@@ -259,20 +260,21 @@
   <ion-modal [isOpen]="isTrackingOpen" (didDismiss)="closeTracking()">
     <ng-template>
       <ion-header class="ion-no-border">
-        <ion-toolbar color="primary">
+        <ion-toolbar class="modal-hero-toolbar">
           <ion-buttons slot="start">
             <ion-button (click)="closeTracking()">
               <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
           </ion-buttons>
           <ion-title>Lacak Perjalanan</ion-title>
+          <ion-icon name="map" class="modal-hero-icon"></ion-icon>
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="ion-padding" style="--background: #f8fafc;">
-        <div class="route-info-card" style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
-          <h4 style="margin: 0 0 5px; font-weight: bold; color: #1e1e1e;">{{ trackingTicket?.schedule?.route?.origin?.name }} → {{ trackingTicket?.schedule?.route?.destination?.name }}</h4>
-          <p style="margin: 0; font-size: 12px; color: #64748b;">
+      <ion-content class="ion-padding tracking-content">
+        <div class="route-info-card">
+          <h4>{{ trackingTicket?.schedule?.route?.origin?.name }} → {{ trackingTicket?.schedule?.route?.destination?.name }}</h4>
+          <p>
             Supir: <b>{{ trackingTicket?.schedule?.driver?.user?.name || 'Driver' }}</b> ({{ trackingTicket?.schedule?.vehicle?.plate_number }})
           </p>
         </div>
@@ -292,6 +294,17 @@
             <ion-icon [name]="isMapFullscreen ? 'contract-outline' : 'expand-outline'"></ion-icon>
           </button>
         </div>
+
+        <div class="map-controls-fixed" *ngIf="isMapFullscreen">
+          <button class="map-toggle-btn" (click)="toggleMapFullscreen()" aria-label="Toggle Fullscreen Map">
+            <ion-icon name="contract-outline"></ion-icon>
+          </button>
+          <div class="map-style-switcher">
+            <button (click)="setMapStyle('streets')" [class.active-style]="currentStyle === 'streets'">Terang</button>
+            <button (click)="setMapStyle('dark')" [class.active-style]="currentStyle === 'dark'">Malam</button>
+            <button (click)="setMapStyle('satellite')" [class.active-style]="currentStyle === 'satellite'">Satelit</button>
+          </div>
+        </div>
       </ion-content>
     </ng-template>
   </ion-modal>
@@ -301,25 +314,25 @@
 <!-- Custom Bottom Navigation -->
 <ion-footer class="custom-footer ion-no-border">
   <div class="nav-bar material-nav" [style.--slide-distance]="slideDistance">
-    <div class="nav-item" routerLink="/home">
+    <div class="nav-item" routerLink="/home" routerDirection="root">
       <div class="icon-container">
         <ion-icon name="home-outline"></ion-icon>
       </div>
       <span>Beranda</span>
     </div>
-    <div class="nav-item active" routerLink="/tickets">
+    <div class="nav-item active" routerLink="/tickets" routerDirection="root">
       <div class="icon-container">
         <ion-icon name="ticket"></ion-icon>
       </div>
       <span>Pesanan</span>
     </div>
-    <div class="nav-item" routerLink="/promos">
+    <div class="nav-item" routerLink="/promos" routerDirection="root">
       <div class="icon-container">
         <ion-icon name="pricetag-outline"></ion-icon>
       </div>
       <span>Promo</span>
     </div>
-    <div class="nav-item" routerLink="/profile">
+    <div class="nav-item" routerLink="/profile" routerDirection="root">
       <div class="icon-container">
         <ion-icon name="person-outline"></ion-icon>
       </div>

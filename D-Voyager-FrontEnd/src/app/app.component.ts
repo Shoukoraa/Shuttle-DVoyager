@@ -1,7 +1,7 @@
 import { Component, NgZone } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { Platform, ToastController } from '@ionic/angular';
+import { ModalController, Platform, ToastController } from '@ionic/angular';
 import { App } from '@capacitor/app';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
@@ -19,7 +19,8 @@ export class AppComponent {
     private router: Router,
     private platform: Platform,
     private toastController: ToastController,
-    private zone: NgZone
+    private zone: NgZone,
+    private modalController: ModalController
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
@@ -74,6 +75,12 @@ export class AppComponent {
 
   setupBackButtonBehavior() {
     this.platform.backButton.subscribeWithPriority(9999, async () => {
+      const topModal = await this.modalController.getTop();
+      if (topModal) {
+        await topModal.dismiss();
+        return;
+      }
+
       const currentUrl = this.router.url.split('?')[0];
       
       // Halaman yang dianggap "Root" atau halaman awal di mana tombol back harus memicu konfirmasi keluar

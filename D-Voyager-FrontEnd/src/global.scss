@@ -132,8 +132,8 @@
 /* Smooth Page Transitions & Stability */
 ion-router-outlet {
   background: var(--bg-color);
-  /* Override default animation to a cross-fade for stability */
-  --ion-transition-duration: 300ms;
+  /* Disable page transition animations */
+  --ion-transition-duration: 0ms;
 }
 
 /* Eliminate horizontal "shaking" during transitions */
@@ -141,8 +141,8 @@ ion-router-outlet {
   background: var(--bg-color);
   /* Eliminate horizontal "shaking" during transitions */
   contain: size layout style;
-  transition-property: opacity, transform !important;
-  will-change: opacity, transform;
+  transition: none !important;
+  will-change: auto;
 }
 
 .custom-footer {
@@ -285,8 +285,6 @@ ion-toast.premium-toast {
   --border-radius: 60px !important;
   --box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
   font-family: 'Outfit', sans-serif;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
   
   &::part(container) {
     margin: 12px auto !important;
@@ -508,4 +506,4 @@ ion-toast.premium-toast {
     color: var(--dark-gray);
   }
 }
-
+

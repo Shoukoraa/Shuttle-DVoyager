@@ -11,6 +11,7 @@ import { EchoService } from '../services/echo.service';
 export class DriverChatPage implements OnInit, OnDestroy {
   public selectedTab: string = 'customer';
   public isLoading = false;
+  public slideDistance = '0px';
   
   public currentScheduleId: number | null = null;
   public customerChats: any[] = [];
@@ -38,7 +39,20 @@ export class DriverChatPage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
+    this.initTabSlideAnimation(2);
     this.loadData();
+  }
+
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('driver_active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('driver_active_tab_index', currentTabIndex.toString());
   }
 
   ngOnDestroy() {

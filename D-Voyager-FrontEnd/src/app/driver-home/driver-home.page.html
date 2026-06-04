@@ -208,21 +208,29 @@
 
 <!-- Custom Bottom Navigation for Driver -->
 <ion-footer class="custom-footer driver-footer">
-  <div class="nav-bar">
+  <div class="nav-bar material-nav" [style.--slide-distance]="slideDistance">
     <div class="nav-item active" routerLink="/driver-home" routerDirection="root">
-      <ion-icon name="car-outline"></ion-icon>
+      <div class="icon-container">
+        <ion-icon name="car"></ion-icon>
+      </div>
       <span>Tugas</span>
     </div>
     <div class="nav-item" routerLink="/driver-history" routerDirection="root">
-      <ion-icon name="time-outline"></ion-icon>
+      <div class="icon-container">
+        <ion-icon name="time-outline"></ion-icon>
+      </div>
       <span>Riwayat</span>
     </div>
     <div class="nav-item" routerLink="/driver-chat" routerDirection="root">
-      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <div class="icon-container">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+      </div>
       <span>Pesan</span>
     </div>
     <div class="nav-item" routerLink="/driver-profile" routerDirection="root">
-      <ion-icon name="person-outline"></ion-icon>
+      <div class="icon-container">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
       <span>Akun</span>
     </div>
   </div>

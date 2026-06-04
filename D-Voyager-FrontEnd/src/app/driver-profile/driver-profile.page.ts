@@ -28,6 +28,7 @@ export class DriverProfilePage implements OnInit {
   public isTermsModalOpen: boolean = false;
   public isLogoutModalOpen: boolean = false;
   public errorMessage: string = '';
+  public slideDistance = '0px';
 
   private lastProfileRefreshAt: number = 0;
   private isRefreshingProfile: boolean = false;
@@ -45,8 +46,21 @@ export class DriverProfilePage implements OnInit {
   }
 
   ionViewWillEnter() {
+    this.initTabSlideAnimation(3);
     this.refreshUserData();
     this.loadDriverReviews();
+  }
+
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('driver_active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('driver_active_tab_index', currentTabIndex.toString());
   }
 
   loadCachedUserData() {
