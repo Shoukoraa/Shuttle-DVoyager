@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="shuttle-system/public/assets/Logo_Dvoyager.png" alt="Shuttle D-Voyager Logo" width="200" style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);" />
+  <img src="D-Voyager-FrontEnd/src/assets/Logo_Dvoyager_No_Bg.png" alt="Shuttle D-Voyager Logo" width="200" style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);" />
 </p>
 
 <h1 align="center">🚐 Shuttle D-Voyager</h1>
