@@ -7,8 +7,20 @@ use App\Models\Booking;
 
 class BookingController extends Controller
 {
-    public function index()
+    public function index(\App\Services\PaymentStatusService $paymentStatus)
     {
-        return response()->json(Booking::with(['customer', 'schedule.route', 'schedule.driver'])->get());
+        $bookings = Booking::with(['customer', 'schedule.route', 'schedule.driver', 'payment'])->get();
+
+        $bookings->each(function ($booking) use ($paymentStatus) {
+            if ($booking->status === 'booked' && optional($booking->payment)->status === 'pending') {
+                try {
+                    $paymentStatus->syncBookingPayment($booking);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning('Auto-sync payment failed in Admin: ' . $e->getMessage());
+                }
+            }
+        });
+
+        return response()->json($bookings);
     }
 }

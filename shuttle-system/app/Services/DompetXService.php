@@ -21,7 +21,7 @@ class DompetXService
 
     public function checkCheckoutStatus(string $checkoutId): array
     {
-        return $this->client('{}')
+        return $this->client('')
             ->get("/payments/check-status/{$checkoutId}")
             ->throw()
             ->json();
@@ -29,7 +29,7 @@ class DompetXService
 
     public function getTransactionDetail(string $transactionId): array
     {
-        return $this->client('{}')
+        return $this->client('')
             ->get("/payments/detail/{$transactionId}")
             ->throw()
             ->json();

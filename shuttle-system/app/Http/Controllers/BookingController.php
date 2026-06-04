@@ -35,7 +35,15 @@ class BookingController extends Controller
             ->orderBy('booking_time', 'desc')
             ->get();
 
-        $bookings->each(function ($booking) {
+        $bookings->each(function ($booking) use ($paymentStatus) {
+            if ($booking->status === 'booked' && optional($booking->payment)->status === 'pending') {
+                try {
+                    $paymentStatus->syncBookingPayment($booking);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning('Auto-sync payment failed in myBookings: ' . $e->getMessage());
+                }
+            }
+
             $scheduleStatus = strtolower((string) optional($booking->schedule)->status);
             $bookingStatus = strtolower((string) $booking->status);
 
@@ -45,7 +53,6 @@ class BookingController extends Controller
             }
         });
 
-        // We avoid calling syncBookingPayment synchronously inside the list API to prevent blocking external API requests that cause page load hangs.
         return response()->json($bookings);
     }
 
