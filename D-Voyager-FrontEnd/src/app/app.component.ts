@@ -86,9 +86,6 @@ export class AppComponent {
       // Halaman yang dianggap "Root" atau halaman awal di mana tombol back harus memicu konfirmasi keluar
       const rootUrls = [
         '/home',
-        '/tickets',
-        '/promos',
-        '/profile',
         '/driver-home',
         '/login',
         '/'

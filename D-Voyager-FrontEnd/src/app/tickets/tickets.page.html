@@ -129,12 +129,12 @@
   </div>
 
   <!-- Chat Room Modal -->
-  <ion-modal [isOpen]="isChatOpen" (didDismiss)="closeChat()">
+  <ion-modal [isOpen]="isChatOpen" (didDismiss)="closeChat()" class="customer-chat-modal">
     <ng-template>
-      <ion-header class="ion-no-border">
+      <ion-header class="ion-no-border modal-header">
         <ion-toolbar class="modal-hero-toolbar">
           <ion-buttons slot="start">
-            <ion-button (click)="closeChat()">
+            <ion-button class="modal-back-btn" (click)="closeChat()">
               <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -145,6 +145,14 @@
 
       <ion-content class="chat-room-content">
         <div class="message-list">
+          <div class="chat-empty-state" *ngIf="chatMessages.length === 0 && !isTyping">
+            <div class="empty-chat-icon">
+              <ion-icon name="chatbubbles-outline"></ion-icon>
+            </div>
+            <h3>Belum Ada Pesan</h3>
+            <p>Kirim pesan pertama untuk menghubungi driver perjalanan Anda.</p>
+          </div>
+
           <div *ngFor="let msg of chatMessages" class="message-wrapper" [class.sent]="msg.sender_type === 'customer'" [class.received]="msg.sender_type === 'driver'">
             <div class="message-bubble">
               <p>{{ msg.message }}</p>
@@ -257,12 +265,12 @@
   </ion-modal>
 
   <!-- Tracking Modal -->
-  <ion-modal [isOpen]="isTrackingOpen" (didDismiss)="closeTracking()">
+  <ion-modal [isOpen]="isTrackingOpen" (didDismiss)="closeTracking()" class="customer-tracking-modal">
     <ng-template>
-      <ion-header class="ion-no-border">
+      <ion-header class="ion-no-border modal-header">
         <ion-toolbar class="modal-hero-toolbar">
           <ion-buttons slot="start">
-            <ion-button (click)="closeTracking()">
+            <ion-button class="modal-back-btn" (click)="closeTracking()">
               <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -273,10 +281,16 @@
 
       <ion-content class="ion-padding tracking-content">
         <div class="route-info-card">
-          <h4>{{ trackingTicket?.schedule?.route?.origin?.name }} → {{ trackingTicket?.schedule?.route?.destination?.name }}</h4>
-          <p>
-            Supir: <b>{{ trackingTicket?.schedule?.driver?.user?.name || 'Driver' }}</b> ({{ trackingTicket?.schedule?.vehicle?.plate_number }})
-          </p>
+          <div class="route-card-icon">
+            <ion-icon name="navigate"></ion-icon>
+          </div>
+          <div class="route-card-text">
+            <span>Rute Perjalanan</span>
+            <h4>{{ trackingTicket?.schedule?.route?.origin?.name }} -> {{ trackingTicket?.schedule?.route?.destination?.name }}</h4>
+            <p>
+              Supir: <b>{{ trackingTicket?.schedule?.driver?.user?.name || 'Driver' }}</b> ({{ trackingTicket?.schedule?.vehicle?.plate_number }})
+            </p>
+          </div>
         </div>
 
         <div class="map-wrapper" [class.fullscreen-map-wrapper]="isMapFullscreen">

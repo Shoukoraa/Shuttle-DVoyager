@@ -793,3 +793,144 @@ ion-modal ion-toolbar {
   }
 }
 
+/* Polished customer chat/tracking modal overrides */
+.customer-chat-modal,
+.customer-tracking-modal {
+  .modal-hero-toolbar {
+    --background: #ffffff !important;
+    --color: var(--dark-gray) !important;
+    --border-color: transparent;
+    min-height: 64px;
+
+    &::part(background) {
+      background: linear-gradient(135deg, #fff8e1 0%, #ffffff 78%);
+    }
+
+    ion-title {
+      color: var(--dark-gray);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .modal-back-btn {
+      --color: var(--dark-gray);
+      --background: rgba(255, 193, 7, 0.2);
+      --border-radius: 14px;
+      width: 40px;
+      height: 40px;
+      margin-left: 8px;
+    }
+  }
+}
+
+.chat-empty-state {
+  min-height: calc(100vh - 190px);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+  padding: 24px;
+
+  .empty-chat-icon {
+    width: 86px;
+    height: 86px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: rgba(255, 193, 7, 0.16);
+    color: var(--primary-dark);
+
+    ion-icon {
+      font-size: 40px;
+    }
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    color: var(--dark-gray);
+    font-size: 20px;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    max-width: 260px;
+    color: var(--text-sub);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+.customer-chat-modal .chat-toolbar .chat-input-wrapper {
+  min-height: 52px;
+  border-radius: 26px;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+
+  ion-button {
+    --background: var(--primary-color);
+    --background-activated: var(--primary-dark);
+    --color: var(--dark-gray);
+    --border-radius: 50%;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.customer-tracking-modal {
+  .route-info-card {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+
+    .route-card-icon {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 16px;
+      background: rgba(255, 193, 7, 0.18);
+      color: var(--primary-dark);
+    }
+
+    span {
+      display: block;
+      margin-bottom: 4px;
+      color: #9ca3af;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h4 {
+      font-size: 18px;
+    }
+  }
+
+  .map-wrapper {
+    height: min(68vh, 620px);
+    min-height: 480px;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.16);
+
+    &.fullscreen-map-wrapper {
+      border-radius: 0;
+      overflow: visible;
+    }
+  }
+
+  #customer-map {
+    border: 0;
+    border-radius: 20px;
+    box-shadow: none;
+  }
+}
+
+
