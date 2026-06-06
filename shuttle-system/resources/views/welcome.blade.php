@@ -100,7 +100,7 @@
 <body class="bg-[#F8F9FA] text-dark-900 font-sans antialiased overflow-x-hidden">
 
     <!-- HEADER / NAVIGATION BAR -->
-    <header class="fixed top-0 inset-x-0 z-50 transition-all duration-300 glass-nav border-b border-slate-300/40 shadow-sm">
+    <header id="main-header" class="fixed top-0 inset-x-0 z-50 transition-transform duration-300 transform translate-y-0 glass-nav border-b border-slate-300/40 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <!-- Brand Logo -->
             <a href="#" class="flex items-center gap-3 group">
@@ -846,6 +846,29 @@
         const mobileMenu = document.getElementById('mobile-menu');
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
+        });
+
+        // Hide/Show header on scroll
+        let lastScrollY = window.scrollY;
+        const header = document.getElementById('main-header');
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            // Only hide/show if scrolled more than a small threshold (e.g. 5px) to prevent jitter
+            if (Math.abs(currentScrollY - lastScrollY) > 5) {
+                if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                    // Scrolling down - hide header and close mobile menu
+                    header.classList.add('-translate-y-full');
+                    header.classList.remove('translate-y-0');
+                    mobileMenu.classList.add('hidden');
+                } else {
+                    // Scrolling up - show header
+                    header.classList.remove('-translate-y-full');
+                    header.classList.add('translate-y-0');
+                }
+            }
+            lastScrollY = currentScrollY;
         });
 
         // 1. Interactive Booking Simulator Code
