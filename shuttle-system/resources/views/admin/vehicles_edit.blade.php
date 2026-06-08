@@ -18,7 +18,7 @@
 
     <!-- Edit Form Card -->
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <form action="/admin/vehicles/{{ $vehicle->id }}" method="POST" class="space-y-5">
+        <form action="/admin/vehicles/{{ $vehicle->id }}" method="POST" enctype="multipart/form-data" class="space-y-5">
             @csrf
             @method('PUT')
 
@@ -67,6 +67,27 @@
                         </svg>
                     </div>
                 </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label for="photos" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Foto Kendaraan (Maks. 5)</label>
+                @if($vehicle->photo && is_array($vehicle->photo) && count($vehicle->photo) > 0)
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        @foreach($vehicle->photo as $imgUrl)
+                            <div class="text-center">
+                                <img src="{{ $imgUrl }}" alt="Foto kendaraan saat ini" class="w-24 h-16 object-cover rounded-xl border border-gray-200 shadow-sm">
+                            </div>
+                        @endforeach
+                    </div>
+                    <p class="text-[10px] text-gray-400 mb-2">Foto saat ini (semua akan digantikan jika mengunggah file baru)</p>
+                @elseif($vehicle->photo && is_string($vehicle->photo))
+                    <div class="mb-2">
+                        <img src="{{ $vehicle->photo }}" alt="Foto kendaraan saat ini" class="w-32 h-20 object-cover rounded-xl border border-gray-200 shadow-sm">
+                        <p class="text-[10px] text-gray-400 mt-1">Foto saat ini</p>
+                    </div>
+                @endif
+                <input type="file" name="photos[]" id="photos" accept="image/*" multiple class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                <p class="text-[10px] text-gray-400">Pilih berkas baru jika ingin mengganti (maks. 5). Format: JPG, JPEG, PNG, WEBP</p>
             </div>
 
             <div class="flex items-center gap-3 pt-2">

@@ -16,7 +16,12 @@ class Vehicle extends Model
         'vehicle_category',
         'capacity',
         'driver_id',
-        'status'
+        'status',
+        'photo'
+    ];
+
+    protected $casts = [
+        'photo' => 'array'
     ];
 
     public function driver()

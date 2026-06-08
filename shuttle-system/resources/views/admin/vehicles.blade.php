@@ -30,7 +30,7 @@
                 <h3 class="font-bold text-dark-900 font-outfit">Tambah Kendaraan</h3>
             </div>
 
-            <form action="/admin/vehicles" method="POST" class="space-y-4">
+            <form action="/admin/vehicles" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 
                 <div class="flex flex-col gap-1.5">
@@ -63,6 +63,12 @@
                 <div class="flex flex-col gap-1.5">
                     <label for="capacity" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kapasitas Kursi</label>
                     <input type="number" name="capacity" id="capacity" placeholder="Contoh: 14" required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2.5 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium">
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label for="photos" class="text-xs font-bold text-gray-500 uppercase tracking-wider">Foto Kendaraan (Maks. 5)</label>
+                    <input type="file" name="photos[]" id="photos" accept="image/*" multiple class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl px-4 py-2 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-medium file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                    <p class="text-[10px] text-gray-400">Pilih 1 atau lebih foto (maks. 5). Format: JPG, JPEG, PNG, WEBP</p>
                 </div>
 
                 <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-2.5 bg-dark-900 hover:bg-dark-850 text-white font-semibold text-sm rounded-xl border border-dark-900 shadow-sm transition-all gap-2">
@@ -124,6 +130,7 @@
                                     <input type="checkbox" id="selectAllItems" class="rounded text-brand-500 focus:ring-brand-500 h-4 w-4 border-gray-300">
                                 </th>
                                 <th class="px-6 py-3.5 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">ID</th>
+                                <th class="px-6 py-3.5 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Foto</th>
                                 <th class="px-6 py-3.5 text-xs font-bold text-gray-400 uppercase tracking-wider">Plat Nomor</th>
                                 <th class="px-6 py-3.5 text-xs font-bold text-gray-400 uppercase tracking-wider">Model / Tipe</th>
                                 <th class="px-6 py-3.5 text-xs font-bold text-gray-400 uppercase tracking-wider">Kategori</th>
@@ -140,6 +147,17 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-gray-400">
                                         {{ $veh->id }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        @if($veh->photo && is_array($veh->photo) && count($veh->photo) > 0)
+                                            <img src="{{ $veh->photo[0] }}" alt="Foto kendaraan" class="w-12 h-8 object-cover rounded-lg border border-gray-150 mx-auto shadow-sm">
+                                        @elseif($veh->photo && is_string($veh->photo))
+                                            <img src="{{ $veh->photo }}" alt="Foto kendaraan" class="w-12 h-8 object-cover rounded-lg border border-gray-150 mx-auto shadow-sm">
+                                        @else
+                                            <div class="w-12 h-8 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 mx-auto shadow-inner text-xs font-bold">
+                                                No Pic
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 font-bold text-dark-900 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2.5 py-1 bg-gray-100 border border-gray-200 rounded-lg font-mono">

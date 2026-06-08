@@ -205,8 +205,18 @@ class AdminWebController extends Controller
             'plate_number' => 'required|string|max:20',
             'vehicle_type' => 'required|string|max:50',
             'vehicle_category' => 'required|in:family_car,mini_bus,bus',
-            'capacity' => 'required|integer|min:1'
+            'capacity' => 'required|integer|min:1',
+            'photos' => 'nullable|array|max:5',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
+
+        $photoUrls = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $file) {
+                $path = $file->store('vehicles', 'public');
+                $photoUrls[] = asset('storage/' . $path);
+            }
+        }
 
         $existingVehicle = Vehicle::withTrashed()
             ->where('plate_number', $validated['plate_number'])
@@ -215,11 +225,22 @@ class AdminWebController extends Controller
         if ($existingVehicle) {
             if ($existingVehicle->trashed()) {
                 $existingVehicle->restore();
+
+                // Hapus foto lama jika ada foto baru
+                if (count($photoUrls) > 0 && $existingVehicle->photo) {
+                    $oldPhotos = is_array($existingVehicle->photo) ? $existingVehicle->photo : [$existingVehicle->photo];
+                    foreach ($oldPhotos as $oldUrl) {
+                        $oldPath = str_replace(asset('storage/'), '', $oldUrl);
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                    }
+                }
+
                 $existingVehicle->update([
                     'vehicle_type' => $validated['vehicle_type'],
                     'vehicle_category' => $validated['vehicle_category'],
                     'capacity' => $validated['capacity'],
                     'status' => 'active',
+                    'photo' => count($photoUrls) > 0 ? $photoUrls : $existingVehicle->photo
                 ]);
 
                 return back()->with('success', 'Kendaraan lama dengan plat yang sama berhasil dipulihkan!');
@@ -230,6 +251,7 @@ class AdminWebController extends Controller
                 ->withInput();
         }
 
+        $validated['photo'] = count($photoUrls) > 0 ? $photoUrls : null;
         Vehicle::create($validated);
         return back()->with('success', 'Kendaraan berhasil ditambahkan!');
     }
@@ -240,8 +262,29 @@ class AdminWebController extends Controller
             'vehicle_type' => 'required|string|max:50',
             'vehicle_category' => 'required|in:family_car,mini_bus,bus',
             'capacity' => 'required|integer|min:1',
-            'status' => 'required|string'
+            'status' => 'required|string',
+            'photos' => 'nullable|array|max:5',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048'
         ]);
+
+        if ($request->hasFile('photos')) {
+            // Hapus foto lama jika ada
+            if ($vehicle->photo) {
+                $oldPhotos = is_array($vehicle->photo) ? $vehicle->photo : [$vehicle->photo];
+                foreach ($oldPhotos as $oldUrl) {
+                    $oldPath = str_replace(asset('storage/'), '', $oldUrl);
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                }
+            }
+            
+            $photoUrls = [];
+            foreach ($request->file('photos') as $file) {
+                $path = $file->store('vehicles', 'public');
+                $photoUrls[] = asset('storage/' . $path);
+            }
+            $validated['photo'] = $photoUrls;
+        }
+
         $vehicle->update($validated);
         return redirect()->route('admin.vehicles')->with('success', 'Kendaraan berhasil diperbarui!');
     }

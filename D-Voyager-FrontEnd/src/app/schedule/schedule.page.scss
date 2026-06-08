@@ -290,68 +290,37 @@
         }
       }
 
-      .vehicle-type {
+      .ticket-details {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px dashed #e5e7eb;
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
+        flex-direction: column;
+        gap: 10px;
 
-        span {
-          font-size: 13px;
-          color: #6b7280;
-          font-weight: 600;
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
         }
 
-        .vehicle-info {
+        .detail-item {
           display: flex;
-          flex-wrap: wrap;
+          align-items: center;
           gap: 8px;
-          min-width: 0;
-        }
+          font-size: 13px;
+          color: #4b5563;
+          font-weight: 600;
 
-        .vehicle-meta {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          min-width: 88px;
-          padding: 8px 10px;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          background: #f9fafb;
-
-          .meta-label {
-            font-size: 10px;
-            color: #9ca3af;
-            font-weight: 800;
-            text-transform: uppercase;
+          ion-icon {
+            font-size: 16px;
+            color: var(--primary-dark);
           }
 
           strong {
             color: var(--dark-gray);
-            font-size: 12px;
             font-weight: 800;
-            line-height: 1.2;
-            overflow-wrap: anywhere;
-          }
-        }
-
-        .vehicle-capacity {
-          flex-basis: 100%;
-          font-size: 12px;
-        }
-
-        .seat-badge {
-          flex: 0 0 auto;
-          color: #10B981;
-          /* Green for available */
-          background: #D1FAE5;
-          padding: 4px 10px;
-          border-radius: 6px;
-          font-size: 12px;
-
-          &.almost-full {
-            color: #EF4444;
-            background: #FEE2E2;
           }
         }
       }
@@ -388,7 +357,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        gap: 2px;
+        gap: 4px;
       }
 
       .price {
@@ -398,10 +367,10 @@
       }
 
       .toll-tag {
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 800;
-        color: #10dc60;
-        background: rgba(16, 220, 96, 0.12);
+        color: #10B981;
+        background: rgba(16, 185, 129, 0.12);
         padding: 2px 6px;
         border-radius: 4px;
         text-transform: uppercase;
