@@ -488,6 +488,9 @@
 .custom-modal {
   --background: var(--white);
   --border-radius: 24px 24px 0 0;
+  --height: 90%;
+  --bottom: 0;
+  align-items: flex-end;
   
   &::part(content) {
     border-radius: 24px 24px 0 0;
@@ -501,6 +504,8 @@
     ion-title {
       font-weight: 800;
       font-size: 18px;
+      text-align: left;
+      padding-inline-start: 16px;
     }
 
     ion-button {
@@ -509,6 +514,11 @@
       font-size: 14px;
     }
   }
+
+  .search-bar-wrapper {
+    padding: 0 4px 8px;
+    background: var(--white);
+  }
 }
 
 .modal-searchbar {
@@ -516,7 +526,13 @@
   --placeholder-color: #94a3b8;
   --icon-color: #64748b;
   --border-radius: 14px;
-  padding: 0 16px 8px 16px;
+  --box-shadow: none;
+  padding: 0 16px;
+}
+
+.modal-scroll-content {
+  --background: var(--white);
+  --padding-top: 0;
 }
 
 .location-list {
@@ -538,13 +554,19 @@
       background: #f8fafc;
     }
 
-    .location-icon {
-      color: #64748b;
-      font-size: 20px;
-      margin-right: 12px;
+    .location-icon-wrapper {
       background: #f1f5f9;
       padding: 10px;
       border-radius: 12px;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        color: #64748b;
+        font-size: 20px;
+      }
     }
 
     h3 {

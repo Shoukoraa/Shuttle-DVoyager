@@ -507,3 +507,106 @@ ion-toast.premium-toast {
   }
 }
 
+/* ==========================================================================
+   Premium Global Alert (.premium-alert)
+   ========================================================================== */
+ion-alert.premium-alert {
+  --background: var(--white);
+  --backdrop-opacity: 0.6;
+  
+  &::part(container) {
+    border-radius: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 12px 8px;
+  }
+
+  .alert-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--dark-gray);
+    letter-spacing: -0.5px;
+  }
+
+  .alert-message {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+
+  .alert-button-group {
+    padding: 12px 8px 4px;
+    gap: 8px;
+  }
+
+  .alert-button {
+    height: 48px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: none;
+    letter-spacing: 0;
+    
+    &.alert-button-confirm {
+      background: var(--primary-color);
+      color: var(--dark-gray);
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+    }
+
+    &.alert-button-cancel {
+      color: #64748b;
+    }
+
+    &.alert-button-danger {
+      color: #EF4444;
+    }
+  }
+}
+
+/* ==========================================================================
+   Skeleton Shimmer Animation
+   ========================================================================== */
+.shimmer {
+  background: #f6f7f8;
+  background-image: linear-gradient(
+    to right,
+    #f6f7f8 0%,
+    #edeef1 20%,
+    #f6f7f8 40%,
+    #f6f7f8 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 800px 100%; 
+  display: inline-block;
+  position: relative; 
+  animation: shimmerAnim 1.5s infinite linear;
+  border-radius: 8px;
+}
+
+@keyframes shimmerAnim {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+/* Shimmer Helpers */
+.shimmer-text {
+  height: 14px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.shimmer-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 12px;
+}
+
+.shimmer-avatar {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}

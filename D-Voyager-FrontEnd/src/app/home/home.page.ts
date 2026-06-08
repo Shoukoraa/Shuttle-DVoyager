@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../services/api.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -24,10 +25,16 @@ export class HomePage implements OnInit {
   public tujuanSearch = '';
 
   public promos: any[] = [];
+  public isLoadingPromos = true;
+  public isLoadingLocations = true;
 
   public slideDistance = '0px';
 
-  constructor(private router: Router, private apiService: ApiService) {}
+  constructor(
+    private router: Router, 
+    private apiService: ApiService,
+    private alertController: AlertController
+  ) {}
 
   ionViewWillEnter() {
     this.initTabSlideAnimation(0);
@@ -70,10 +77,12 @@ export class HomePage implements OnInit {
         console.log('Locations raw response:', res);
         const rawList = Array.isArray(res) ? res : Object.values(res || {});
         this.locations = rawList.filter(loc => loc && typeof loc === 'object' && typeof loc.name === 'string');
+        this.isLoadingLocations = false;
         console.log('Locations parsed list:', this.locations);
       },
       error: (err) => {
         console.error('Failed to load locations:', err);
+        this.isLoadingLocations = false;
       }
     });
 
@@ -228,9 +237,19 @@ export class HomePage implements OnInit {
     );
   }
 
-  searchShuttle() {
+  async searchShuttle() {
     if (!this.asalId || !this.tujuanId) {
-      alert('Pilih kota asal dan tujuan');
+      const alert = await this.alertController.create({
+        header: 'Pilih Lokasi',
+        message: 'Silakan pilih kota asal dan tujuan terlebih dahulu untuk mencari jadwal.',
+        cssClass: 'premium-alert',
+        buttons: [{
+          text: 'Cari',
+          role: 'confirm',
+          cssClass: 'alert-button-confirm'
+        }]
+      });
+      await alert.present();
       return;
     }
 
@@ -265,9 +284,11 @@ export class HomePage implements OnInit {
             icon: v.icon || 'gift-outline'
           };
         });
+        this.isLoadingPromos = false;
       },
       error: (err) => {
         console.error('Failed to load home promos:', err);
+        this.isLoadingPromos = false;
       }
     });
   }

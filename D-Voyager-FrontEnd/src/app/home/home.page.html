@@ -118,7 +118,19 @@
         <h3>Penawaran Eksklusif</h3>
       </div>
       
-      <div class="promo-scroller">
+      <!-- Skeleton Promos -->
+      <div class="promo-scroller" *ngIf="isLoadingPromos">
+        <div class="promo-ticket" style="border: none; background: #f3f4f6;" *ngFor="let i of [1,2]">
+          <div class="shimmer" style="width: 40px; height: 40px; border-radius: 12px; margin-right: 15px;"></div>
+          <div class="promo-text">
+            <div class="shimmer" style="width: 120px; height: 18px; margin-bottom: 8px;"></div>
+            <div class="shimmer" style="width: 80px; height: 14px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Promos -->
+      <div class="promo-scroller" *ngIf="!isLoadingPromos && promos.length > 0">
         <div class="promo-ticket" *ngFor="let promo of promos" [style.borderLeftColor]="promo.color">
           <div class="ticket-cutout top"></div>
           <div class="ticket-cutout bottom"></div>
@@ -139,8 +151,6 @@
   <ion-modal 
     [isOpen]="isAsalModalOpen" 
     (didDismiss)="isAsalModalOpen = false" 
-    [initialBreakpoint]="0.6" 
-    [breakpoints]="[0, 0.6, 0.9]"
     class="custom-modal">
     <ng-template>
       <ion-header class="ion-no-border">
@@ -150,23 +160,29 @@
             <ion-button (click)="isAsalModalOpen = false">Tutup</ion-button>
           </ion-buttons>
         </ion-toolbar>
+        <div class="search-bar-wrapper">
+          <ion-searchbar 
+            placeholder="Cari kota asal..." 
+            [(ngModel)]="asalSearch"
+            class="modal-searchbar"
+            animated="true">
+          </ion-searchbar>
+        </div>
       </ion-header>
-      <ion-content>
-        <ion-searchbar 
-          placeholder="Cari kota asal..." 
-          [(ngModel)]="asalSearch"
-          class="modal-searchbar"
-          animated="true">
-        </ion-searchbar>
+      <ion-content class="ion-padding-top modal-scroll-content">
         <ion-list lines="none" class="location-list">
           <ion-item button *ngFor="let loc of getFilteredLocations(asalSearch)" (click)="selectAsal(loc)" class="location-item">
-            <ion-icon name="location" slot="start" class="location-icon"></ion-icon>
+            <div class="location-icon-wrapper">
+              <ion-icon name="location"></ion-icon>
+            </div>
             <ion-label>
               <h3>{{ loc.name }}</h3>
               <p>Terminal / Titik Jemput</p>
             </ion-label>
             <ion-icon name="checkmark-circle" slot="end" class="check-icon" *ngIf="asalId === loc.id"></ion-icon>
           </ion-item>
+          <!-- Extra space for bottom scroll -->
+          <div style="height: 120px;"></div>
         </ion-list>
       </ion-content>
     </ng-template>
@@ -176,8 +192,6 @@
   <ion-modal 
     [isOpen]="isTujuanModalOpen" 
     (didDismiss)="isTujuanModalOpen = false" 
-    [initialBreakpoint]="0.6" 
-    [breakpoints]="[0, 0.6, 0.9]"
     class="custom-modal">
     <ng-template>
       <ion-header class="ion-no-border">
@@ -187,23 +201,29 @@
             <ion-button (click)="isTujuanModalOpen = false">Tutup</ion-button>
           </ion-buttons>
         </ion-toolbar>
+        <div class="search-bar-wrapper">
+          <ion-searchbar 
+            placeholder="Cari kota tujuan..." 
+            [(ngModel)]="tujuanSearch"
+            class="modal-searchbar"
+            animated="true">
+          </ion-searchbar>
+        </div>
       </ion-header>
-      <ion-content>
-        <ion-searchbar 
-          placeholder="Cari kota tujuan..." 
-          [(ngModel)]="tujuanSearch"
-          class="modal-searchbar"
-          animated="true">
-        </ion-searchbar>
+      <ion-content class="ion-padding-top modal-scroll-content">
         <ion-list lines="none" class="location-list">
           <ion-item button *ngFor="let loc of getFilteredLocations(tujuanSearch)" (click)="selectTujuan(loc)" class="location-item">
-            <ion-icon name="location" slot="start" class="location-icon"></ion-icon>
+            <div class="location-icon-wrapper">
+              <ion-icon name="location"></ion-icon>
+            </div>
             <ion-label>
               <h3>{{ loc.name }}</h3>
               <p>Terminal / Titik Tujuan</p>
             </ion-label>
             <ion-icon name="checkmark-circle" slot="end" class="check-icon" *ngIf="tujuanId === loc.id"></ion-icon>
           </ion-item>
+          <!-- Extra space for bottom scroll -->
+          <div style="height: 120px;"></div>
         </ion-list>
       </ion-content>
     </ng-template>

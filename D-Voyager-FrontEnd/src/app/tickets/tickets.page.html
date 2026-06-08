@@ -18,9 +18,26 @@
 
   <div class="tickets-container">
     
-    <div class="loading-state" *ngIf="isLoading" style="text-align: center; margin-top: 50px;">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Memuat pesanan...</p>
+    <div class="skeleton-loader" *ngIf="isLoading">
+      <div class="ticket-card skeleton-card" *ngFor="let i of [1,2,3]">
+        <div class="ticket-header">
+          <div class="shimmer" style="width: 80px; height: 24px; border-radius: 12px;"></div>
+          <div class="shimmer" style="width: 100px; height: 16px;"></div>
+        </div>
+        <div class="route-info" style="margin: 20px 0;">
+          <div class="shimmer" style="width: 100px; height: 24px;"></div>
+          <div class="shimmer" style="width: 30px; height: 30px; border-radius: 50%;"></div>
+          <div class="shimmer" style="width: 100px; height: 24px;"></div>
+        </div>
+        <div class="datetime-info">
+          <div class="shimmer" style="width: 120px; height: 16px;"></div>
+          <div class="shimmer" style="width: 120px; height: 16px;"></div>
+        </div>
+        <div class="ticket-footer">
+          <div class="shimmer" style="width: 80px; height: 30px;"></div>
+          <div class="shimmer" style="width: 80px; height: 30px;"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Active Ticket Card -->

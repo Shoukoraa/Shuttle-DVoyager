@@ -23,9 +23,18 @@
     </div>
 
     <!-- Loading State -->
-    <div class="loading-state" *ngIf="isLoadingSchedule" style="text-align: center; padding: 30px;">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Memuat jadwal...</p>
+    <!-- Skeleton Loader -->
+    <div class="skeleton-loader" *ngIf="isLoadingSchedule">
+      <div class="booking-card trip-card skeleton-card">
+        <div class="shimmer-title shimmer" style="width: 40%;"></div>
+        <div class="shimmer-text shimmer" style="height: 30px; margin: 15px 0;"></div>
+        <div class="shimmer-text shimmer" style="width: 100%;"></div>
+        <div class="shimmer-text shimmer" style="width: 80%;"></div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+           <div class="shimmer" style="flex: 1; height: 48px; border-radius: 12px;"></div>
+           <div class="shimmer" style="flex: 1; height: 48px; border-radius: 12px;"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Active Trip Card -->
