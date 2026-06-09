@@ -134,7 +134,3 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/broadcasting/auth', [\Illuminate\Broadcasting\BroadcastController::class, 'authenticate']);
 
 });
-
-// ==========================================
-// CHATBOT CUSTOMER SERVICE DEMO ROUTES (Removed)
-// ==========================================
