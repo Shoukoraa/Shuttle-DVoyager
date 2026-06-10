@@ -36,6 +36,7 @@ class AdminWebController extends Controller
         $reportData = $this->buildMonthlyReportData($request);
 
         $pdf = Pdf::loadView('admin.reports.monthly', $reportData)
+            ->setOption('isRemoteEnabled', true)
             ->setPaper('a4', 'portrait');
 
         return $pdf->download(sprintf('laporan-bulanan-%04d-%02d.pdf', $reportData['selected_year'], $reportData['selected_month']));

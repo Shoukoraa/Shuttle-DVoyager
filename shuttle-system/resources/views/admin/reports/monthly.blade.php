@@ -124,7 +124,9 @@
 </head>
 <body>
     <div class="header-container">
-        @if(file_exists(public_path('assets/Logo_Dvoyager.png')))
+        @if(file_exists(public_path('assets/Logo_Dvoyager_No_Bg.png')))
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/Logo_Dvoyager_No_Bg.png'))) }}" class="logo" alt="D-Voyager Logo">
+        @elseif(file_exists(public_path('assets/Logo_Dvoyager.png')))
             <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/Logo_Dvoyager.png'))) }}" class="logo" alt="D-Voyager Logo">
         @endif
         <h1>D-VOYAGER SHUTTLE</h1>
