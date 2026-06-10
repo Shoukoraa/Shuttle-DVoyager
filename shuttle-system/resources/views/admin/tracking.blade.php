@@ -8,6 +8,7 @@
 <!-- Memuat Pusher dan Laravel Echo untuk Real-Time WebSockets -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pusher/8.3.0/pusher.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <div class="space-y-8 animate-fade-in">
     
@@ -416,21 +417,43 @@
     // 6. Inisialisasi Laravel Echo Real-Time Listener
     function setupEcho() {
         window.Pusher = Pusher;
-        var echoConfig = {
-            broadcaster: 'reverb',
-            key: '{{ env("REVERB_APP_KEY") }}',
-            wsHost: '{{ env("VITE_REVERB_HOST", "localhost") }}',
-            wsPort: {{ env("VITE_REVERB_PORT", 8080) }},
-            wssPort: {{ env("VITE_REVERB_PORT", 8080) }},
-            forceTLS: (window.location.protocol === 'https:' || '{{ env("VITE_REVERB_SCHEME") }}' === 'https'),
-            enabledTransports: ['ws', 'wss'],
-            authEndpoint: '/admin/broadcasting/auth',
-            auth: {
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        
+        // Setup Axios for Echo Auth
+        axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+        
+        var broadcastDriver = '{{ env("BROADCAST_CONNECTION", "reverb") }}';
+        var echoConfig;
+
+        if (broadcastDriver === 'pusher') {
+            echoConfig = {
+                broadcaster: 'pusher',
+                key: '{{ env("PUSHER_APP_KEY") }}',
+                cluster: '{{ env("PUSHER_APP_CLUSTER", "mt1") }}',
+                forceTLS: true,
+                authEndpoint: '/admin/broadcasting/auth',
+                auth: {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
                 }
-            }
-        };
+            };
+        } else {
+            echoConfig = {
+                broadcaster: 'reverb',
+                key: '{{ env("REVERB_APP_KEY") }}',
+                wsHost: '{{ env("REVERB_HOST", "localhost") }}',
+                wsPort: {{ env("REVERB_PORT", 8080) }},
+                wssPort: {{ env("REVERB_PORT", 8080) }},
+                forceTLS: false,
+                enabledTransports: ['ws', 'wss'],
+                authEndpoint: '/admin/broadcasting/auth',
+                auth: {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                }
+            };
+        }
 
         var echoInstance = new Echo(echoConfig);
 

@@ -6,7 +6,7 @@
         <img src="assets/Logo_Dvoyager_No_Bg.png" alt="D-Voyager Logo">
       </div>
       <h1>D-Voyager</h1>
-      <p>Login to your account</p>
+      <p>Driver Login</p>
     </div>
 
     <!-- Login Form -->
@@ -39,17 +39,11 @@
       <div class="error-banner" *ngIf="errorMessage">
         {{ errorMessage }}
       </div>
-
-      <ion-button expand="block" fill="outline" class="google-btn" (click)="loginWithGoogle()">
-        <ion-icon slot="start" name="logo-google"></ion-icon>
-        Continue with Google
-      </ion-button>
     </div>
     
     <!-- Sign Up Link -->
     <div class="signup-section">
-      <p>Don't have an account? <a routerLink="/signup">Sign Up</a></p>
-      <p style="margin-top: 10px;">Are you a driver? <a routerLink="/driver-login">Login as Driver</a></p>
+      <p style="margin-top: 10px;">Are you a customer? <a routerLink="/login">Login as Customer</a></p>
     </div>
   </div>
 </ion-content>

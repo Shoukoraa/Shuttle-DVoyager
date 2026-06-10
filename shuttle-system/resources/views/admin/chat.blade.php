@@ -96,16 +96,29 @@
 
     function initEcho() {
         window.Pusher = Pusher;
-        const echoConfig = {
-            broadcaster: 'reverb',
-            key: '{{ env("REVERB_APP_KEY") }}',
-            wsHost: '{{ env("REVERB_HOST", "localhost") }}',
-            wsPort: {{ env("REVERB_PORT", 8080) }},
-            wssPort: {{ env("REVERB_PORT", 8080) }},
-            forceTLS: false,
-            enabledTransports: ['ws', 'wss'],
-            authEndpoint: '/admin/broadcasting/auth'
-        };
+        var broadcastDriver = '{{ env("BROADCAST_CONNECTION", "reverb") }}';
+        var echoConfig;
+
+        if (broadcastDriver === 'pusher') {
+            echoConfig = {
+                broadcaster: 'pusher',
+                key: '{{ env("PUSHER_APP_KEY") }}',
+                cluster: '{{ env("PUSHER_APP_CLUSTER", "mt1") }}',
+                forceTLS: true,
+                authEndpoint: '/admin/broadcasting/auth'
+            };
+        } else {
+            echoConfig = {
+                broadcaster: 'reverb',
+                key: '{{ env("REVERB_APP_KEY") }}',
+                wsHost: '{{ env("REVERB_HOST", "localhost") }}',
+                wsPort: {{ env("REVERB_PORT", 8080) }},
+                wssPort: {{ env("REVERB_PORT", 8080) }},
+                forceTLS: false,
+                enabledTransports: ['ws', 'wss'],
+                authEndpoint: '/admin/broadcasting/auth'
+            };
+        }
 
         adminEcho = new Echo(echoConfig);
 
