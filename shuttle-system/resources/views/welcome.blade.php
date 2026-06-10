@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>D-Voyager Shuttle - Sistem Manajemen & Pemesanan Tiket Shuttle Terpadu</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png?v=1') }}">
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="D-Voyager Shuttle adalah sistem manajemen dan pemesanan tiket shuttle terpadu dengan pelacakan GPS real-time, seleksi kursi otomatis, dan pembayaran digital instan.">
