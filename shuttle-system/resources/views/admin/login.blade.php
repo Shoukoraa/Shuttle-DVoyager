@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Keamanan Admin - Shuttle D-Voyager</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     
     <!-- Google Fonts: Outfit (Brand & Headings) & Inter (Typography) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

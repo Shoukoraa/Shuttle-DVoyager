@@ -489,17 +489,47 @@
   --background: var(--white);
   --border-radius: 24px 24px 0 0;
   --height: 90%;
+  --max-height: 90%;
   --bottom: 0;
   align-items: flex-end;
   
   &::part(content) {
     border-radius: 24px 24px 0 0;
+    overflow: hidden;
+  }
+
+  .modal-grip {
+    width: 72px;
+    height: 28px;
+    margin: 4px auto 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    touch-action: manipulation;
+
+    &::before {
+      content: '';
+      width: 48px;
+      height: 5px;
+      border-radius: 3px;
+      background: #cbd5e1; /* Subtle slate gray handle */
+      display: block;
+    }
+
+    &:active::before {
+      background: #94a3b8;
+    }
   }
 
   .modal-toolbar {
     --background: var(--white);
     --color: var(--dark-gray);
     --border-width: 0;
+    padding-top: 16px; /* Space for the drag handle to prevent overlap */
     
     ion-title {
       font-weight: 800;
@@ -533,6 +563,13 @@
 .modal-scroll-content {
   --background: var(--white);
   --padding-top: 0;
+  height: 100%;
+
+  &::part(scroll) {
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .location-list {
@@ -544,10 +581,13 @@
     --border-radius: 16px;
     --padding-start: 12px;
     --padding-end: 12px;
+    --min-height: 64px;
     margin-bottom: 8px;
     border: 1px solid rgba(0, 0, 0, 0.03);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    transition: all 0.2s ease;
+    contain: content;
+    transition: transform 0.15s ease, background 0.15s ease;
+    will-change: transform;
 
     &:active {
       transform: scale(0.98);
@@ -587,6 +627,30 @@
       color: #FBC02D; /* Primary accent yellow check */
     }
   }
+
+  .empty-location-item {
+    --background: transparent;
+    --min-height: 72px;
+    text-align: center;
+
+    h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--dark-gray);
+      margin: 0 0 4px;
+    }
+
+    p {
+      font-size: 12px;
+      color: #64748b;
+      margin: 0;
+    }
+  }
+}
+
+.modal-bottom-spacer {
+  height: 120px;
+  pointer-events: none;
 }
 
 /* Custom visual presentation inside trigger */

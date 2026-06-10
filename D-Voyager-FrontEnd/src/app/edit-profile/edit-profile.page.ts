@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { ToastController, LoadingController } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
+import { catchError, firstValueFrom, of, timeout } from 'rxjs';
 
 @Component({
   selector: 'app-edit-profile',
@@ -25,9 +26,13 @@ export class EditProfilePage implements OnInit {
   errorMessage = '';
   passwordErrorMessage = '';
 
+  isDeletingAccount = false;
+  isDeleteAccountModalOpen = false;
+
   constructor(
     private router: Router,
     private toastController: ToastController,
+    private loadingController: LoadingController,
     private apiService: ApiService
   ) { }
 
@@ -242,5 +247,49 @@ export class EditProfilePage implements OnInit {
     });
 
     await toast.present();
+  }
+
+  openDeleteAccountModal() {
+    if (this.isDeletingAccount || this.isSaving || this.isSavingPassword) {
+      return;
+    }
+    this.isDeleteAccountModalOpen = true;
+  }
+
+  confirmDeleteAccount() {
+    this.isDeleteAccountModalOpen = false;
+    this.performDeleteAccount();
+  }
+
+  private async performDeleteAccount() {
+    this.isDeletingAccount = true;
+
+    const loading = await this.loadingController.create({
+      message: 'Menghapus akun...',
+      spinner: 'crescent',
+    });
+
+    await loading.present();
+
+    await firstValueFrom(
+      this.apiService.deleteAccount().pipe(
+        timeout({ first: 5000 }),
+        catchError((error) => {
+          console.error('Delete Account API error:', error);
+          return of(null);
+        })
+      )
+    );
+
+    await loading.dismiss();
+    this.isDeletingAccount = false;
+
+    // Hapus sisa data Auth
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
+    localStorage.removeItem('user_role');
+
+    // Redirect ke landing page
+    this.router.navigate(['/landing'], { replaceUrl: true });
   }
 }

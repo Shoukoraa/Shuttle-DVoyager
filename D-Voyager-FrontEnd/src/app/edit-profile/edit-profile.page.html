@@ -5,7 +5,7 @@
       <ion-back-button defaultHref="/profile" icon="arrow-back" text="" class="back-btn"></ion-back-button>
       <h2>Edit Profil</h2>
     </div>
-    
+
     <div class="profile-summary">
       <label class="avatar-circle" for="profilePhotoInput">
         <img *ngIf="profilePhotoUrl" [src]="profilePhotoUrl" alt="Foto profil" referrerpolicy="no-referrer">
@@ -15,13 +15,8 @@
         </span>
         <ion-spinner *ngIf="isUploadingPhoto" name="crescent"></ion-spinner>
       </label>
-      <input
-        id="profilePhotoInput"
-        class="photo-input"
-        type="file"
-        accept="image/png,image/jpeg,image/webp"
-        (change)="uploadProfilePhoto($event)"
-        [disabled]="isLoading || isUploadingPhoto">
+      <input id="profilePhotoInput" class="photo-input" type="file" accept="image/png,image/jpeg,image/webp"
+        (change)="uploadProfilePhoto($event)" [disabled]="isLoading || isUploadingPhoto">
       <h1>{{ name || 'User' }}</h1>
       <p>{{ email || 'Email tidak tersedia' }}</p>
     </div>
@@ -33,15 +28,8 @@
         <ion-label class="custom-label">Nama Lengkap</ion-label>
         <ion-item class="custom-input-item" lines="none">
           <ion-icon name="person-outline" slot="start"></ion-icon>
-          <ion-input
-            type="text"
-            name="name"
-            [(ngModel)]="name"
-            placeholder="Masukkan nama lengkap"
-            autocomplete="name"
-            maxlength="50"
-            [disabled]="isLoading || isSaving"
-            required>
+          <ion-input type="text" name="name" [(ngModel)]="name" placeholder="Masukkan nama lengkap" autocomplete="name"
+            maxlength="50" [disabled]="isLoading || isSaving" required>
           </ion-input>
         </ion-item>
       </div>
@@ -50,11 +38,7 @@
         <ion-label class="custom-label">Email</ion-label>
         <ion-item class="custom-input-item readonly" lines="none">
           <ion-icon name="mail-outline" slot="start"></ion-icon>
-          <ion-input
-            type="email"
-            name="email"
-            [(ngModel)]="email"
-            readonly>
+          <ion-input type="email" name="email" [(ngModel)]="email" readonly>
           </ion-input>
         </ion-item>
         <p class="hint-text">Email mengikuti akun login dan tidak bisa diubah dari aplikasi.</p>
@@ -64,15 +48,8 @@
         <ion-label class="custom-label">Nomor Telepon</ion-label>
         <ion-item class="custom-input-item" lines="none">
           <ion-icon name="call-outline" slot="start"></ion-icon>
-          <ion-input
-            type="tel"
-            name="phone"
-            [(ngModel)]="phone"
-            placeholder="Contoh: 081234567890"
-            autocomplete="tel"
-            inputmode="tel"
-            maxlength="20"
-            [disabled]="isLoading || isSaving">
+          <ion-input type="tel" name="phone" [(ngModel)]="phone" placeholder="Contoh: 081234567890" autocomplete="tel"
+            inputmode="tel" maxlength="20" [disabled]="isLoading || isSaving">
           </ion-input>
         </ion-item>
       </div>
@@ -111,5 +88,35 @@
         <span>{{ (isSaving || isSavingPassword) ? 'Menyimpan...' : 'Simpan Semua Perubahan' }}</span>
       </ion-button>
     </form>
+
+    <!-- Danger Zone for Account Deletion -->
+    <div class="danger-zone">
+      <h3>PERINGATAN!</h3>
+      <p>Menghapus akun akan menghapus semua data tiket dan informasi profil Anda secara permanen. Tindakan ini tidak
+        dapat dibatalkan.</p>
+      <button type="button" class="delete-account-btn" (click)="openDeleteAccountModal()"
+        [disabled]="isLoading || isSaving || isSavingPassword || isDeletingAccount">
+        <ion-icon name="trash-outline"></ion-icon>
+        <span>Hapus Akun Permanen</span>
+      </button>
+    </div>
   </div>
+
+  <!-- Delete Account Confirmation Modal -->
+  <ion-modal [isOpen]="isDeleteAccountModalOpen" (didDismiss)="isDeleteAccountModalOpen = false"
+    class="premium-logout-modal delete-account-modal">
+    <ng-template>
+      <div class="logout-modal-wrapper">
+        <div class="alert-icon-wrapper delete-icon">
+          <ion-icon name="trash-outline"></ion-icon>
+        </div>
+        <h2>Hapus Akun?</h2>
+        <p>Semua data tiket dan informasi akun akan dihapus secara permanen dan tidak dapat dikembalikan.</p>
+        <div class="modal-action-buttons">
+          <button class="btn-cancel" (click)="isDeleteAccountModalOpen = false">Batal</button>
+          <button class="btn-confirm delete-btn" (click)="confirmDeleteAccount()">Hapus</button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
 </ion-content>

@@ -23,6 +23,8 @@ export class HomePage implements OnInit {
   public isTujuanModalOpen = false;
   public asalSearch = '';
   public tujuanSearch = '';
+  public filteredAsalLocations: any[] = [];
+  public filteredTujuanLocations: any[] = [];
 
   public promos: any[] = [];
   public isLoadingPromos = true;
@@ -77,6 +79,7 @@ export class HomePage implements OnInit {
         console.log('Locations raw response:', res);
         const rawList = Array.isArray(res) ? res : Object.values(res || {});
         this.locations = rawList.filter(loc => loc && typeof loc === 'object' && typeof loc.name === 'string');
+        this.refreshFilteredLocations();
         this.isLoadingLocations = false;
         console.log('Locations parsed list:', this.locations);
       },
@@ -201,12 +204,22 @@ export class HomePage implements OnInit {
 
   openAsalModal() {
     this.asalSearch = '';
+    this.updateAsalFilter('');
     this.isAsalModalOpen = true;
+  }
+
+  closeAsalModal() {
+    this.isAsalModalOpen = false;
   }
 
   openTujuanModal() {
     this.tujuanSearch = '';
+    this.updateTujuanFilter('');
     this.isTujuanModalOpen = true;
+  }
+
+  closeTujuanModal() {
+    this.isTujuanModalOpen = false;
   }
 
   selectAsal(loc: any) {
@@ -229,11 +242,33 @@ export class HomePage implements OnInit {
     return loc ? loc.name : '';
   }
 
-  getFilteredLocations(query: string): any[] {
-    const validLocs = (this.locations || []).filter(loc => loc && typeof loc === 'object' && typeof loc.name === 'string');
-    if (!query) return validLocs;
-    return validLocs.filter(loc => 
-      loc.name.toLowerCase().includes(query.toLowerCase())
+  updateAsalFilter(query: string): void {
+    this.filteredAsalLocations = this.filterLocations(query);
+  }
+
+  updateTujuanFilter(query: string): void {
+    this.filteredTujuanLocations = this.filterLocations(query);
+  }
+
+  trackByLocationId(_: number, loc: any): number | string {
+    return loc?.id ?? loc?.name;
+  }
+
+  private refreshFilteredLocations(): void {
+    this.filteredAsalLocations = this.filterLocations(this.asalSearch);
+    this.filteredTujuanLocations = this.filterLocations(this.tujuanSearch);
+  }
+
+  private filterLocations(query: string): any[] {
+    const keyword = (query || '').trim().toLowerCase();
+    const validLocs = this.locations || [];
+
+    if (!keyword) {
+      return validLocs;
+    }
+
+    return validLocs.filter(loc =>
+      loc.name.toLowerCase().includes(keyword)
     );
   }
 
