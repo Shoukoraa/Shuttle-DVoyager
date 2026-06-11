@@ -96,6 +96,8 @@
               id="datetime" 
               presentation="date" 
               [(ngModel)]="tanggal"
+              (ngModelChange)="onTanggalChange($event)"
+              [min]="minTravelDate"
               [showDefaultButtons]="true"
               doneText="Pilih"
               cancelText="Batal"

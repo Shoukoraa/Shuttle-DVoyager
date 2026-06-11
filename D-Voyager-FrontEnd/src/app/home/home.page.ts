@@ -16,7 +16,8 @@ export class HomePage implements OnInit {
   public locations: any[] = [];
   public asalId: number | null = null;
   public tujuanId: number | null = null;
-  public tanggal: string = new Date().toISOString();
+  public minTravelDate: string = this.getTodayDateValue();
+  public tanggal: string = this.minTravelDate;
   public isSwapping = false;
 
   public isAsalModalOpen = false;
@@ -39,6 +40,7 @@ export class HomePage implements OnInit {
   ) {}
 
   ionViewWillEnter() {
+    this.refreshMinimumTravelDate();
     this.initTabSlideAnimation(0);
 
     const role = localStorage.getItem('user_role');
@@ -64,6 +66,8 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
+    this.refreshMinimumTravelDate();
+
     const role = localStorage.getItem('user_role');
     if (role === 'driver') {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
@@ -159,47 +163,53 @@ export class HomePage implements OnInit {
   }
 
   setToday() {
-    this.tanggal = new Date().toISOString();
+    this.tanggal = this.minTravelDate;
   }
 
   setTomorrow() {
     const tmr = new Date();
     tmr.setDate(tmr.getDate() + 1);
-    this.tanggal = tmr.toISOString();
+    this.tanggal = this.formatDateValue(tmr);
   }
 
   isToday(): boolean {
     if (!this.tanggal) return false;
-    const today = new Date();
-    const current = new Date(this.tanggal);
-    return today.toDateString() === current.toDateString();
+    return this.minTravelDate === this.normalizeDateValue(this.tanggal);
   }
 
   isTomorrow(): boolean {
     if (!this.tanggal) return false;
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const current = new Date(this.tanggal);
-    return tomorrow.toDateString() === current.toDateString();
+    return this.formatDateValue(tomorrow) === this.normalizeDateValue(this.tanggal);
   }
 
   getFormattedDate(): string {
     if (!this.tanggal) return 'Pilih Tanggal';
-    const dateObj = new Date(this.tanggal);
+    const dateObj = this.parseDateValue(this.tanggal);
     const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     return dateObj.toLocaleDateString('id-ID', options);
   }
 
   getCalendarMonth(): string {
     if (!this.tanggal) return 'MEI';
-    const dateObj = new Date(this.tanggal);
+    const dateObj = this.parseDateValue(this.tanggal);
     return dateObj.toLocaleDateString('id-ID', { month: 'short' }).toUpperCase();
   }
 
   getCalendarDay(): string {
     if (!this.tanggal) return '27';
-    const dateObj = new Date(this.tanggal);
+    const dateObj = this.parseDateValue(this.tanggal);
     return dateObj.toLocaleDateString('id-ID', { day: '2-digit' });
+  }
+
+  onTanggalChange(value: string | null | undefined): void {
+    if (!value) {
+      this.tanggal = this.minTravelDate;
+      return;
+    }
+
+    this.tanggal = this.isPastTravelDate(value) ? this.minTravelDate : value;
   }
 
   openAsalModal() {
@@ -288,9 +298,24 @@ export class HomePage implements OnInit {
       return;
     }
 
+    if (!this.tanggal || this.isPastTravelDate(this.tanggal)) {
+      this.tanggal = this.minTravelDate;
+      const alert = await this.alertController.create({
+        header: 'Tanggal Tidak Valid',
+        message: 'Tanggal perjalanan tidak boleh sebelum hari ini.',
+        cssClass: 'premium-alert',
+        buttons: [{
+          text: 'Mengerti',
+          role: 'confirm',
+          cssClass: 'alert-button-confirm'
+        }]
+      });
+      await alert.present();
+      return;
+    }
+
     // Format date to YYYY-MM-DD
-    const dateObj = new Date(this.tanggal);
-    const formattedDate = dateObj.toISOString().split('T')[0];
+    const formattedDate = this.normalizeDateValue(this.tanggal);
 
     this.router.navigate(['/schedule'], {
       queryParams: {
@@ -299,6 +324,38 @@ export class HomePage implements OnInit {
         date: formattedDate
       }
     });
+  }
+
+  private refreshMinimumTravelDate(): void {
+    this.minTravelDate = this.getTodayDateValue();
+
+    if (!this.tanggal || this.isPastTravelDate(this.tanggal)) {
+      this.tanggal = this.minTravelDate;
+    }
+  }
+
+  private isPastTravelDate(value: string): boolean {
+    return this.normalizeDateValue(value) < this.minTravelDate;
+  }
+
+  private getTodayDateValue(): string {
+    return this.formatDateValue(new Date());
+  }
+
+  private normalizeDateValue(value: string): string {
+    return value.split('T')[0];
+  }
+
+  private parseDateValue(value: string): Date {
+    const [year, month, day] = this.normalizeDateValue(value).split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  private formatDateValue(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   loadHomePromos() {
