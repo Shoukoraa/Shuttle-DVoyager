@@ -370,7 +370,7 @@ export class ChatbotPage implements OnInit {
     if (this.isInputDisabled()) {
       return 'Silakan selesaikan kendala Anda di atas...';
     }
-    return 'Tanya Voyager Bot...';
+    return 'Tanya ke Kiperina...';
   }
 
   handleBotInput(text: string) {
