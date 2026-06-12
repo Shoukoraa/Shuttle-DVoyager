@@ -285,9 +285,15 @@ export class HomePage implements OnInit {
   async searchShuttle() {
     if (!this.asalId || !this.tujuanId) {
       const alert = await this.alertController.create({
-        header: 'Pilih Lokasi',
-        message: 'Silakan pilih kota asal dan tujuan terlebih dahulu untuk mencari jadwal.',
-        cssClass: 'premium-alert',
+        message: `
+          <div class="location-alert-content">
+            <div class="location-alert-visual">
+              <img src="assets/bingung.png" alt="" class="location-alert-image" />
+            </div>
+            <p>Silakan pilih kota asal dan tujuan terlebih dahulu untuk mencari jadwal.</p>
+          </div>
+        `,
+        cssClass: 'premium-alert location-alert',
         buttons: [{
           text: 'Cari',
           role: 'confirm',
