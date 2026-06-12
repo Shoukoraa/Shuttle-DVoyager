@@ -14,6 +14,28 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/contact', function (\Illuminate\Http\Request $request) {
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'subject' => 'required|string|max:255',
+        'message' => 'required|string',
+    ]);
+
+    try {
+        \Illuminate\Support\Facades\Mail::raw($data['message'], function ($message) use ($data) {
+            $message->to('domiini1c.id@gmail.com')
+                    ->subject($data['subject'] . ' - Dari: ' . $data['name'])
+                    ->from($data['email'], $data['name'])
+                    ->replyTo($data['email'], $data['name']);
+        });
+
+        return response()->json(['success' => true, 'message' => 'Pesan berhasil dikirim!']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Gagal mengirim email: ' . $e->getMessage()], 500);
+    }
+});
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN AUTH

@@ -121,8 +121,10 @@ export class AppComponent {
   private async setupStatusBar() {
     if (this.platform.is('cordova') || this.platform.is('capacitor')) {
       try {
-        await StatusBar.setOverlaysWebView({ overlay: false });
-        await StatusBar.setBackgroundColor({ color: '#ffffff' });
+        // Set overlay to true for a more modern immersive look
+        // This requires safe-area-inset-top padding in CSS (already added)
+        await StatusBar.setOverlaysWebView({ overlay: true });
+        await StatusBar.setBackgroundColor({ color: 'transparent' });
         await StatusBar.setStyle({ style: Style.Light });
       } catch (err) {
         console.warn('Failed to configure StatusBar:', err);

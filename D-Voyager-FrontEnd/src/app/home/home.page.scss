@@ -6,7 +6,7 @@
 /* Diagonal Header */
 .header-diagonal {
   background: var(--primary-color);
-  padding: 48px 24px 60px;
+  padding: calc(var(--ion-safe-area-top, 0px) + 24px) 24px 60px;
   clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
   position: relative;
   z-index: 1;

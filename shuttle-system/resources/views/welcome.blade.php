@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>D-Voyager Shuttle - Sistem Manajemen & Pemesanan Tiket Shuttle Terpadu</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png?v=1') }}">
     
@@ -89,12 +90,91 @@
         .text-glow-yellow {
             text-shadow: 0 0 15px rgba(251, 192, 45, 0.3);
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
         }
         .floating-mockup {
             animation: float 4s ease-in-out infinite;
+        }
+
+        /* Mobile Ticket Simulation Style */
+        .ticket-card {
+            background: white;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: visible;
+        }
+        .ticket-cutout {
+            position: absolute;
+            top: 68%;
+            width: 24px;
+            height: 24px;
+            background: #F8F9FA; /* Matches section bg */
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        .ticket-cutout.left { left: -14px; box-shadow: inset -4px 0 6px rgba(0,0,0,0.02); }
+        .ticket-cutout.right { right: -14px; box-shadow: inset 4px 0 6px rgba(0,0,0,0.02); }
+        
+        .ticket-divider {
+            border-top: 2px dashed #E5E7EB;
+            width: calc(100% - 32px);
+            margin: 0 auto;
+        }
+
+        /* Mobile Seat Simulation Style */
+        .seat-btn {
+            width: 44px;
+            height: 48px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 13px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            color: #1E1E1E;
+        }
+        .seat-btn::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.04);
+        }
+        .seat-btn.selected {
+            background: #FBC02D;
+            border-color: #FBC02D;
+            box-shadow: 0 8px 16px rgba(251, 192, 45, 0.3);
+        }
+        .seat-btn.selected::before {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .seat-btn.unavailable {
+            background: #f3f4f6;
+            color: #d1d5db;
+            cursor: not-allowed;
+            border-color: #e5e7eb;
+        }
+        .seat-btn:active:not(.unavailable) {
+            transform: scale(0.92);
         }
     </style>
 </head>
@@ -412,96 +492,114 @@
                 <p class="text-dark-700 text-sm sm:text-base">Rasakan kemudahan pencarian jadwal armada kami. Coba form simulasi di bawah ini untuk melihat ketersediaan tiket.</p>
             </div>
 
-            <!-- Simulator Widget Frame (#1E1E1E Dark background with white inputs) -->
-            <div class="bg-dark-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-dark-800 relative">
-                <div class="absolute -top-4 -right-4 bg-brand-500 text-dark-900 font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-lg transform rotate-3 animate-pulse">
-                    🔒 Keamanan DompetX Terintegrasi
+            <!-- Simulator Widget Frame (Match Mobile Design: Light themed with premium cards) -->
+            <div class="bg-white rounded-[32px] p-6 sm:p-10 shadow-2xl border border-slate-300/40 relative overflow-hidden">
+                <div class="absolute -top-1 right-10 md:right-16 h-8 w-24 bg-slate-100 rounded-b-2xl border-x border-b border-slate-200/50 flex items-center justify-center gap-1">
+                    <span class="h-1 w-8 rounded-full bg-slate-300"></span>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 mt-4">
                     <!-- Origin Selector -->
                     <div>
-                        <label class="block text-xs font-bold text-brand-500 uppercase tracking-wider mb-2">Kota Asal</label>
-                        <select id="sim-origin" class="w-full bg-dark-850 border border-dark-800 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:border-brand-500 transition-colors">
-                            <option value="Jakarta">Jakarta (Kuningan)</option>
-                            <option value="Bandung">Bandung (Dago)</option>
-                            <option value="Surabaya">Surabaya (Tunjungan)</option>
-                            <option value="Yogyakarta">Yogyakarta (Malioboro)</option>
-                        </select>
+                        <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-[0.1em] mb-2 px-1">Kota Asal</label>
+                        <div class="relative group">
+                            <select id="sim-origin" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all appearance-none cursor-pointer">
+                                <option value="Jakarta">Jakarta (Kuningan)</option>
+                                <option value="Bandung">Bandung (Dago)</option>
+                                <option value="Surabaya">Surabaya (Tunjungan)</option>
+                                <option value="Yogyakarta">Yogyakarta (Malioboro)</option>
+                            </select>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-dark-400">▼</div>
+                        </div>
                     </div>
                     
                     <!-- Destination Selector -->
                     <div>
-                        <label class="block text-xs font-bold text-brand-500 uppercase tracking-wider mb-2">Kota Tujuan</label>
-                        <select id="sim-dest" class="w-full bg-dark-850 border border-dark-800 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:border-brand-500 transition-colors">
-                            <option value="Bandung">Bandung (Dago)</option>
-                            <option value="Jakarta" selected>Jakarta (Kuningan)</option>
-                            <option value="Yogyakarta">Yogyakarta (Malioboro)</option>
-                            <option value="Surabaya">Surabaya (Tunjungan)</option>
-                        </select>
+                        <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-[0.1em] mb-2 px-1">Kota Tujuan</label>
+                        <div class="relative group">
+                            <select id="sim-dest" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all appearance-none cursor-pointer">
+                                <option value="Bandung">Bandung (Dago)</option>
+                                <option value="Jakarta" selected>Jakarta (Kuningan)</option>
+                                <option value="Yogyakarta">Yogyakarta (Malioboro)</option>
+                                <option value="Surabaya">Surabaya (Tunjungan)</option>
+                            </select>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-dark-400">▼</div>
+                        </div>
                     </div>
 
                     <!-- Date Picker -->
                     <div>
-                        <label class="block text-xs font-bold text-brand-500 uppercase tracking-wider mb-2">Tanggal Keberangkatan</label>
-                        <input type="date" id="sim-date" class="w-full bg-dark-850 border border-dark-800 rounded-xl px-4 py-2.5 text-white font-semibold focus:outline-none focus:border-brand-500 transition-colors" value="2026-05-27">
+                        <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-[0.1em] mb-2 px-1">Tanggal</label>
+                        <input type="date" id="sim-date" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all" value="2026-06-12">
                     </div>
                 </div>
 
-                <button type="button" onclick="runSimulasi()" class="w-full bg-brand-500 text-dark-900 font-extrabold py-4 rounded-2xl hover:bg-brand-600 hover:shadow-lg transition-all transform hover:-translate-y-0.5 text-center">
-                    Cari Jadwal Shuttle
-                </button>
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <button type="button" onclick="runSimulasi()" class="w-full bg-brand-500 text-dark-900 font-extrabold py-4 rounded-2xl hover:bg-brand-600 shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30 transition-all transform hover:-translate-y-0.5 text-center flex items-center justify-center gap-2 group">
+                        Cari Tiket Sekarang
+                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </div>
 
                 <!-- Results Output (Initially Hidden) -->
-                <div id="sim-results" class="hidden mt-8 border-t border-dark-800 pt-6">
-                    <h3 class="font-outfit font-bold text-lg text-brand-500 mb-4">Jadwal Perjalanan Tersedia</h3>
-                    <div id="sim-routes-container" class="space-y-4">
-                        <!-- Result Items will be injected here via Javascript -->
+                <div id="sim-results" class="hidden mt-12 bg-slate-50/50 -mx-6 sm:-mx-10 p-6 sm:p-10 border-t border-slate-200/60">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="font-outfit font-extrabold text-xl text-dark-900">Jadwal Tersedia</h3>
+                        <span id="results-count" class="text-xs font-bold text-dark-400 bg-white border border-slate-200 px-3 py-1 rounded-full">3 Armada Ditemukan</span>
+                    </div>
+                    <div id="sim-routes-container" class="space-y-6">
+                        <!-- Result Items in Ticket Style will be injected here -->
                     </div>
                 </div>
 
-                <!-- Seat Map Output (Initially Hidden) -->
-                <div id="sim-seats-container" class="hidden mt-8 border-t border-dark-800 pt-6 bg-dark-850 p-6 rounded-2xl border border-dark-800">
-                    <div class="flex justify-between items-center mb-6">
+                <!-- Seat Map Output (Initially Hidden, Match Mobile Seat Selection UI) -->
+                <div id="sim-seats-container" class="hidden mt-4 bg-slate-100/50 -mx-6 sm:-mx-10 p-6 sm:p-10 border-t border-slate-200/60 transition-all duration-500">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                         <div>
-                            <h4 class="font-outfit font-bold text-base text-white">Pilih Kursi Penumpang</h4>
-                            <p class="text-xs text-dark-300">Pilih nomor kursi Anda (Toyota HiAce - 10 Kursi)</p>
+                            <h4 class="font-outfit font-extrabold text-xl text-dark-900">Pilih Kursi</h4>
+                            <p class="text-xs font-bold text-dark-400 mt-1">Ketuk kursi yang tersedia untuk membooking</p>
                         </div>
-                        <span id="selected-seat-badge" class="bg-brand-500 text-dark-900 font-extrabold text-xs px-3 py-1 rounded-full">Belum Memilih Kursi</span>
+                        <div id="selected-seat-badge" class="bg-white border border-slate-200 text-dark-900 font-bold text-sm px-5 py-2.5 rounded-2xl shadow-sm flex items-center gap-2">
+                           <span class="w-2 h-2 rounded-full bg-slate-300"></span> Belum Memilih Kursi
+                        </div>
                     </div>
 
-                    <!-- Seat Layout Grid -->
-                    <div class="max-w-[280px] mx-auto bg-white p-6 rounded-2xl shadow-inner border border-slate-300 flex flex-col items-center">
-                        <div class="w-full bg-slate-100 text-center font-bold text-slate-500 py-1.5 rounded-lg mb-6 text-[10px] uppercase tracking-widest">Bagian Depan / Supir</div>
+                    <!-- Premium Seat Layout Container -->
+                    <div class="max-w-[320px] mx-auto bg-white p-8 rounded-[40px] shadow-xl border border-slate-200/60 relative flex flex-col items-center">
+                        <div class="w-full bg-slate-50 text-center font-black text-slate-400 py-2.5 rounded-2xl mb-8 text-[10px] uppercase tracking-[0.2em] border border-slate-200/40">BAGIAN DEPAN / SUPIR</div>
                         
-                        <div class="grid grid-cols-3 gap-4 w-full">
-                            <!-- Driver Seat (Disabled) -->
-                            <div class="bg-slate-200 text-slate-400 font-bold h-11 flex items-center justify-center rounded-lg cursor-not-allowed text-xs">🚗</div>
-                            <div></div>
+                        <!-- The Seat grid mimicking the mobile experience -->
+                        <div class="grid grid-cols-3 gap-6 w-full">
+                            <!-- Driver Space -->
+                            <div class="w-[44px] h-[48px] border-2 border-dashed border-slate-200 bg-slate-50 rounded-xl flex items-center justify-center text-slate-300 text-lg opacity-60">
+                                🚐
+                            </div>
+                            <div class="w-[44px]"></div>
                             <!-- Seat 1 -->
-                            <button onclick="selectSeat('1')" class="bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 font-bold h-11 flex items-center justify-center rounded-lg text-xs transition-colors">01</button>
+                            <button id="seat-1" onclick="selectSeat('1')" class="seat-btn">01</button>
                             
                             <!-- Row 2 -->
-                            <button onclick="selectSeat('2')" class="bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 font-bold h-11 flex items-center justify-center rounded-lg text-xs transition-colors">02</button>
-                            <div class="flex items-center justify-center text-[10px] text-slate-300 font-bold uppercase">Jalur</div>
-                            <button class="bg-red-100 border border-red-200 text-red-500 font-bold h-11 flex items-center justify-center rounded-lg text-xs cursor-not-allowed" disabled>03</button>
+                            <button id="seat-2" onclick="selectSeat('2')" class="seat-btn">02</button>
+                            <div class="flex items-center justify-center"></div>
+                            <button class="seat-btn unavailable" disabled>03</button>
                             
                             <!-- Row 3 -->
-                            <button onclick="selectSeat('4')" class="bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 font-bold h-11 flex items-center justify-center rounded-lg text-xs transition-colors">04</button>
-                            <div class="flex items-center justify-center text-[10px] text-slate-300 font-bold uppercase">Jalur</div>
-                            <button onclick="selectSeat('5')" class="bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 font-bold h-11 flex items-center justify-center rounded-lg text-xs transition-colors">05</button>
+                            <button id="seat-4" onclick="selectSeat('4')" class="seat-btn">04</button>
+                            <div class="flex items-center justify-center"></div>
+                            <button id="seat-5" onclick="selectSeat('5')" class="seat-btn">05</button>
                             
                             <!-- Row 4 -->
-                            <button onclick="selectSeat('6')" class="bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 font-bold h-11 flex items-center justify-center rounded-lg text-xs transition-colors">06</button>
-                            <button class="bg-red-100 border border-red-200 text-red-500 font-bold h-11 flex items-center justify-center rounded-lg text-xs cursor-not-allowed" disabled>07</button>
-                            <button onclick="selectSeat('8')" class="bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 font-bold h-11 flex items-center justify-center rounded-lg text-xs transition-colors">08</button>
+                            <button id="seat-6" onclick="selectSeat('6')" class="seat-btn">06</button>
+                            <button class="seat-btn unavailable" disabled>07</button>
+                            <button id="seat-8" onclick="selectSeat('8')" class="seat-btn">08</button>
                         </div>
                     </div>
 
-                    <!-- Checkout simulator action in Brand Yellow -->
-                    <div id="checkout-action" class="hidden mt-6 text-center">
-                        <button type="button" onclick="checkoutSimulasi()" class="w-full sm:w-auto bg-brand-500 text-dark-900 font-extrabold px-8 py-3.5 rounded-xl hover:bg-brand-600 hover:shadow-lg transition-all transform hover:-translate-y-0.5">
-                            Lanjut Pembayaran Aman (DompetX)
+                    <!-- Action Footer -->
+                    <div id="checkout-action" class="hidden mt-10 text-center animate-bounce-short">
+                        <button type="button" onclick="checkoutSimulasi()" class="w-full sm:w-auto bg-dark-900 text-brand-500 font-black px-10 py-4 rounded-2xl hover:bg-dark-850 shadow-2xl transition-all transform hover:-translate-y-1 active:translate-y-0.5 flex items-center justify-center gap-3 mx-auto">
+                            LANJUT PEMBAYARAN
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                         </button>
                     </div>
                 </div>
@@ -719,27 +817,43 @@
                 <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-300">
                     <h3 class="font-outfit font-bold text-lg text-dark-900 mb-6">Kirim Pesan Langsung</h3>
                     
-                    <form onsubmit="event.preventDefault(); alert('Terimakasih! Pesan Anda telah diterima dan akan segera direspon oleh tim D-Voyager.'); this.reset();" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <form onsubmit="handleContactSubmit(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-xs font-bold text-dark-500 uppercase mb-2">Nama Lengkap</label>
-                                <input type="text" required class="w-full bg-dark-50 border border-slate-300 rounded-xl px-4 py-3 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-colors">
+                                <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-widest mb-2 px-1">Nama Lengkap</label>
+                                <input type="text" id="contact-name" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-dark-500 uppercase mb-2">Alamat Email</label>
-                                <input type="email" required class="w-full bg-dark-50 border border-slate-300 rounded-xl px-4 py-3 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-colors">
+                                <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-widest mb-2 px-1">Alamat Email</label>
+                                <input type="email" id="contact-email" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-all">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-dark-500 uppercase mb-2">Subjek / Topik</label>
-                            <input type="text" required class="w-full bg-dark-50 border border-slate-300 rounded-xl px-4 py-3 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-colors">
+                            <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-widest mb-2 px-1">Subjek / Topik</label>
+                            <div class="relative mb-3">
+                                <select id="contact-subject" required onchange="toggleOtherSubject(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-all appearance-none cursor-pointer font-bold">
+                                    <option value="" disabled selected>Pilih Topik Pertanyaan</option>
+                                    <option value="Pemesanan Tiket">Pemesanan Tiket</option>
+                                    <option value="Layanan Armada">Layanan Armada</option>
+                                    <option value="Kemitraan">Kemitraan</option>
+                                    <option value="Kendala Teknis Transaksi">Kendala Teknis Transaksi</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-dark-400">▼</div>
+                            </div>
+                            
+                            <!-- Dynamic Other Subject Input -->
+                            <div id="other-subject-container" class="hidden animate-fade-in">
+                                <input type="text" id="contact-subject-other" placeholder="Tuliskan subjek lainnya di sini..." class="w-full bg-white border border-brand-300 rounded-2xl px-4 py-3.5 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-all shadow-sm">
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-dark-500 uppercase mb-2">Isi Pesan Anda</label>
-                            <textarea rows="4" required class="w-full bg-dark-50 border border-slate-300 rounded-xl px-4 py-3 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-colors resize-none"></textarea>
+                            <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-widest mb-2 px-1">Isi Pesan Anda</label>
+                            <textarea id="contact-message" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-all resize-none"></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-dark-900 to-dark-850 hover:bg-dark-800 text-brand-500 border border-brand-500/20 font-extrabold py-3 rounded-xl hover:shadow-md transition-all">
-                            Kirim Pesan CS
+                        <button type="submit" id="contact-submit-btn" class="w-full bg-dark-900 text-brand-500 font-black py-4 rounded-2xl hover:bg-dark-850 shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0.5 flex items-center justify-center gap-2">
+                             <span id="btn-text">KIRIM PESAN CS</span>
+                             <span id="btn-loader" class="hidden h-5 w-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></span>
                         </button>
                     </form>
                 </div>
@@ -923,22 +1037,58 @@
             
             routes.forEach(route => {
                 const item = document.createElement('div');
-                item.className = "flex flex-col sm:flex-row justify-between items-start sm:items-center bg-dark-850 p-4 rounded-2xl border border-dark-800 hover:border-brand-500 transition-colors shadow-sm gap-4 text-white";
+                item.className = "ticket-card p-6 flex flex-col md:flex-row gap-6 relative group cursor-pointer hover:-translate-y-1 transition-transform duration-300";
+                item.onclick = () => pilihJadwal(route.id);
                 item.innerHTML = `
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-white text-sm sm:text-base">${route.depart}</span>
-                            <span class="bg-brand-500 text-dark-900 text-[10px] px-2 py-0.5 rounded font-extrabold">${route.id}</span>
+                    <div class="ticket-cutout left"></div>
+                    <div class="ticket-cutout right"></div>
+                    
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-brand-500 text-dark-900 text-[10px] font-black px-2.5 py-1 rounded-lg shadow-sm">${route.id}</div>
+                            <div class="flex items-center gap-1.5 bg-slate-100 px-2 py-0.5 rounded-md">
+                                <span class="text-[10px] font-bold text-dark-400">STATUS:</span>
+                                <span class="flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                <span class="text-[10px] font-black text-emerald-600 uppercase">Aktif</span>
+                            </div>
                         </div>
-                        <span class="text-xs text-dark-300 block mt-0.5">${route.type} • ${origin} ke ${dest}</span>
+                        
+                        <div class="flex items-end gap-6 mb-6">
+                            <div class="text-3xl font-black text-dark-900 leading-none">${route.depart.split(' ')[0]}</div>
+                            <div class="flex-1 h-px bg-slate-200 mb-2 relative">
+                                <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] font-extrabold text-slate-300">D-VOYAGER</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] font-extrabold text-dark-400 uppercase tracking-widest pl-4">Estimasi</div>
+                                <div class="text-xs font-black text-dark-800">Cepat & Aman</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-4 pt-4 border-t border-slate-100">
+                             <div class="flex items-center gap-2 text-xs font-bold text-dark-700">
+                                <span class="p-1.5 bg-brand-50 rounded-lg">🚐</span>
+                                <span>${route.type}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs font-bold text-dark-700">
+                                <span class="p-1.5 bg-slate-50 rounded-lg">📍</span>
+                                <span>${origin} → ${dest}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 border-t sm:border-t-0 border-dark-800 pt-3 sm:pt-0">
-                        <div>
-                            <span class="block font-extrabold text-brand-500 text-sm sm:text-base">${route.price}</span>
-                            <span class="block text-[10px] text-right text-emerald-400 font-semibold">${route.seatsLeft} kursi tersedia</span>
+                    
+                    <div class="md:w-px md:h-24 bg-slate-100 self-center hidden md:block"></div>
+                    <div class="ticket-divider md:hidden"></div>
+
+                    <div class="md:w-48 flex flex-col justify-center items-center md:items-end gap-3 pt-6 md:pt-0">
+                        <div class="text-right">
+                            <div class="text-[10px] font-extrabold text-dark-400 uppercase tracking-widest">Total Harga</div>
+                            <div class="text-2xl font-black text-dark-900">${route.price}</div>
                         </div>
-                        <button type="button" onclick="pilihJadwal('${route.id}')" class="bg-white text-dark-900 font-extrabold text-xs px-4 py-2.5 rounded-xl hover:bg-brand-500 transition-colors">
-                            Pilih
+                        <div class="bg-emerald-50 text-emerald-600 text-[10px] font-black px-3 py-1.5 rounded-full border border-emerald-100/50">
+                            ${route.seatsLeft} KURSI TERSEDIA
+                        </div>
+                        <button type="button" class="w-full bg-dark-900 text-brand-500 font-extrabold text-[11px] py-3 rounded-xl group-hover:bg-brand-500 group-hover:text-dark-900 transition-all shadow-lg active:scale-95">
+                            PILIH JADWAL
                         </button>
                     </div>
                 `;
@@ -959,12 +1109,22 @@
         }
 
         function selectSeat(seatNum) {
+            // Unselect previous
+            if (selectedSeatNum) {
+                const prevSeat = document.getElementById(`seat-${selectedSeatNum}`);
+                if (prevSeat) prevSeat.classList.remove('selected');
+            }
+
             selectedSeatNum = seatNum;
+            const currentSeat = document.getElementById(`seat-${seatNum}`);
+            if (currentSeat) currentSeat.classList.add('selected');
+
             const badge = document.getElementById('selected-seat-badge');
-            badge.textContent = `Kursi terpilih: Nomor ${seatNum}`;
-            badge.className = "bg-brand-500 text-dark-900 font-extrabold text-xs px-3 py-1 rounded-full";
+            badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span> Kursi Terpilih: ${seatNum}`;
+            badge.classList.add('border-brand-500', 'bg-brand-50/50');
             
             document.getElementById('checkout-action').classList.remove('hidden');
+            document.getElementById('checkout-action').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         function checkoutSimulasi() {
@@ -1097,6 +1257,71 @@
             
             // Enable body scroll
             document.body.style.overflow = '';
+        }
+
+        function toggleOtherSubject(value) {
+            const container = document.getElementById('other-subject-container');
+            const otherInput = document.getElementById('contact-subject-other');
+            
+            if (value === 'Lainnya') {
+                container.classList.remove('hidden');
+                otherInput.setAttribute('required', 'required');
+            } else {
+                container.classList.add('hidden');
+                otherInput.removeAttribute('required');
+            }
+        }
+
+        async function handleContactSubmit(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('contact-submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnLoader = document.getElementById('btn-loader');
+            const form = event.target;
+            
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            let subject = document.getElementById('contact-subject').value;
+            const message = document.getElementById('contact-message').value;
+            
+            if (subject === 'Lainnya') {
+                subject = document.getElementById('contact-subject-other').value;
+            }
+
+            // Set Loading state
+            btn.disabled = true;
+            btnText.textContent = "SEDANG MENGIRIM...";
+            btnLoader.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name, email, subject, message })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`Terimakasih ${name}! Pesan Anda telah berhasil dikirim langsung ke tim D-Voyager melalui sistem kami.`);
+                    form.reset();
+                    toggleOtherSubject(''); // Hide custom input if it was open
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Maaf, terjadi masalah saat mengirim pesan: ' + error.message + '. Silakan coba lagi nanti.');
+            } finally {
+                // Reset state
+                btn.disabled = false;
+                btnText.textContent = "KIRIM PESAN CS";
+                btnLoader.classList.add('hidden');
+            }
         }
 
         // Close modal when clicking outside the card

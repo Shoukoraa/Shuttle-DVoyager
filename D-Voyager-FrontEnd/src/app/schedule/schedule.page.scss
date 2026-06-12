@@ -8,7 +8,8 @@
   ion-toolbar {
     --background: var(--white);
     --border-color: transparent;
-    padding: 10px 0;
+    padding-top: var(--ion-safe-area-top, 0);
+    padding-bottom: 10px;
   }
 
   ion-back-button {

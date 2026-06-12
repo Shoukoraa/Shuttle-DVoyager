@@ -30,7 +30,7 @@
   position: relative;
   z-index: 1;
   padding: 20px;
-  padding-top: 40px;
+  padding-top: calc(var(--ion-safe-area-top, 0px) + 20px);
   padding-bottom: 80px; /* Space for footer */
 }
 
