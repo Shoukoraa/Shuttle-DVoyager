@@ -17,6 +17,14 @@
   </div>
 
   <div class="tickets-container">
+    <div class="payment-success-hero" [class.leaving]="isPaymentSuccessLeaving" *ngIf="showPaymentSuccessMascot" aria-live="polite">
+      <div class="success-copy">
+        <span>Pembayaran diproses</span>
+        <h2>Yeay, pesanan Anda sudah masuk!</h2>
+        <p>Tiket aktif akan muncul di bawah setelah sistem memperbarui status pembayaran.</p>
+      </div>
+      <img src="assets/PembayaranBerhasil.png" alt="Maskot pembayaran berhasil" class="success-mascot">
+    </div>
     
     <div class="skeleton-loader" *ngIf="isLoading">
       <div class="ticket-card skeleton-card" *ngFor="let i of [1,2,3]">
