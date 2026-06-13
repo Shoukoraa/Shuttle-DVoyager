@@ -13,6 +13,9 @@
     
     <!-- Tailwind Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- SweetAlert2 (Premium Alerts) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -217,9 +220,9 @@
                 </div>
             </div>
             
-            <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin keluar?')">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="inline">
                 @csrf
-                <button type="submit" class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-all focus:outline-none" title="Log Out">
+                <button type="button" onclick="confirmLogout()" class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-all focus:outline-none" title="Log Out">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
@@ -327,6 +330,26 @@
         if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleSidebar);
         if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
         if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        function confirmLogout() {
+            Swal.fire({
+                title: 'Konfirmasi Keluar',
+                text: 'Apakah Anda yakin ingin keluar dari Admin Panel?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // Red button for logout
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Keluar',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-3xl font-sans'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
+        }
     </script>
 </body>
 </html>
