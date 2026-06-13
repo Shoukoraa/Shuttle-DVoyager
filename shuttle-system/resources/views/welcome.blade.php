@@ -286,88 +286,15 @@
                             <span class="h-1 w-8 rounded-full bg-dark-800"></span>
                         </div>
                         
-                        <!-- Internal App UI Simulator -->
-                        <div class="w-full h-full bg-white rounded-[30px] overflow-hidden flex flex-col relative text-[11px]">
-                            <!-- App Header (Dark theme #1E1E1E with Yellow #FBC02D text) -->
-                            <div class="bg-dark-900 text-white p-4 pt-6 flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <div class="h-6 w-6 bg-white rounded-md p-0.5">
-                                        <img src="{{ asset('assets/Logo_Dvoyager.png') }}" class="h-full w-full object-contain" onerror="this.src='https://img.icons8.com/color/48/shuttle-bus.png'">
-                                    </div>
-                                    <span class="font-outfit font-extrabold text-xs text-brand-500">D-Voyager</span>
-                                </div>
-                                <span class="bg-brand-500 text-dark-900 text-[8px] px-2 py-0.5 rounded-full font-bold">App Pelanggan</span>
-                            </div>
-                            
-                            <!-- Search Form Mock -->
-                            <div class="p-3 bg-white shadow-sm border-b border-slate-300/40">
-                                <div class="font-bold text-dark-900 mb-1.5 text-xs">Pesan Tiket Shuttle</div>
-                                <div class="space-y-1.5">
-                                    <div class="bg-dark-50 p-2 rounded-lg flex items-center gap-2 border border-slate-300/30">
-                                        <span class="text-emerald-500 font-bold">●</span>
-                                        <div class="flex-1">
-                                            <span class="text-[8px] block text-dark-400 -mb-0.5">KOTA ASAL</span>
-                                            <span class="font-semibold text-dark-800">Jakarta (Kuningan)</span>
-                                        </div>
-                                    </div>
-                                    <div class="bg-dark-50 p-2 rounded-lg flex items-center gap-2 border border-slate-300/30">
-                                        <span class="text-brand-500 font-bold">●</span>
-                                        <div class="flex-1">
-                                            <span class="text-[8px] block text-dark-400 -mb-0.5">KOTA TUJUAN</span>
-                                            <span class="font-semibold text-dark-800">Bandung (Dago)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Live Tracking / Maps Mock with Golden Route -->
-                            <div class="flex-1 bg-slate-300 relative flex flex-col justify-end p-2 overflow-hidden">
-                                <!-- Mock Map Background -->
-                                <div class="absolute inset-0 bg-neutral-100 p-1 flex flex-col justify-between pointer-events-none">
-                                    <!-- Map roads -->
-                                    <div class="absolute h-px w-full bg-slate-300/60 top-1/3"></div>
-                                    <div class="absolute h-px w-full bg-slate-300/60 top-2/3"></div>
-                                    <div class="absolute w-px h-full bg-slate-300/60 left-1/3"></div>
-                                    <div class="absolute w-px h-full bg-slate-300/60 left-2/3"></div>
-                                    <!-- GPS Route line in Brand Golden Yellow -->
-                                    <svg class="absolute inset-0 h-full w-full" fill="none" stroke="currentColor">
-                                        <path d="M 50,40 L 120,90 L 190,140" stroke="#FBC02D" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 4"/>
-                                    </svg>
-                                    <!-- GPS Pins -->
-                                    <div class="absolute top-[25px] left-[40px] bg-emerald-500 text-white rounded-full p-0.5 shadow-md text-[6px] font-bold">ASAL</div>
-                                    <div class="absolute bottom-[35px] right-[40px] bg-dark-900 text-brand-500 border border-brand-500/50 rounded-full p-0.5 shadow-md text-[6px] font-bold">TUJUAN</div>
-                                    
-                                    <!-- Shuttle Car Icon Moving -->
-                                    <div class="absolute top-[75px] left-[105px] bg-white rounded-full p-1 shadow-lg border border-brand-300 flex items-center gap-1">
-                                        <span class="text-xs">🚐</span>
-                                        <span class="text-[8px] font-extrabold text-dark-900 animate-pulse">DV-102</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Ticket Card Hover overlay -->
-                                <div class="bg-white/95 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-slate-300 z-10">
-                                    <div class="flex justify-between items-center border-b border-slate-300/50 pb-1 mb-1">
-                                        <div>
-                                            <span class="font-bold text-dark-900">Toyota HiAce Premio</span>
-                                            <span class="block text-[8px] text-dark-400">No. Pol: B 1289 VQY</span>
-                                        </div>
-                                        <span class="bg-emerald-100 text-emerald-800 text-[8px] px-1.5 py-0.5 rounded font-extrabold">Aktif</span>
-                                    </div>
-                                    <div class="flex justify-between items-center text-[9px]">
-                                        <span class="text-dark-400">Estimasi Tiba:</span>
-                                        <span class="font-bold text-brand-600">12 Menit lagi</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Bottom App Bar in #1E1E1E with golden yellow active state -->
-                            <div class="bg-dark-900 border-t border-dark-800 p-2 flex justify-around text-dark-400">
-                                <span class="text-brand-500 font-bold flex flex-col items-center"><span>🏠</span><span class="text-[8px]">Home</span></span>
-                                <span class="flex flex-col items-center hover:text-white transition-colors"><span>🎫</span><span class="text-[8px]">Tiket</span></span>
-                                <span class="flex flex-col items-center hover:text-white transition-colors"><span>💬</span><span class="text-[8px]">Chat</span></span>
-                                <span class="flex flex-col items-center hover:text-white transition-colors"><span>👤</span><span class="text-[8px]">Akun</span></span>
-                            </div>
+                        <!-- Internal App UI Slider (Screenshots 1web.jpg to 5web.jpg) -->
+                        <div id="mockup-slider-container" class="w-full h-full bg-white rounded-[30px] overflow-hidden relative">
+                            <!-- Dual layers for cross-fade -->
+                            <img id="mockup-img-1" src="{{ asset('assets/1web.jpg') }}" alt="D-Voyager App Screenshot" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-100 z-10">
+                            <img id="mockup-img-2" src="{{ asset('assets/2web.jpg') }}" alt="D-Voyager App Screenshot" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 z-0">
                         </div>
+
+
+
                     </div>
                 </div>
                 
@@ -710,63 +637,112 @@
                 </p>
             </div>
 
-            <!-- Team Grid with #D1D5DB borders & #1E1E1E accents -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            <!-- Team Grid: Executive Profile Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
                 <!-- Setyo -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform rotate-3 group-hover:rotate-0 transition-transform duration-500">
                             SD
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Setyo Dwinugroho</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201143</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Setyo Dwinugroho</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201143</span>
+                    </div>
                 </div>
 
                 <!-- Ahmad -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform -rotate-3 group-hover:rotate-0 transition-transform duration-500">
                             AF
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Ahmad Farid I. F.</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201108</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Ahmad Farid I. F.</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201108</span>
+                    </div>
                 </div>
 
                 <!-- Dwi Arya -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform rotate-6 group-hover:rotate-0 transition-transform duration-500">
                             DA
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Dwi Arya D.</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201129</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Dwi Arya D.</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201129</span>
+                    </div>
                 </div>
 
                 <!-- Moreno -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500">
                             MA
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Moreno Alvarel</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201114</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Moreno Alvarel</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201114</span>
+                    </div>
                 </div>
 
                 <!-- Jonatan -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform rotate-2 group-hover:rotate-0 transition-transform duration-500">
                             JS
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Jonatan S. Simbolon</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201154</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Jonatan S. Simbolon</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201154</span>
+                    </div>
                 </div>
             </div>
+
+
+
+
         </div>
     </section>
 
@@ -1323,6 +1299,49 @@
                 btnLoader.classList.add('hidden');
             }
         }
+
+        // Premium Cross-Fade Slider Logic
+        const img1 = document.getElementById('mockup-img-1');
+        const img2 = document.getElementById('mockup-img-2');
+        const images = [
+            "{{ asset('assets/1web.jpg') }}",
+            "{{ asset('assets/2web.jpg') }}",
+            "{{ asset('assets/3web.jpg') }}",
+            "{{ asset('assets/4web.jpg') }}",
+            "{{ asset('assets/5web.jpg') }}"
+        ];
+        let currentIdx = 0;
+        let isFirstActive = true;
+
+        function rotateMockupImage() {
+            currentIdx = (currentIdx + 1) % images.length;
+            const nextSrc = images[currentIdx];
+
+            if (isFirstActive) {
+                // Fade out 1, Bring in 2
+                img2.src = nextSrc;
+                img2.onload = () => {
+                    img1.classList.replace('opacity-100', 'opacity-0');
+                    img1.classList.replace('z-10', 'z-0');
+                    img2.classList.replace('opacity-0', 'opacity-100');
+                    img2.classList.replace('z-0', 'z-10');
+                    isFirstActive = false;
+                };
+            } else {
+                // Fade out 2, Bring in 1
+                img1.src = nextSrc;
+                img1.onload = () => {
+                    img2.classList.replace('opacity-100', 'opacity-0');
+                    img2.classList.replace('z-10', 'z-0');
+                    img1.classList.replace('opacity-0', 'opacity-100');
+                    img1.classList.replace('z-0', 'z-10');
+                    isFirstActive = true;
+                };
+            }
+        }
+
+        // Start Rotation every 4 seconds
+        setInterval(rotateMockupImage, 4000);
 
         // Close modal when clicking outside the card
         document.getElementById('legal-modal').addEventListener('click', (e) => {
