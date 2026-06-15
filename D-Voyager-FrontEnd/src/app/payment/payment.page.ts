@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
@@ -34,6 +34,7 @@ export class PaymentPage implements OnInit, OnDestroy {
   displayTimer: string = '15:00';
   countdownSeconds: number = 900;
   timerInterval: any;
+  private browserFinishedListener: any = null;
 
   paymentMethods: { category: string, items: PaymentMethod[] }[] = [
     {
@@ -67,7 +68,8 @@ export class PaymentPage implements OnInit, OnDestroy {
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private zone: NgZone
   ) { }
 
   ngOnInit() {
@@ -87,6 +89,7 @@ export class PaymentPage implements OnInit, OnDestroy {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
+    this.removeBrowserListener();
   }
 
   private startTimer() {
@@ -275,6 +278,16 @@ export class PaymentPage implements OnInit, OnDestroy {
 
   private async openPaymentCheckout(paymentUrl: string) {
     if (Capacitor.isNativePlatform()) {
+      // Dengarkan event ketika in-app browser ditutup (user tekan "Continue Now" di DompetX)
+      this.removeBrowserListener();
+      this.browserFinishedListener = await Browser.addListener('browserFinished', () => {
+        this.removeBrowserListener();
+        this.zone.run(() => {
+          sessionStorage.setItem('showPaymentSuccessMascot', '1');
+          this.router.navigate(['/tickets']);
+        });
+      });
+
       await Browser.open({
         url: paymentUrl,
         presentationStyle: 'fullscreen',
@@ -286,6 +299,13 @@ export class PaymentPage implements OnInit, OnDestroy {
     window.open(paymentUrl, '_blank', 'noopener,noreferrer');
     sessionStorage.setItem('showPaymentSuccessMascot', '1');
     this.router.navigate(['/tickets']);
+  }
+
+  private removeBrowserListener() {
+    if (this.browserFinishedListener) {
+      this.browserFinishedListener.remove();
+      this.browserFinishedListener = null;
+    }
   }
 
   async showToast(message: string, color: string) {
