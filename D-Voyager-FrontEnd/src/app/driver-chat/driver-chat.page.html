@@ -2,7 +2,7 @@
   <div class="modern-header">
     <ion-icon name="chatbubbles" class="bg-icon"></ion-icon>
     <h1>Pesan Masuk</h1>
-    <p>Komunikasi dengan penumpang & CS</p>
+    <p>Komunikasi dengan penumpang &amp; CS</p>
     
     <ion-segment [(ngModel)]="selectedTab" class="driver-segment" mode="ios">
       <ion-segment-button value="customer">
@@ -72,53 +72,91 @@
   <ion-modal [isOpen]="isChatOpen" (didDismiss)="closeChat()">
     <ng-template>
       <ion-header class="ion-no-border">
-        <ion-toolbar color="primary">
+        <ion-toolbar class="chat-modal-toolbar">
           <ion-buttons slot="start">
-            <ion-button (click)="closeChat()">
+            <ion-button (click)="closeChat()" class="back-btn">
               <ion-icon name="arrow-back"></ion-icon>
             </ion-button>
           </ion-buttons>
-          <ion-title>{{ activeChatCustomer?.name }}</ion-title>
+          <div class="toolbar-contact">
+            <div class="contact-avatar" [class.cs-avatar]="isCsChatActive">
+              <ion-icon [name]="isCsChatActive ? 'headset' : 'person'"></ion-icon>
+            </div>
+            <div class="contact-info">
+              <span class="contact-name">{{ activeChatCustomer?.name }}</span>
+              <span class="contact-status">{{ isCsChatActive ? 'Customer Service' : 'Penumpang' }}</span>
+            </div>
+          </div>
         </ion-toolbar>
       </ion-header>
 
       <ion-content class="chat-room-content">
         <div class="message-list">
-          <div *ngFor="let msg of chatMessages" class="message-wrapper" 
-            [class.sent]="(isCsChatActive ? msg.sender_type === 'user' : msg.sender_type === 'driver')" 
-            [class.received]="(isCsChatActive ? (msg.sender_type === 'admin' || msg.sender_type === 'bot' || msg.sender_type === 'system') : msg.sender_type === 'customer')">
-            <div class="message-bubble">
-              <p>{{ isCsChatActive ? msg.message_content : msg.message }}</p>
-              <span class="message-time">{{ msg.created_at | date:'HH:mm' }}</span>
+          <div *ngFor="let msg of chatMessages" class="msg-anim"
+            [ngClass]="{
+              'msg-right': isCsChatActive ? msg.sender_type === 'user' : msg.sender_type === 'driver',
+              'msg-left': isCsChatActive ? (msg.sender_type === 'admin' || msg.sender_type === 'bot') : msg.sender_type === 'customer',
+              'msg-center': msg.sender_type === 'system'
+            }">
+
+            <!-- System Message -->
+            <div *ngIf="msg.sender_type === 'system'" class="bubble-system">
+              {{ isCsChatActive ? msg.message_content : msg.message }}
             </div>
+
+            <!-- Received Message (left) -->
+            <ng-container *ngIf="(isCsChatActive ? (msg.sender_type === 'admin' || msg.sender_type === 'bot') : msg.sender_type === 'customer')">
+              <div class="sender-avatar" [class.cs-sender]="isCsChatActive">
+                <ion-icon [name]="isCsChatActive ? (msg.sender_type === 'bot' ? 'sparkles' : 'headset') : 'person'"></ion-icon>
+              </div>
+              <div class="msg-group">
+                <div *ngIf="isCsChatActive && msg.sender_type === 'admin'" class="sender-name">Admin CS</div>
+                <div class="bubble-left" [innerHTML]="isCsChatActive ? msg.message_content : msg.message"></div>
+                <span class="msg-time-left">{{ msg.created_at | date:'HH:mm' }}</span>
+              </div>
+            </ng-container>
+
+            <!-- Sent Message (right) -->
+            <ng-container *ngIf="(isCsChatActive ? msg.sender_type === 'user' : msg.sender_type === 'driver')">
+              <div class="msg-group-right">
+                <div class="bubble-right" [innerHTML]="isCsChatActive ? msg.message_content : msg.message"></div>
+                <span class="msg-time-right">{{ msg.created_at | date:'HH:mm' }}</span>
+              </div>
+            </ng-container>
           </div>
 
           <!-- Typing Indicator -->
-          <div class="typing-indicator" *ngIf="isTyping">
-            <div class="dots-container">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
+          <div class="msg-anim msg-left" *ngIf="isTyping">
+            <div class="sender-avatar">
+              <ion-icon name="person"></ion-icon>
             </div>
-            <span class="typing-text">Penumpang sedang mengetik...</span>
+            <div class="msg-group">
+              <div class="bubble-left typing-bubble">
+                <div class="typing-dots">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </ion-content>
 
       <ion-footer class="ion-no-border">
-        <ion-toolbar class="chat-toolbar">
-          <div class="chat-input-wrapper">
+        <ion-toolbar class="chat-input-toolbar">
+          <div class="input-container">
             <ion-textarea 
               [(ngModel)]="newMessage" 
               (input)="sendTypingEvent()"
+              (keyup.enter)="sendMessage()"
               placeholder="Ketik pesan..." 
               auto-grow="true" 
               rows="1" 
-              max-rows="4">
+              max-rows="4"
+              class="chat-input">
             </ion-textarea>
-            <ion-button fill="clear" (click)="sendMessage()" [disabled]="!newMessage.trim()">
-              <ion-icon name="send" slot="icon-only" color="primary"></ion-icon>
-            </ion-button>
+            <button class="btn-send" (click)="sendMessage()" [disabled]="!newMessage.trim()">
+              <ion-icon name="paper-plane"></ion-icon>
+            </button>
           </div>
         </ion-toolbar>
       </ion-footer>

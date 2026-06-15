@@ -42,8 +42,8 @@
             <!-- Session Info Bar -->
             <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-white flex-shrink-0 shadow-sm z-10">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center font-bold text-lg border border-brand-500/20">
-                        <span id="admin-client-initial">C</span>
+                    <div id="admin-client-avatar-container" class="flex-shrink-0">
+                        <!-- Dynamic avatar image or initial will go here -->
                     </div>
                     <div>
                         <div id="admin-client-name" class="text-sm font-bold text-gray-900">—</div>
@@ -87,6 +87,7 @@
     let devToken = '{{ csrf_token() }}'; // Or properly set up authentication if needed for API
     let adminEcho = null;
     let activeAdminSessionId = null;
+    let activeClientAvatarUrl = null;
 
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -161,17 +162,36 @@
                     item.className = 'admin-session-item' + (isActive ? ' active' : '');
                     const time = new Date(s.created_at).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
                     const clientName = s.user ? s.user.name : 'Pelanggan';
+                    const avatarUrl = s.user && s.user.profile_photo_url ? s.user.profile_photo_url : null;
+                    const initial = clientName.charAt(0).toUpperCase();
+                    
+                    let avatarHtml = '';
+                    if (avatarUrl) {
+                        avatarHtml = `<img src="${avatarUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-200" alt="${clientName}">`;
+                    } else {
+                        avatarHtml = `
+                            <div class="w-10 h-10 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center font-bold text-base border border-brand-500/20 flex-shrink-0">
+                                <span>${initial}</span>
+                            </div>
+                        `;
+                    }
+
                     item.innerHTML = `
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="text-sm font-bold text-gray-900 truncate pr-2">${clientName}</span>
-                            <span class="text-[10px] text-gray-400 flex-shrink-0">${time}</span>
-                        </div>
-                        <div class="text-[11px] text-gray-500 mb-2 truncate">
-                            <svg class="w-3 h-3 inline mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                            ${s.last_category ? s.last_category.name : 'Umum'}
-                        </div>
-                        <div class="flex gap-1.5 items-center">
-                            <span class="bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">Aktif</span>
+                        <div class="flex items-center gap-3">
+                            ${avatarHtml}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-start mb-0.5">
+                                    <span class="text-sm font-bold text-gray-900 truncate pr-2">${clientName}</span>
+                                    <span class="text-[10px] text-gray-400 flex-shrink-0">${time}</span>
+                                </div>
+                                <div class="text-[11px] text-gray-500 mb-1.5 truncate">
+                                    <svg class="w-3 h-3 inline mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                                    ${s.last_category ? s.last_category.name : 'Umum'}
+                                </div>
+                                <div class="flex gap-1.5 items-center">
+                                    <span class="bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">Aktif</span>
+                                </div>
+                            </div>
                         </div>
                     `;
                     item.onclick = () => openAdminSession(s);
@@ -191,8 +211,21 @@
         
         const clientName = session.user ? session.user.name : 'Pelanggan';
         document.getElementById('admin-client-name').textContent = clientName;
-        document.getElementById('admin-client-initial').textContent = clientName.charAt(0).toUpperCase();
         document.getElementById('admin-session-meta').textContent = `Sesi ID: ${session.id.substring(0,8)}... | Kategori: ${session.last_category ? session.last_category.name : 'Umum'}`;
+        
+        // Dynamic Avatar in Header
+        const avatarContainer = document.getElementById('admin-client-avatar-container');
+        activeClientAvatarUrl = session.user && session.user.profile_photo_url ? session.user.profile_photo_url : null;
+        if (activeClientAvatarUrl) {
+            avatarContainer.innerHTML = `<img src="${activeClientAvatarUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-200" alt="${clientName}">`;
+        } else {
+            const initial = clientName.charAt(0).toUpperCase();
+            avatarContainer.innerHTML = `
+                <div class="w-10 h-10 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center font-bold text-lg border border-brand-500/20">
+                    <span>${initial}</span>
+                </div>
+            `;
+        }
 
         axios.get(`/admin/chat/${session.id}/history`)
             .then(r => {
@@ -262,10 +295,20 @@
     function appendAdminBoxUserMsg(text) {
         const el = document.createElement('div');
         el.className = 'msg-anim flex items-end gap-2 max-w-[75%]';
+        
+        let avatarHtml = '';
+        if (activeClientAvatarUrl) {
+            avatarHtml = `<img src="${activeClientAvatarUrl}" class="w-7 h-7 rounded-full object-cover border border-gray-200 flex-shrink-0" alt="Avatar">`;
+        } else {
+            avatarHtml = `
+                <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 text-gray-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                </div>
+            `;
+        }
+
         el.innerHTML = `
-            <div class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 text-gray-500">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            </div>
+            ${avatarHtml}
             <div class="bubble-user shadow-sm">${text}</div>
         `;
         document.getElementById('admin-chat-box').appendChild(el);

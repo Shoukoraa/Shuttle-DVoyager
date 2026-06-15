@@ -98,12 +98,10 @@ ion-toolbar {
 .msg-left {
   align-items: flex-start;
   gap: 10px;
-  align-self: flex-start;
 }
 
 .msg-right {
   justify-content: flex-end;
-  align-self: flex-end;
 }
 
 .msg-center { align-self: center; max-width: 85%; }
@@ -136,6 +134,7 @@ ion-toolbar {
   display: flex;
   flex-direction: column;
   max-width: calc(100% - 44px);
+  flex-grow: 1;
   
   .sender-name {
     font-size: 10px;
@@ -309,4 +308,5 @@ ion-toolbar {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  width: 100%;
 }
