@@ -14,11 +14,11 @@
   <div class="chat-status-bar">
     <div class="bot-info">
       <div class="avatar-container">
-        <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shuttle&backgroundColor=b6e3f4" class="bot-avatar">
+        <img src="assets/Maskot_1-removebg-preview.png" class="bot-avatar">
         <span class="online-dot"></span>
       </div>
       <div class="bot-details">
-        <div class="bot-name">Shuttle Bot</div>
+        <div class="bot-name">Kiperina</div>
         <div class="bot-status" [class.text-red]="!echoConnected">{{ echoConnected ? '● Online — Siap Membantu' : '● Menghubungkan...' }}</div>
       </div>
     </div>
@@ -38,7 +38,7 @@
       
       <!-- Bot / Admin Message -->
       <ng-container *ngIf="msg.sender_type === 'bot' || msg.sender_type === 'admin'">
-        <img *ngIf="msg.sender_type === 'bot'" src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shuttle&backgroundColor=b6e3f4" class="sender-avatar bot">
+        <img *ngIf="msg.sender_type === 'bot'" src="assets/Maskot_1-removebg-preview.png" class="sender-avatar bot">
         <div *ngIf="msg.sender_type === 'admin'" class="sender-avatar admin">
           <ion-icon name="headset"></ion-icon>
         </div>
@@ -46,19 +46,23 @@
         <div class="msg-group">
           <div *ngIf="msg.sender_type === 'admin'" class="sender-name">Admin CS</div>
           <div class="bubble-left" [class.bg-bot]="msg.sender_type === 'bot'" [class.bg-admin]="msg.sender_type === 'admin'" [innerHTML]="msg.message_content"></div>
+          <span class="msg-time-left" *ngIf="msg.timestamp">{{ msg.timestamp }}</span>
         </div>
       </ng-container>
 
       <!-- User Message -->
       <ng-container *ngIf="msg.sender_type === 'user'">
-        <div class="bubble-right" [innerHTML]="msg.message_content"></div>
+        <div class="msg-group-right">
+          <div class="bubble-right" [innerHTML]="msg.message_content"></div>
+          <span class="msg-time-right" *ngIf="msg.timestamp">{{ msg.timestamp }}</span>
+        </div>
       </ng-container>
 
     </div>
 
     <!-- Typing Indicator -->
     <div *ngIf="isTyping" class="msg-anim msg-left">
-      <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=shuttle&backgroundColor=b6e3f4" class="sender-avatar bot">
+      <img src="assets/Maskot_1-removebg-preview.png" class="sender-avatar bot">
       <div class="bubble-left bg-bot typing-bubble">
         <div class="typing-dots">
           <span></span><span></span><span></span>

@@ -7,6 +7,7 @@ interface ChatMessage {
   id?: number;
   sender_type: 'bot' | 'user' | 'admin' | 'system';
   message_content: string;
+  timestamp?: string;
 }
 
 @Component({
@@ -68,13 +69,20 @@ export class ChatbotPage implements OnInit {
     }, 100);
   }
 
+  getCurrentTime(): string {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
   startBot() {
     this.messages = [];
     this.selectedCategory = null;
     this.selectedProblem = null;
     this.sessionId = null;
     
-    this.appendBotMsg('Halo! Terima kasih telah menghubungi D-Voyager dan selamat datang. Saya Voyager Bot, yang akan membantu menjawab pertanyaanmu hari ini! 👋');
+    this.appendBotMsg('Halo! Terima kasih telah menghubungi D-Voyager dan selamat datang. Saya Kiperina, yang akan membantu menjawab pertanyaanmu hari ini! 👋');
     
     this.isTyping = true;
     this.scrollToBottom();
@@ -92,17 +100,17 @@ export class ChatbotPage implements OnInit {
   }
 
   appendBotMsg(text: string) {
-    this.messages.push({ sender_type: 'bot', message_content: text });
+    this.messages.push({ sender_type: 'bot', message_content: text, timestamp: this.getCurrentTime() });
     this.scrollToBottom();
   }
 
   appendUserMsg(text: string) {
-    this.messages.push({ sender_type: 'user', message_content: text });
+    this.messages.push({ sender_type: 'user', message_content: text, timestamp: this.getCurrentTime() });
     this.scrollToBottom();
   }
 
   appendSystemMsg(text: string) {
-    this.messages.push({ sender_type: 'system', message_content: text });
+    this.messages.push({ sender_type: 'system', message_content: text, timestamp: this.getCurrentTime() });
     this.scrollToBottom();
   }
 
@@ -370,7 +378,7 @@ export class ChatbotPage implements OnInit {
     if (this.isInputDisabled()) {
       return 'Silakan selesaikan kendala Anda di atas...';
     }
-    return 'Tanya Voyager Bot...';
+    return 'Tanya Kiperina...';
   }
 
   handleBotInput(text: string) {
@@ -383,14 +391,14 @@ export class ChatbotPage implements OnInit {
 
       // 1. Small talk: Halo / Salam
       if (input.match(/\b(halo|hai|hey|p|assalamualaikum|selamat|pagi|siang|sore|malam)\b/)) {
-        this.appendBotMsg('Halo! Ada yang bisa Voyager Bot bantu hari ini? Silakan ketik langsung kendala Anda (misal: "lupa password", "batal tiket") atau pilih kategori di bawah. 😊');
+        this.appendBotMsg('Halo! Ada yang bisa Kiperina bantu hari ini? Silakan ketik langsung kendala Anda (misal: "lupa password", "batal tiket") atau pilih kategori di bawah. 😊');
         this.scrollToBottom();
         return;
       }
 
       // 2. Small talk: Terima kasih
       if (input.includes('terima kasih') || input.includes('makasih') || input.includes('thanks') || input.includes('thank you')) {
-        this.appendBotMsg('Sama-sama! Voyager Bot senang bisa membantu Anda. Semoga perjalanan Anda menyenangkan bersama D-Voyager! ✨');
+        this.appendBotMsg('Sama-sama! Kiperina senang bisa membantu Anda. Semoga perjalanan Anda menyenangkan bersama D-Voyager! ✨');
         this.scrollToBottom();
         return;
       }
@@ -518,7 +526,7 @@ export class ChatbotPage implements OnInit {
       }
 
       // Fallback
-      this.appendBotMsg('Maaf, Voyager Bot belum memahami pesan Anda. Silakan ketik kata kunci yang lebih spesifik (seperti "batal", "bayar", "password", "barang", "customer service") atau gunakan tombol menu yang tersedia. 🙏');
+      this.appendBotMsg('Maaf, Kiperina belum memahami pesan Anda. Silakan ketik kata kunci yang lebih spesifik (seperti "batal", "bayar", "password", "barang", "customer service") atau gunakan tombol menu yang tersedia. 🙏');
       this.scrollToBottom();
     }, 800);
   }
@@ -563,7 +571,8 @@ export class ChatbotPage implements OnInit {
         if (e.sender_type !== 'user') {
           this.messages.push({
             sender_type: e.sender_type,
-            message_content: e.message_content
+            message_content: e.message_content,
+            timestamp: this.getCurrentTime()
           });
           this.scrollToBottom();
         }
