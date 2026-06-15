@@ -289,7 +289,6 @@ export class ChatbotPage implements OnInit {
 
   handleFeedback(value: string) {
     if (value === 'yes') {
-      this.appendUserMsg('Saya puas');
       this.isTyping = true;
       this.scrollToBottom();
       setTimeout(() => {
@@ -307,7 +306,6 @@ export class ChatbotPage implements OnInit {
         }, 1000);
       }, 800);
     } else {
-      this.appendUserMsg('Saya tidak puas');
       this.isTyping = true;
       this.scrollToBottom();
       setTimeout(() => {
@@ -328,7 +326,6 @@ export class ChatbotPage implements OnInit {
   }
 
   openWhatsApp() {
-    this.appendUserMsg('Hubungi via WhatsApp 📱');
     const waNumber = '62895324354052';
     const waMessage = 'Halo Admin, saya butuh bantuan terkait D-Voyager.';
     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;

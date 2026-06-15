@@ -19,9 +19,9 @@ ion-toolbar {
 }
 
 .chat-status-bar {
-  background: #fef08a;
+  background: #fff;
   padding: 12px 18px;
-  border-bottom: 1px solid #fde047;
+  border-bottom: 1px solid #f1f5f9;
   box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 
   .bot-info {
@@ -39,7 +39,7 @@ ion-toolbar {
       width: 46px;
       height: 46px;
       border-radius: 50%;
-      border: 2px solid #fef9c3;
+      border: 2px solid #f1f5f9;
       background: #fff;
       object-fit: cover;
       object-position: center 28%;
@@ -54,7 +54,7 @@ ion-toolbar {
       height: 10px;
       background: #10b981;
       border-radius: 50%;
-      border: 2px solid #fef08a;
+      border: 2px solid #fff;
     }
   }
 
@@ -62,13 +62,13 @@ ion-toolbar {
     .bot-name {
       font-size: 14px;
       font-weight: 800;
-      color: #1e293b;
+      color: #0f172a;
     }
     .bot-status {
       font-size: 11px;
       font-weight: 600;
-      color: #047857;
-      &.text-red { color: #b91c1c; }
+      color: #10b981;
+      &.text-red { color: #ef4444; }
     }
   }
 }
@@ -148,15 +148,17 @@ ion-toolbar {
 
 .bubble-left {
   width: fit-content;
-  max-width: 100%;
-  padding: 11px 14px;
-  font-size: 13px;
-  line-height: 1.5;
+  max-width: 90%;
+  padding: 12px 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
   border-radius: 16px 16px 16px 6px;
   color: white;
   
   &.bg-bot {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(135deg, #fef08a, #facc15);
+    color: #1e293b;
+    border: 1px solid #fde047;
   }
   &.bg-admin {
     background: linear-gradient(135deg, #10b981, #059669);
@@ -166,13 +168,14 @@ ion-toolbar {
 }
 
 .bubble-right {
+  width: fit-content;
   background: #fff;
   color: #0f172a;
   border: 1px solid #e2e8f0;
-  max-width: min(78%, 310px);
-  padding: 11px 14px;
-  font-size: 13px;
-  line-height: 1.5;
+  max-width: 100%;
+  padding: 12px 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
   border-radius: 16px 16px 6px 16px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
@@ -196,13 +199,13 @@ ion-toolbar {
   margin-top: 8px;
   margin-left: 44px;
   align-self: flex-start;
-  max-width: 320px;
+  max-width: 380px;
   animation: fadeSlideUp 0.3s ease both;
   
   .option-btn {
     background: #fff;
-    border: 1px solid #e2e8f0;
-    color: #3b82f6;
+    border: 1px solid #fde047;
+    color: #ca8a04;
     padding: 12px 16px;
     border-radius: 12px;
     font-size: 13px;
@@ -212,16 +215,20 @@ ion-toolbar {
     box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     
     &:active {
-      background: #eff6ff;
-      border-color: #bfdbfe;
+      background: #fef9c3;
+      border-color: #eab308;
     }
     
     &.btn-outline {
       background: transparent;
-      border: 1px dashed #cbd5e1;
-      color: #64748b;
+      border: 1px dashed #fcd34d;
+      color: #78350f;
       text-align: center;
       margin-top: 4px;
+      
+      &:active {
+        background: rgba(254, 240, 138, 0.2);
+      }
     }
   }
 }
@@ -235,7 +242,7 @@ ion-toolbar {
   span {
     width: 6px;
     height: 6px;
-    background: #fff;
+    background: #1e293b;
     border-radius: 50%;
     animation: typing 1.4s infinite ease-in-out both;
     opacity: 0.6;
@@ -274,12 +281,13 @@ ion-toolbar {
   }
   
   .btn-send {
-    --color: #fff;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    --color: #1e293b;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
     width: 40px;
     height: 40px;
     border-radius: 50%;
     margin: 0;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
     
     ion-icon {
       font-size: 16px;
@@ -309,4 +317,6 @@ ion-toolbar {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  max-width: calc(100% - 44px);
+  width: 100%;
 }
