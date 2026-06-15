@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost/shuttle-system/public",
+      "url": "http://localhost/D-Voyager-BackEnd/public",
       "description": "Local Development Server"
     }
   ],

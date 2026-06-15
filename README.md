@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="shuttle-system/public/assets/Logo_Dvoyager.png" alt="Shuttle D-Voyager Logo" width="200" style="border-radius: 44px; box-shadow: 0 12px 32px rgba(0,0,0,0.15);" />
+  <img src="D-Voyager-BackEnd/public/assets/Logo_Dvoyager.png" alt="Shuttle D-Voyager Logo" width="200" style="border-radius: 44px; box-shadow: 0 12px 32px rgba(0,0,0,0.15);" />
 </p>
 
 <h1 align="center">🚐 Shuttle D-Voyager</h1>
@@ -59,7 +59,7 @@ Pastikan Anda sudah menginstal **PHP, Composer, Node.js, dan MySQL** di sistem A
 
 ```bash
 # Masuk ke direktori backend
-cd shuttle-system
+cd D-Voyager-BackEnd
 
 # Install ekstensi PHP & library Composer
 composer install

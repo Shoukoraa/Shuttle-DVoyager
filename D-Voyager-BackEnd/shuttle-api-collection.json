@@ -121,7 +121,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost/shuttle-system/public",
+			"value": "http://localhost/D-Voyager-BackEnd/public",
 			"type": "string"
 		},
 		{
