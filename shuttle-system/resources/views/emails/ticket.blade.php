@@ -50,9 +50,18 @@
                 <div class="label">Total Pembayaran</div>
                 <div class="value">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</div>
             </div>
-            <p style="margin-top: 20px; font-size: 14px; color: #555;">
-                Terima kasih telah menggunakan layanan D-Voyager Shuttle. Silakan tunjukkan E-Ticket ini (atau manifest di aplikasi) kepada supir saat hendak naik.
-            </p>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: none; margin-top: 20px;">
+                <tr>
+                    <td style="vertical-align: middle; text-align: left; border: none; padding: 0; padding-right: 15px;">
+                        <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.5;">
+                            Terima kasih telah menggunakan layanan D-Voyager Shuttle. Silakan tunjukkan E-Ticket ini (atau manifest di aplikasi) kepada supir saat hendak naik.
+                        </p>
+                    </td>
+                    <td style="vertical-align: middle; text-align: right; width: 80px; border: none; padding: 0;">
+                        <img src="{{ $message->embed(public_path('assets/E-Ticket.png')) }}" alt="Mascot" style="width: 80px; height: 80px; display: block; margin-left: auto;">
+                    </td>
+                </tr>
+            </table>
         </div>
         <div class="footer">
             &copy; {{ date('Y') }} D-Voyager Shuttle. All rights reserved.

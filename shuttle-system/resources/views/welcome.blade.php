@@ -17,6 +17,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Flatpickr (Premium Date Picker) CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+
+    <!-- SweetAlert2 (Premium Alerts) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Tailwind Play CDN with User's Exact Color Palette Integrated -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -70,6 +81,35 @@
     
     <!-- Custom CSS Styles for Smooth Scrolling, Backdrop Blur, and Custom Animations -->
     <style>
+        /* Custom Flatpickr Premium Styling */
+        .flatpickr-calendar {
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(209, 213, 219, 0.8) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 20px !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.prevMonthDay.selected, .flatpickr-day.nextMonthDay.selected {
+            background: #FBC02D !important;
+            border-color: #FBC02D !important;
+            color: #1E1E1E !important;
+            font-weight: 800 !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            color: #1E1E1E !important;
+        }
+        .flatpickr-current-month .numInputWrapper span.arrowUp:after {
+            border-bottom-color: #1E1E1E !important;
+        }
+        .flatpickr-current-month .numInputWrapper span.arrowDown:after {
+            border-top-color: #1E1E1E !important;
+        }
+        .flatpickr-day:hover {
+            background: #fec625 !important;
+            color: #1E1E1E !important;
+        }
+
         .glass-nav {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(16px);
@@ -286,88 +326,15 @@
                             <span class="h-1 w-8 rounded-full bg-dark-800"></span>
                         </div>
                         
-                        <!-- Internal App UI Simulator -->
-                        <div class="w-full h-full bg-white rounded-[30px] overflow-hidden flex flex-col relative text-[11px]">
-                            <!-- App Header (Dark theme #1E1E1E with Yellow #FBC02D text) -->
-                            <div class="bg-dark-900 text-white p-4 pt-6 flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <div class="h-6 w-6 bg-white rounded-md p-0.5">
-                                        <img src="{{ asset('assets/Logo_Dvoyager.png') }}" class="h-full w-full object-contain" onerror="this.src='https://img.icons8.com/color/48/shuttle-bus.png'">
-                                    </div>
-                                    <span class="font-outfit font-extrabold text-xs text-brand-500">D-Voyager</span>
-                                </div>
-                                <span class="bg-brand-500 text-dark-900 text-[8px] px-2 py-0.5 rounded-full font-bold">App Pelanggan</span>
-                            </div>
-                            
-                            <!-- Search Form Mock -->
-                            <div class="p-3 bg-white shadow-sm border-b border-slate-300/40">
-                                <div class="font-bold text-dark-900 mb-1.5 text-xs">Pesan Tiket Shuttle</div>
-                                <div class="space-y-1.5">
-                                    <div class="bg-dark-50 p-2 rounded-lg flex items-center gap-2 border border-slate-300/30">
-                                        <span class="text-emerald-500 font-bold">●</span>
-                                        <div class="flex-1">
-                                            <span class="text-[8px] block text-dark-400 -mb-0.5">KOTA ASAL</span>
-                                            <span class="font-semibold text-dark-800">Jakarta (Kuningan)</span>
-                                        </div>
-                                    </div>
-                                    <div class="bg-dark-50 p-2 rounded-lg flex items-center gap-2 border border-slate-300/30">
-                                        <span class="text-brand-500 font-bold">●</span>
-                                        <div class="flex-1">
-                                            <span class="text-[8px] block text-dark-400 -mb-0.5">KOTA TUJUAN</span>
-                                            <span class="font-semibold text-dark-800">Bandung (Dago)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Live Tracking / Maps Mock with Golden Route -->
-                            <div class="flex-1 bg-slate-300 relative flex flex-col justify-end p-2 overflow-hidden">
-                                <!-- Mock Map Background -->
-                                <div class="absolute inset-0 bg-neutral-100 p-1 flex flex-col justify-between pointer-events-none">
-                                    <!-- Map roads -->
-                                    <div class="absolute h-px w-full bg-slate-300/60 top-1/3"></div>
-                                    <div class="absolute h-px w-full bg-slate-300/60 top-2/3"></div>
-                                    <div class="absolute w-px h-full bg-slate-300/60 left-1/3"></div>
-                                    <div class="absolute w-px h-full bg-slate-300/60 left-2/3"></div>
-                                    <!-- GPS Route line in Brand Golden Yellow -->
-                                    <svg class="absolute inset-0 h-full w-full" fill="none" stroke="currentColor">
-                                        <path d="M 50,40 L 120,90 L 190,140" stroke="#FBC02D" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 4"/>
-                                    </svg>
-                                    <!-- GPS Pins -->
-                                    <div class="absolute top-[25px] left-[40px] bg-emerald-500 text-white rounded-full p-0.5 shadow-md text-[6px] font-bold">ASAL</div>
-                                    <div class="absolute bottom-[35px] right-[40px] bg-dark-900 text-brand-500 border border-brand-500/50 rounded-full p-0.5 shadow-md text-[6px] font-bold">TUJUAN</div>
-                                    
-                                    <!-- Shuttle Car Icon Moving -->
-                                    <div class="absolute top-[75px] left-[105px] bg-white rounded-full p-1 shadow-lg border border-brand-300 flex items-center gap-1">
-                                        <span class="text-xs">🚐</span>
-                                        <span class="text-[8px] font-extrabold text-dark-900 animate-pulse">DV-102</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Ticket Card Hover overlay -->
-                                <div class="bg-white/95 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-slate-300 z-10">
-                                    <div class="flex justify-between items-center border-b border-slate-300/50 pb-1 mb-1">
-                                        <div>
-                                            <span class="font-bold text-dark-900">Toyota HiAce Premio</span>
-                                            <span class="block text-[8px] text-dark-400">No. Pol: B 1289 VQY</span>
-                                        </div>
-                                        <span class="bg-emerald-100 text-emerald-800 text-[8px] px-1.5 py-0.5 rounded font-extrabold">Aktif</span>
-                                    </div>
-                                    <div class="flex justify-between items-center text-[9px]">
-                                        <span class="text-dark-400">Estimasi Tiba:</span>
-                                        <span class="font-bold text-brand-600">12 Menit lagi</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Bottom App Bar in #1E1E1E with golden yellow active state -->
-                            <div class="bg-dark-900 border-t border-dark-800 p-2 flex justify-around text-dark-400">
-                                <span class="text-brand-500 font-bold flex flex-col items-center"><span>🏠</span><span class="text-[8px]">Home</span></span>
-                                <span class="flex flex-col items-center hover:text-white transition-colors"><span>🎫</span><span class="text-[8px]">Tiket</span></span>
-                                <span class="flex flex-col items-center hover:text-white transition-colors"><span>💬</span><span class="text-[8px]">Chat</span></span>
-                                <span class="flex flex-col items-center hover:text-white transition-colors"><span>👤</span><span class="text-[8px]">Akun</span></span>
-                            </div>
+                        <!-- Internal App UI Slider (Screenshots 1web.jpg to 5web.jpg) -->
+                        <div id="mockup-slider-container" class="w-full h-full bg-white rounded-[30px] overflow-hidden relative">
+                            <!-- Dual layers for cross-fade -->
+                            <img id="mockup-img-1" src="{{ asset('assets/1web.jpg') }}" alt="D-Voyager App Screenshot" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-100 z-10">
+                            <img id="mockup-img-2" src="{{ asset('assets/2web.jpg') }}" alt="D-Voyager App Screenshot" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 z-0">
                         </div>
+
+
+
                     </div>
                 </div>
                 
@@ -395,7 +362,7 @@
                 <!-- 1. Customer App Card -->
                 <div class="glass-card rounded-3xl p-8 hover:shadow-xl hover:border-brand-500 hover:-translate-y-1 transition-all group duration-300">
                     <div class="h-14 w-14 bg-brand-100 text-brand-600 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner group-hover:bg-brand-500 group-hover:text-dark-900 transition-colors duration-300">
-                        📱
+                        <i class="fa-solid fa-mobile-screen-button"></i>
                     </div>
                     <h3 class="font-outfit font-bold text-xl text-dark-900 mb-3">1. Aplikasi Pelanggan</h3>
                     <p class="text-dark-700 text-sm leading-relaxed mb-6">
@@ -423,8 +390,8 @@
 
                 <!-- 2. Driver App Card -->
                 <div class="glass-card rounded-3xl p-8 hover:shadow-xl hover:border-brand-500 hover:-translate-y-1 transition-all group duration-300">
-                    <div class="h-14 w-14 bg-dark-50 text-dark-900 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner group-hover:bg-brand-500 group-hover:text-dark-900 transition-colors duration-300 border border-slate-300/30">
-                        🚗
+                    <div class="h-14 w-14 bg-brand-100 text-brand-600 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner group-hover:bg-brand-500 group-hover:text-dark-900 transition-colors duration-300">
+                        <i class="fa-solid fa-bus"></i>
                     </div>
                     <h3 class="font-outfit font-bold text-xl text-dark-900 mb-3">2. Aplikasi Driver</h3>
                     <p class="text-dark-700 text-sm leading-relaxed mb-6">
@@ -453,7 +420,7 @@
                 <!-- 3. Admin Web Panel Card -->
                 <div class="glass-card rounded-3xl p-8 hover:shadow-xl hover:border-brand-500 hover:-translate-y-1 transition-all group duration-300">
                     <div class="h-14 w-14 bg-brand-100 text-brand-700 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner group-hover:bg-brand-500 group-hover:text-dark-900 transition-colors duration-300">
-                        👑
+                        <i class="fa-solid fa-user-tie"></i>
                     </div>
                     <h3 class="font-outfit font-bold text-xl text-dark-900 mb-3">3. Dashboard Admin (Web)</h3>
                     <p class="text-dark-700 text-sm leading-relaxed mb-6">
@@ -493,7 +460,7 @@
             </div>
 
             <!-- Simulator Widget Frame (Match Mobile Design: Light themed with premium cards) -->
-            <div class="bg-white rounded-[32px] p-6 sm:p-10 shadow-2xl border border-slate-300/40 relative overflow-hidden">
+            <div class="bg-white rounded-[32px] p-6 sm:p-10 shadow-2xl border border-slate-300/40 relative">
                 <div class="absolute -top-1 right-10 md:right-16 h-8 w-24 bg-slate-100 rounded-b-2xl border-x border-b border-slate-200/50 flex items-center justify-center gap-1">
                     <span class="h-1 w-8 rounded-full bg-slate-300"></span>
                 </div>
@@ -502,35 +469,88 @@
                     <!-- Origin Selector -->
                     <div>
                         <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-[0.1em] mb-2 px-1">Kota Asal</label>
-                        <div class="relative group">
-                            <select id="sim-origin" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all appearance-none cursor-pointer">
-                                <option value="Jakarta">Jakarta (Kuningan)</option>
-                                <option value="Bandung">Bandung (Dago)</option>
-                                <option value="Surabaya">Surabaya (Tunjungan)</option>
-                                <option value="Yogyakarta">Yogyakarta (Malioboro)</option>
-                            </select>
-                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-dark-400">▼</div>
+                        <select id="sim-origin" class="hidden">
+                            <option value="Jakarta">Jakarta (Kuningan)</option>
+                            <option value="Bandung">Bandung (Dago)</option>
+                            <option value="Surabaya">Surabaya (Tunjungan)</option>
+                            <option value="Yogyakarta">Yogyakarta (Malioboro)</option>
+                        </select>
+                        <div class="relative custom-dropdown" data-select-id="sim-origin">
+                            <button type="button" class="dropdown-trigger w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all flex items-center justify-between cursor-pointer hover:bg-slate-100/50">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-location-dot text-brand-500 text-sm"></i>
+                                    <span class="dropdown-value-text">Jakarta (Kuningan)</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-down text-dark-400 text-xs transition-transform duration-300"></i>
+                            </button>
+                            <div class="dropdown-menu absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200/80 p-2 z-50 transition-all duration-200 scale-95 opacity-0 pointer-events-none origin-top">
+                                <div class="dropdown-option px-4 py-2.5 rounded-xl text-sm font-bold text-dark-800 hover:bg-brand-50 hover:text-dark-900 cursor-pointer flex items-center justify-between" data-value="Jakarta">
+                                    <span>Jakarta (Kuningan)</span>
+                                    <i class="fa-solid fa-check text-brand-500 text-xs opacity-0"></i>
+                                </div>
+                                <div class="dropdown-option px-4 py-2.5 rounded-xl text-sm font-bold text-dark-800 hover:bg-brand-50 hover:text-dark-900 cursor-pointer flex items-center justify-between" data-value="Bandung">
+                                    <span>Bandung (Dago)</span>
+                                    <i class="fa-solid fa-check text-brand-500 text-xs opacity-0"></i>
+                                </div>
+                                <div class="dropdown-option px-4 py-2.5 rounded-xl text-sm font-bold text-dark-800 hover:bg-brand-50 hover:text-dark-900 cursor-pointer flex items-center justify-between" data-value="Surabaya">
+                                    <span>Surabaya (Tunjungan)</span>
+                                    <i class="fa-solid fa-check text-brand-500 text-xs opacity-0"></i>
+                                </div>
+                                <div class="dropdown-option px-4 py-2.5 rounded-xl text-sm font-bold text-dark-800 hover:bg-brand-50 hover:text-dark-900 cursor-pointer flex items-center justify-between" data-value="Yogyakarta">
+                                    <span>Yogyakarta (Malioboro)</span>
+                                    <i class="fa-solid fa-check text-brand-500 text-xs opacity-0"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Destination Selector -->
                     <div>
                         <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-[0.1em] mb-2 px-1">Kota Tujuan</label>
-                        <div class="relative group">
-                            <select id="sim-dest" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all appearance-none cursor-pointer">
-                                <option value="Bandung">Bandung (Dago)</option>
-                                <option value="Jakarta" selected>Jakarta (Kuningan)</option>
-                                <option value="Yogyakarta">Yogyakarta (Malioboro)</option>
-                                <option value="Surabaya">Surabaya (Tunjungan)</option>
-                            </select>
-                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-dark-400">▼</div>
+                        <select id="sim-dest" class="hidden">
+                            <option value="Bandung">Bandung (Dago)</option>
+                            <option value="Jakarta" selected>Jakarta (Kuningan)</option>
+                            <option value="Yogyakarta">Yogyakarta (Malioboro)</option>
+                            <option value="Surabaya">Surabaya (Tunjungan)</option>
+                        </select>
+                        <div class="relative custom-dropdown" data-select-id="sim-dest">
+                            <button type="button" class="dropdown-trigger w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all flex items-center justify-between cursor-pointer hover:bg-slate-100/50">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-location-dot text-brand-500 text-sm"></i>
+                                    <span class="dropdown-value-text">Jakarta (Kuningan)</span>
+                                </div>
+                                <i class="fa-solid fa-chevron-down text-dark-400 text-xs transition-transform duration-300"></i>
+                            </button>
+                            <div class="dropdown-menu absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200/80 p-2 z-50 transition-all duration-200 scale-95 opacity-0 pointer-events-none origin-top">
+                                <div class="dropdown-option px-4 py-2.5 rounded-xl text-sm font-bold text-dark-800 hover:bg-brand-50 hover:text-dark-900 cursor-pointer flex items-center justify-between" data-value="Bandung">
+                                    <span>Bandung (Dago)</span>
+                                    <i class="fa-solid fa-check text-brand-500 text-xs opacity-0"></i>
+                                </div>
+                                <div class="dropdown-option px-4 py-2.5 rounded-xl text-sm font-bold text-dark-800 hover:bg-brand-50 hover:text-dark-900 cursor-pointer flex items-center justify-between" data-value="Jakarta">
+                                    <span>Jakarta (Kuningan)</span>
+                                    <i class="fa-solid fa-check text-brand-500 text-xs opacity-0"></i>
+                                </div>
+                                <div class="dropdown-option px-4 py-2.5 rounded-xl text-sm font-bold text-dark-800 hover:bg-brand-50 hover:text-dark-900 cursor-pointer flex items-center justify-between" data-value="Yogyakarta">
+                                    <span>Yogyakarta (Malioboro)</span>
+                                    <i class="fa-solid fa-check text-brand-500 text-xs opacity-0"></i>
+                                </div>
+                                <div class="dropdown-option px-4 py-2.5 rounded-xl text-sm font-bold text-dark-800 hover:bg-brand-50 hover:text-dark-900 cursor-pointer flex items-center justify-between" data-value="Surabaya">
+                                    <span>Surabaya (Tunjungan)</span>
+                                    <i class="fa-solid fa-check text-brand-500 text-xs opacity-0"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Date Picker -->
                     <div>
                         <label class="block text-[10px] font-extrabold text-dark-400 uppercase tracking-[0.1em] mb-2 px-1">Tanggal</label>
-                        <input type="date" id="sim-date" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all" value="2026-06-12">
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-brand-500 text-sm z-10 pointer-events-none">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </span>
+                            <input type="date" id="sim-date" class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3.5 text-dark-900 font-bold focus:outline-none focus:border-brand-500 transition-all cursor-pointer" value="2026-06-12">
+                        </div>
                     </div>
                 </div>
 
@@ -560,7 +580,7 @@
                             <p class="text-xs font-bold text-dark-400 mt-1">Ketuk kursi yang tersedia untuk membooking</p>
                         </div>
                         <div id="selected-seat-badge" class="bg-white border border-slate-200 text-dark-900 font-bold text-sm px-5 py-2.5 rounded-2xl shadow-sm flex items-center gap-2">
-                           <span class="w-2 h-2 rounded-full bg-slate-300"></span> Belum Memilih Kursi
+                        <span class="w-2 h-2 rounded-full bg-slate-300"></span> Belum Memilih Kursi
                         </div>
                     </div>
 
@@ -572,7 +592,7 @@
                         <div class="grid grid-cols-3 gap-6 w-full">
                             <!-- Driver Space -->
                             <div class="w-[44px] h-[48px] border-2 border-dashed border-slate-200 bg-slate-50 rounded-xl flex items-center justify-center text-slate-300 text-lg opacity-60">
-                                🚐
+                                <i class="fa-solid fa-user-tie"></i>  
                             </div>
                             <div class="w-[44px]"></div>
                             <!-- Seat 1 -->
@@ -710,63 +730,112 @@
                 </p>
             </div>
 
-            <!-- Team Grid with #D1D5DB borders & #1E1E1E accents -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            <!-- Team Grid: Executive Profile Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
                 <!-- Setyo -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform rotate-3 group-hover:rotate-0 transition-transform duration-500">
                             SD
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Setyo Dwinugroho</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201143</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Setyo Dwinugroho</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201143</span>
+                    </div>
                 </div>
 
                 <!-- Ahmad -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform -rotate-3 group-hover:rotate-0 transition-transform duration-500">
                             AF
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Ahmad Farid I. F.</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201108</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Ahmad Farid I. F.</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201108</span>
+                    </div>
                 </div>
 
                 <!-- Dwi Arya -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform rotate-6 group-hover:rotate-0 transition-transform duration-500">
                             DA
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Dwi Arya D.</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201129</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Dwi Arya D.</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201129</span>
+                    </div>
                 </div>
 
                 <!-- Moreno -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500">
                             MA
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Moreno Alvarel</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201114</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Moreno Alvarel</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201114</span>
+                    </div>
                 </div>
 
                 <!-- Jonatan -->
-                <div class="glass-card rounded-2xl p-6 text-center hover:shadow-lg border border-slate-300/60 hover:border-brand-500 transition-all duration-300 flex flex-col justify-between">
-                    <div>
-                        <div class="h-16 w-16 bg-dark-900 text-brand-500 rounded-full flex items-center justify-center font-bold font-outfit text-xl mx-auto mb-4 shadow-md border border-brand-500/30">
+                <div class="group relative bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-brand-500 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="relative inline-block mb-6">
+                        <div class="h-20 w-20 bg-dark-900 border-4 border-white shadow-xl rounded-2xl flex items-center justify-center font-black font-outfit text-2xl text-brand-500 transform rotate-2 group-hover:rotate-0 transition-transform duration-500">
                             JS
                         </div>
-                        <h4 class="font-outfit font-extrabold text-dark-900 leading-tight">Jonatan S. Simbolon</h4>
                     </div>
-                    <span class="block text-[10px] text-dark-400 font-mono mt-4 border-t border-slate-300/40 pt-2">NIM: 24416255201154</span>
+
+                    <div class="flex-1 flex flex-col justify-center mb-6">
+                        <h4 class="font-outfit font-black text-dark-900 text-lg leading-tight">Jonatan S. Simbolon</h4>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <span class="text-[9px] font-mono text-slate-400 block mb-1 uppercase tracking-widest">NIM Mahasiswa</span>
+                        <span class="text-xs font-bold text-dark-400">24416255201154</span>
+                    </div>
                 </div>
             </div>
+
+
+
+
         </div>
     </section>
 
@@ -786,7 +855,7 @@
                     <div class="space-y-6">
                         <!-- Address -->
                         <div class="flex items-start gap-4">
-                            <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20">📍</div>
+                            <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20"><i class="fa-solid fa-location-dot"></i></div>
                             <div>
                                 <span class="block font-extrabold text-dark-900 text-sm">Alamat Kantor Pusat</span>
                                 <span class="text-dark-500 text-xs sm:text-sm">Perumahan Telagasari Indah, Jl. Arjuna, Karawang, Jawa Barat 41381</span>
@@ -795,7 +864,7 @@
 
                         <!-- Phone -->
                         <div class="flex items-start gap-4">
-                            <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20">📞</div>
+                            <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20"><i class="fa-solid fa-phone"></i></div>
                             <div>
                                 <span class="block font-extrabold text-dark-900 text-sm">Telepon / WhatsApp</span>
                                 <span class="text-dark-500 text-xs sm:text-sm">+62 895-3243-54052 (Customer Service)</span>
@@ -804,7 +873,7 @@
 
                         <!-- Email -->
                         <div class="flex items-start gap-4">
-                            <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20">✉️</div>
+                            <div class="h-10 w-10 bg-dark-900 text-brand-500 rounded-xl flex items-center justify-center text-lg shrink-0 border border-brand-500/20"><i class="fa-solid fa-envelope"></i></div>
                             <div>
                                 <span class="block font-extrabold text-dark-900 text-sm">Email Resmi</span>
                                 <span class="text-dark-500 text-xs sm:text-sm">domiini1c.id@gmail.com</span>
@@ -852,8 +921,8 @@
                             <textarea id="contact-message" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-dark-900 text-sm focus:outline-none focus:border-brand-500 transition-all resize-none"></textarea>
                         </div>
                         <button type="submit" id="contact-submit-btn" class="w-full bg-dark-900 text-brand-500 font-black py-4 rounded-2xl hover:bg-dark-850 shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0.5 flex items-center justify-center gap-2">
-                             <span id="btn-text">KIRIM PESAN CS</span>
-                             <span id="btn-loader" class="hidden h-5 w-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></span>
+                            <span id="btn-text">KIRIM PESAN CS</span>
+                            <span id="btn-loader" class="hidden h-5 w-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></span>
                         </button>
                     </form>
                 </div>
@@ -897,11 +966,11 @@
                     <h5 class="text-white font-bold text-sm uppercase tracking-wider mb-4">Kepatuhan Bisnis (Legal)</h5>
                     <ul class="space-y-2.5 text-sm">
                         <!-- Privacy Policy Link -->
-                        <li><button type="button" onclick="openModal('privacy')" class="text-dark-300 hover:text-brand-500 transition-colors text-left focus:outline-none">🔒 Kebijakan Privasi (Privacy Policy)</button></li>
+                        <li><button type="button" onclick="openModal('privacy')" class="text-dark-300 hover:text-brand-500 transition-colors text-left focus:outline-none"><i class="fa-solid fa-lock"></i> Kebijakan Privasi (Privacy Policy)</button></li>
                         <!-- Terms of Service Link -->
-                        <li><button type="button" onclick="openModal('terms')" class="text-dark-300 hover:text-brand-500 transition-colors text-left focus:outline-none">📝 Syarat & Ketentuan (Terms & Conditions)</button></li>
+                        <li><button type="button" onclick="openModal('terms')" class="text-dark-300 hover:text-brand-500 transition-colors text-left focus:outline-none"><i class="fa-solid fa-file-lines"></i> Syarat & Ketentuan (Terms & Conditions)</button></li>
                         <!-- Refund Policy Link -->
-                        <li><button type="button" onclick="openModal('refund')" class="text-dark-300 hover:text-brand-500 transition-colors text-left focus:outline-none">💰 Kebijakan Pembatalan & Refund</button></li>
+                        <li><button type="button" onclick="openModal('refund')" class="text-dark-300 hover:text-brand-500 transition-colors text-left focus:outline-none"><i class="fa-solid fa-money-bill-wave"></i> Kebijakan Pembatalan & Refund</button></li>
                     </ul>
                 </div>
 
@@ -933,7 +1002,7 @@
             <!-- Modal Header -->
             <div class="p-6 border-b border-slate-300 flex justify-between items-center bg-[#F8F9FA]">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-lg" id="modal-icon">📄</span>
+                    <span class="text-lg" id="modal-icon"><i class="fa-solid fa-lock"></i></span>
                     <h3 id="modal-title" class="font-outfit font-bold text-lg text-dark-900">Judul Dokumen</h3>
                 </div>
                 <button type="button" onclick="closeModal()" class="text-dark-400 hover:text-dark-900 focus:outline-none p-1 bg-slate-200/50 hover:bg-slate-200 rounded-lg text-sm">✕</button>
@@ -1014,7 +1083,16 @@
             const date = document.getElementById('sim-date').value;
             
             if (origin === dest) {
-                alert("Mohon pilih kota asal dan tujuan yang berbeda.");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Mohon pilih kota asal dan tujuan yang berbeda.',
+                    confirmButtonColor: '#FBC02D',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'rounded-3xl font-sans'
+                    }
+                });
                 return;
             }
 
@@ -1065,12 +1143,12 @@
                         </div>
                         
                         <div class="flex flex-wrap gap-4 pt-4 border-t border-slate-100">
-                             <div class="flex items-center gap-2 text-xs font-bold text-dark-700">
-                                <span class="p-1.5 bg-brand-50 rounded-lg">🚐</span>
+                            <div class="flex items-center gap-2 text-xs font-bold text-dark-700">
+                                <span class="p-1.5 bg-brand-50 rounded-lg"><i class="fa-solid fa-bus"></i></span>
                                 <span>${route.type}</span>
                             </div>
                             <div class="flex items-center gap-2 text-xs font-bold text-dark-700">
-                                <span class="p-1.5 bg-slate-50 rounded-lg">📍</span>
+                                <span class="p-1.5 bg-slate-50 rounded-lg"><i class="fa-solid fa-location-dot"></i></span>
                                 <span>${origin} → ${dest}</span>
                             </div>
                         </div>
@@ -1128,14 +1206,31 @@
         }
 
         function checkoutSimulasi() {
-            alert(`[SIMULASI PEMBAYARAN DOMPETX]\n\nAnda memesan tiket Shuttle ID: ${activeRouteId}\nNomor Kursi: ${selectedSeatNum}\nMetode Pembayaran: DompetX Payment Gateway\n\nStatus: Simulasi Sukses! Integrasi DompetX API aktif pada environment produksi.`);
+            Swal.fire({
+                icon: 'success',
+                title: 'Simulasi Pembayaran DompetX',
+                html: `
+                    <div class="text-left text-sm space-y-2 text-dark-800">
+                        <p><strong>ID Shuttle:</strong> ${activeRouteId}</p>
+                        <p><strong>Nomor Kursi:</strong> ${selectedSeatNum}</p>
+                        <p><strong>Metode Pembayaran:</strong> DompetX Payment Gateway</p>
+                        <hr class="border-slate-200 my-2">
+                        <p class="text-xs text-emerald-600 font-bold bg-emerald-50 p-2.5 rounded-xl border border-emerald-100/50">✓ Simulasi Sukses! Integrasi DompetX API aktif pada environment produksi.</p>
+                    </div>
+                `,
+                confirmButtonColor: '#FBC02D',
+                confirmButtonText: 'Selesai',
+                customClass: {
+                    popup: 'rounded-3xl font-sans'
+                }
+            });
         }
 
         // 2. Legal Modals Content Data and Display Functions (CRITICAL FOR DOMPETX MERCHANT APPROVAL)
         const modalContents = {
             privacy: {
                 title: "Kebijakan Privasi (Privacy Policy)",
-                icon: "🔒",
+                icon: '<i class="fa-solid fa-lock"></i>',
                 body: `
                     <h4 class="font-bold text-slate-800 text-sm uppercase">1. Pengantar Kebijakan</h4>
                     <p>Kami di PT D-Voyager Shuttle Indonesia sangat menghargai privasi data pribadi Anda selaku pengguna aplikasi dan website kami. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan mengamankan informasi pribadi Anda saat menggunakan layanan kami di dominic.my.id dan aplikasi mobile D-Voyager.</p>
@@ -1166,7 +1261,7 @@
             },
             terms: {
                 title: "Syarat & Ketentuan (Terms & Conditions)",
-                icon: "📝",
+                icon: '<i class="fa-solid fa-file-lines"></i>',
                 body: `
                     <h4 class="font-bold text-slate-800 text-sm uppercase">1. Ketentuan Penggunaan Layanan</h4>
                     <p>Dengan mengakses website dominic.my.id atau mengunduh aplikasi mobile D-Voyager, Anda setuju untuk terikat oleh Syarat dan Ketentuan penggunaan ini. Jika Anda tidak menyetujui bagian mana pun dari ketentuan ini, Anda dilarang menggunakan layanan kami.</p>
@@ -1187,7 +1282,7 @@
             },
             refund: {
                 title: "Kebijakan Pembatalan & Refund (Refund Policy)",
-                icon: "💰",
+                icon: '<i class="fa-solid fa-money-bill-wave"></i>',
                 body: `
                     <h4 class="font-bold text-slate-800 text-sm uppercase">1. Kebijakan Pembatalan Oleh Penumpang</h4>
                     <p>Kami memahami bahwa rencana perjalanan Anda dapat berubah sewaktu-waktu. Penumpang dapat mengajukan pembatalan pemesanan tiket shuttle dengan ketentuan sebagai berikut:</p>
@@ -1224,7 +1319,7 @@
             if (!data) return;
 
             title.textContent = data.title;
-            icon.textContent = data.icon;
+            icon.innerHTML = data.icon;
             content.innerHTML = data.body;
 
             modal.classList.remove('hidden');
@@ -1307,7 +1402,16 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert(`Terimakasih ${name}! Pesan Anda telah berhasil dikirim langsung ke tim D-Voyager melalui sistem kami.`);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pesan Terkirim',
+                        text: `Terimakasih ${name}! Pesan Anda telah berhasil dikirim langsung ke tim D-Voyager melalui sistem kami.`,
+                        confirmButtonColor: '#FBC02D',
+                        confirmButtonText: 'Sama-sama',
+                        customClass: {
+                            popup: 'rounded-3xl font-sans'
+                        }
+                    });
                     form.reset();
                     toggleOtherSubject(''); // Hide custom input if it was open
                 } else {
@@ -1315,7 +1419,16 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Maaf, terjadi masalah saat mengirim pesan: ' + error.message + '. Silakan coba lagi nanti.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Mengirim',
+                    text: 'Maaf, terjadi masalah saat mengirim pesan: ' + error.message + '. Silakan coba lagi nanti.',
+                    confirmButtonColor: '#FBC02D',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'rounded-3xl font-sans'
+                    }
+                });
             } finally {
                 // Reset state
                 btn.disabled = false;
@@ -1324,11 +1437,136 @@
             }
         }
 
+        // Premium Cross-Fade Slider Logic
+        const img1 = document.getElementById('mockup-img-1');
+        const img2 = document.getElementById('mockup-img-2');
+        const images = [
+            "{{ asset('assets/1web.jpg') }}",
+            "{{ asset('assets/2web.jpg') }}",
+            "{{ asset('assets/3web.jpg') }}",
+            "{{ asset('assets/4web.jpg') }}",
+            "{{ asset('assets/5web.jpg') }}"
+        ];
+        let currentIdx = 0;
+        let isFirstActive = true;
+
+        function rotateMockupImage() {
+            currentIdx = (currentIdx + 1) % images.length;
+            const nextSrc = images[currentIdx];
+
+            if (isFirstActive) {
+                // Fade out 1, Bring in 2
+                img2.src = nextSrc;
+                img2.onload = () => {
+                    img1.classList.replace('opacity-100', 'opacity-0');
+                    img1.classList.replace('z-10', 'z-0');
+                    img2.classList.replace('opacity-0', 'opacity-100');
+                    img2.classList.replace('z-0', 'z-10');
+                    isFirstActive = false;
+                };
+            } else {
+                // Fade out 2, Bring in 1
+                img1.src = nextSrc;
+                img1.onload = () => {
+                    img2.classList.replace('opacity-100', 'opacity-0');
+                    img2.classList.replace('z-10', 'z-0');
+                    img1.classList.replace('opacity-0', 'opacity-100');
+                    img1.classList.replace('z-0', 'z-10');
+                    isFirstActive = true;
+                };
+            }
+        }
+
+        // Start Rotation every 4 seconds
+        setInterval(rotateMockupImage, 4000);
+
         // Close modal when clicking outside the card
         document.getElementById('legal-modal').addEventListener('click', (e) => {
             if (e.target === document.getElementById('legal-modal')) {
                 closeModal();
             }
+        });
+
+        // Initialize Custom Dropdowns
+        document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+            const trigger = dropdown.querySelector('.dropdown-trigger');
+            const menu = dropdown.querySelector('.dropdown-menu');
+            const options = dropdown.querySelectorAll('.dropdown-option');
+            const selectId = dropdown.dataset.selectId;
+            const hiddenSelect = document.getElementById(selectId);
+            const valueText = dropdown.querySelector('.dropdown-value-text');
+            const arrow = dropdown.querySelector('.fa-chevron-down');
+
+            // Set initial selected value text in UI
+            const initialSelectedOption = hiddenSelect.options[hiddenSelect.selectedIndex];
+            if (initialSelectedOption) {
+                valueText.textContent = initialSelectedOption.textContent;
+            }
+
+            // Open/Close
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close other dropdowns
+                document.querySelectorAll('.custom-dropdown .dropdown-menu').forEach(otherMenu => {
+                    if (otherMenu !== menu) {
+                        otherMenu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                        otherMenu.parentElement.querySelector('.fa-chevron-down').classList.remove('rotate-180');
+                    }
+                });
+                menu.classList.toggle('scale-95');
+                menu.classList.toggle('opacity-0');
+                menu.classList.toggle('pointer-events-none');
+                arrow.classList.toggle('rotate-180');
+            });
+
+            // Select Option
+            options.forEach(option => {
+                // Set initial active state based on hiddenSelect value
+                if (option.dataset.value === hiddenSelect.value) {
+                    option.classList.add('bg-brand-50', 'text-dark-900');
+                    option.querySelector('.fa-check').classList.remove('opacity-0');
+                }
+
+                option.addEventListener('click', () => {
+                    const value = option.dataset.value;
+                    hiddenSelect.value = value;
+                    valueText.textContent = option.querySelector('span').textContent;
+
+                    // Trigger change event for select just in case
+                    hiddenSelect.dispatchEvent(new Event('change'));
+
+                    // Update UI active states
+                    options.forEach(opt => {
+                        opt.classList.remove('bg-brand-50', 'text-dark-900');
+                        opt.querySelector('.fa-check').classList.add('opacity-0');
+                    });
+                    option.classList.add('bg-brand-50', 'text-dark-900');
+                    option.querySelector('.fa-check').classList.remove('opacity-0');
+
+                    // Close menu
+                    menu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                    arrow.classList.remove('rotate-180');
+                });
+            });
+        });
+
+        // Close on click outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.custom-dropdown .dropdown-menu').forEach(menu => {
+                menu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+                menu.parentElement.querySelector('.fa-chevron-down').classList.remove('rotate-180');
+            });
+        });
+
+        // Initialize Flatpickr Premium Date Picker
+        flatpickr("#sim-date", {
+            locale: "id",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d/m/Y",
+            minDate: "today",
+            defaultDate: "today",
+            disableMobile: "true"
         });
     </script>
 </body>

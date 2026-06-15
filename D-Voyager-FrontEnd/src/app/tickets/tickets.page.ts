@@ -25,6 +25,10 @@ export class TicketsPage implements OnInit, OnDestroy {
   hasTickets: boolean = false;
   tickets: any[] = [];
   isLoading: boolean = false;
+  showPaymentSuccessMascot = false;
+  isPaymentSuccessLeaving = false;
+  private paymentSuccessHideTimer: any = null;
+  private paymentSuccessRemoveTimer: any = null;
   selectedTab: 'aktif' | 'riwayat' = 'aktif';
   isRatingOpen = false;
   ratingTicket: any = null;
@@ -59,11 +63,18 @@ export class TicketsPage implements OnInit, OnDestroy {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
       return;
     }
+    const shouldShowPaymentSuccess = sessionStorage.getItem('showPaymentSuccessMascot') === '1';
+    if (shouldShowPaymentSuccess) {
+      this.selectedTab = 'aktif';
+      sessionStorage.removeItem('showPaymentSuccessMascot');
+      this.presentPaymentSuccessMascot();
+    }
     this.fetchMyBookings();
   }
 
   ionViewWillLeave() {
     this.clearBackButtonHandler();
+    this.clearPaymentSuccessTimers();
   }
 
   private initTabSlideAnimation(currentTabIndex: number) {
@@ -170,6 +181,53 @@ export class TicketsPage implements OnInit, OnDestroy {
         totalPrice: ticket.total_price
       }
     });
+  }
+
+  private presentPaymentSuccessMascot() {
+    this.clearPaymentSuccessTimers(false);
+    this.isPaymentSuccessLeaving = false;
+    this.showPaymentSuccessMascot = true;
+
+    this.paymentSuccessHideTimer = setTimeout(() => {
+      this.dismissPaymentSuccessMascot();
+    }, 3000);
+  }
+
+  dismissPaymentSuccessMascot() {
+    if (!this.showPaymentSuccessMascot || this.isPaymentSuccessLeaving) {
+      return;
+    }
+
+    if (this.paymentSuccessHideTimer) {
+      clearTimeout(this.paymentSuccessHideTimer);
+      this.paymentSuccessHideTimer = null;
+    }
+
+    this.isPaymentSuccessLeaving = true;
+    this.paymentSuccessRemoveTimer = setTimeout(() => {
+      this.showPaymentSuccessMascot = false;
+      this.isPaymentSuccessLeaving = false;
+      this.paymentSuccessRemoveTimer = null;
+    }, 360);
+  }
+
+  private clearPaymentSuccessTimers(resetState: boolean = true) {
+    if (this.paymentSuccessHideTimer) {
+      clearTimeout(this.paymentSuccessHideTimer);
+      this.paymentSuccessHideTimer = null;
+    }
+
+    if (this.paymentSuccessRemoveTimer) {
+      clearTimeout(this.paymentSuccessRemoveTimer);
+      this.paymentSuccessRemoveTimer = null;
+    }
+
+    if (!resetState) {
+      return;
+    }
+
+    this.showPaymentSuccessMascot = false;
+    this.isPaymentSuccessLeaving = false;
   }
 
   isCancelModalOpen = false;
@@ -307,6 +365,7 @@ export class TicketsPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.unsubscribeFromChat();
     this.clearBackButtonHandler();
+    this.clearPaymentSuccessTimers();
   }
 
   private registerBackButtonHandler(handler: () => void) {

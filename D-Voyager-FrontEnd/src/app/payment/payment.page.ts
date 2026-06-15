@@ -269,7 +269,7 @@ export class PaymentPage implements OnInit, OnDestroy {
       return;
     }
 
-    await this.showToast('Pembayaran sedang diproses.', 'success');
+    sessionStorage.setItem('showPaymentSuccessMascot', '1');
     this.router.navigate(['/tickets']);
   }
 
@@ -284,6 +284,7 @@ export class PaymentPage implements OnInit, OnDestroy {
     }
 
     window.open(paymentUrl, '_blank', 'noopener,noreferrer');
+    sessionStorage.setItem('showPaymentSuccessMascot', '1');
     this.router.navigate(['/tickets']);
   }
 

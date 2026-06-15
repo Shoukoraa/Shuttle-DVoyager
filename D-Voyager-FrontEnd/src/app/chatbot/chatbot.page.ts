@@ -378,7 +378,7 @@ export class ChatbotPage implements OnInit {
     if (this.isInputDisabled()) {
       return 'Silakan selesaikan kendala Anda di atas...';
     }
-    return 'Tanya Kiperina...';
+    return 'Tanya ke Kiperina...';
   }
 
   handleBotInput(text: string) {
