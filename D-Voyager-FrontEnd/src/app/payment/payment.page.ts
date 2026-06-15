@@ -37,12 +37,7 @@ export class PaymentPage implements OnInit, OnDestroy {
   private browserFinishedListener: any = null;
 
   paymentMethods: { category: string, items: PaymentMethod[] }[] = [
-    {
-      category: 'Developer Testing (Bypass Gateway)',
-      items: [
-        { id: 'DEV_BYPASS', name: 'Developer Bypass (Bayar Instan Tanpa Uang Asli)', icon: 'terminal-outline', type: 'va' }
-      ]
-    },
+
     {
       category: 'Virtual Account',
       items: [

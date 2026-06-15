@@ -32,33 +32,7 @@ class PaymentController extends Controller
             ], 422);
         }
 
-        // Developer Bypass for testing locally on localhost
-        if ($request->payment_method === 'DEV_BYPASS') {
-            $paymentStatus = resolve(\App\Services\PaymentStatusService::class);
-            
-            $payment = Payment::updateOrCreate(
-                ['booking_id' => $booking->id],
-                [
-                    'amount' => $booking->total_price,
-                    'payment_method' => 'DEV_BYPASS',
-                    'gateway' => 'dev_testing',
-                    'gateway_transaction_id' => 'DEV-TX-' . Str::upper(Str::random(10)),
-                    'payment_url' => null,
-                    'gateway_response' => ['mode' => 'developer_bypass_testing'],
-                    'status' => 'success',
-                    'payment_time' => now(),
-                ]
-            );
 
-            $paymentStatus->markBookingPaid($booking);
-
-            return response()->json([
-                'message' => 'Developer testing payment successful (Bypassed DompetX).',
-                'payment' => $payment,
-                'payment_url' => null,
-                'status' => 'success',
-            ], 200);
-        }
 
         if ($booking->payment && $booking->payment->status === 'pending' && $booking->payment->payment_url) {
             return response()->json([

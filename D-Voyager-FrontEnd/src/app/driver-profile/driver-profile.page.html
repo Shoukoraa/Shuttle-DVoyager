@@ -50,35 +50,15 @@
       </div>
     </div>
 
-    <!-- Customer Reviews -->
-    <div class="info-card reviews-card">
-      <div class="card-title">
+    <!-- Customer Reviews Link -->
+    <div class="info-card" routerLink="/driver-reviews" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
+      <div class="card-title" style="margin-bottom: 0; padding-bottom: 0; border: none;">
         <ion-icon name="star-outline"></ion-icon>
         Ulasan Customer
       </div>
-
-      <div class="loading-reviews" *ngIf="isLoadingReviews">
-        <ion-spinner name="crescent"></ion-spinner>
-        <span>Memuat ulasan...</span>
-      </div>
-
-      <div class="empty-reviews" *ngIf="!isLoadingReviews && reviews.length === 0">
-        Belum ada ulasan dari customer.
-      </div>
-
-      <div class="review-item" *ngFor="let review of reviews">
-        <div class="review-top">
-          <div>
-            <strong>{{ review.customer?.user?.name || 'Customer' }}</strong>
-            <span>{{ getReviewRoute(review) }}</span>
-          </div>
-          <div class="review-rating">
-            <ion-icon name="star"></ion-icon>
-            {{ review.rating }}/5
-          </div>
-        </div>
-        <p *ngIf="review.comment">{{ review.comment }}</p>
-        <small>{{ review.created_at | date:'dd MMM yyyy, HH:mm' }}</small>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ion-badge color="warning">{{ reviewCount }} Ulasan</ion-badge>
+        <ion-icon name="chevron-forward-outline" style="color: var(--text-sub); font-size: 20px;"></ion-icon>
       </div>
     </div>
 

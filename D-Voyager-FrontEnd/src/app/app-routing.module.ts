@@ -121,7 +121,13 @@ const routes: Routes = [
     path: 'driver-login',
     loadChildren: () => import('./driver-login/driver-login.module').then( m => m.DriverLoginPageModule),
     canActivate: [WelcomeGuard]
+  },  {
+    path: 'driver-reviews',
+    loadChildren: () => import('./driver-reviews/driver-reviews.module').then( m => m.DriverReviewsPageModule),
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'driver' }
   }
+
 ];
 
 @NgModule({
