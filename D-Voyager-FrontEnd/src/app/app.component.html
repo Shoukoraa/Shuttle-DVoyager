@@ -1,2 +1,20 @@
 <ion-app>
+  <!-- Custom Video Splash Screen -->
+  <div class="splash-overlay" *ngIf="showSplash">
+    <div class="splash-content">
+      <video 
+        #splashVideo
+        class="splash-video" 
+        [class.video-ready]="videoReady"
+        autoplay 
+        muted 
+        playsinline
+        (playing)="onVideoPlaying()"
+        (ended)="dismissSplash()">
+        <source src="assets/splashscreen.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
+  <ion-router-outlet></ion-router-outlet>
 </ion-app>

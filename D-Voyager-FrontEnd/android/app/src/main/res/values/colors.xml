@@ -3,5 +3,5 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="splash_background">#d5ab1f</color> <!-- Kuning Cerah (Material Yellow) -->
+    <color name="splash_background">#ffd214</color> <!-- Kuning Cerah (Vibrant Yellow) -->
 </resources>

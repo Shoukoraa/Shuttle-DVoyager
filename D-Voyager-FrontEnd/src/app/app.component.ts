@@ -3,6 +3,8 @@ import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ModalController, Platform, ToastController } from '@ionic/angular';
 import { App } from '@capacitor/app';
+import { SplashScreen } from '@capacitor/splash-screen';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 
 @Component({
@@ -42,10 +44,10 @@ export class AppComponent implements OnInit {
   }
 
   async initializeSplashScreen() {
-    // Safety fallback: dismiss splash after 4 seconds in case video fails to play/end
+    // Safety fallback: dismiss splash after 10 seconds in case video fails to play/end
     this.splashTimeout = setTimeout(() => {
       this.dismissSplash();
-    }, 4000);
+    }, 10000);
   }
 
   async dismissSplash() {
