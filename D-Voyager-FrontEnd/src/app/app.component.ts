@@ -1,9 +1,9 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ModalController, Platform, ToastController } from '@ionic/angular';
 import { App } from '@capacitor/app';
-import { StatusBar, Style } from '@capacitor/status-bar';
+
 
 @Component({
   selector: 'app-root',
@@ -11,9 +11,12 @@ import { StatusBar, Style } from '@capacitor/status-bar';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  showSplash = true;
+  videoReady = false;
   private lastBackPress = 0;
   private timePeriodToExit = 2000;
+  private splashTimeout: any;
 
   constructor(
     private router: Router,
@@ -32,6 +35,40 @@ export class AppComponent {
       });
 
     this.initializeApp();
+  }
+
+  ngOnInit() {
+    this.initializeSplashScreen();
+  }
+
+  async initializeSplashScreen() {
+    // Safety fallback: dismiss splash after 4 seconds in case video fails to play/end
+    this.splashTimeout = setTimeout(() => {
+      this.dismissSplash();
+    }, 4000);
+  }
+
+  async dismissSplash() {
+    if (this.showSplash) {
+      this.showSplash = false;
+      if (this.splashTimeout) {
+        clearTimeout(this.splashTimeout);
+      }
+      try {
+        await SplashScreen.hide();
+      } catch (err) {
+        // Ignore native splash hide errors
+      }
+    }
+  }
+
+  async onVideoPlaying() {
+    this.videoReady = true;
+    try {
+      await SplashScreen.hide();
+    } catch (err) {
+      console.warn('Native SplashScreen plugin failed to hide on playing:', err);
+    }
   }
 
   initializeApp() {

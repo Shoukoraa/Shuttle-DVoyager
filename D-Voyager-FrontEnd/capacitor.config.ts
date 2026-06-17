@@ -5,10 +5,7 @@ const config: CapacitorConfig = {
   appName: 'D-Voyager',
   webDir: 'www',
   plugins: {
-    StatusBar: {
-      overlaysWebView: true,
-      backgroundColor: '#ffffff00',
-      style: 'LIGHT'
+
     }
   }
 };
