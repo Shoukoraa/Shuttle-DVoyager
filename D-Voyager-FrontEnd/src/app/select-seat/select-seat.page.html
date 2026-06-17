@@ -74,21 +74,31 @@
         <p>{{ shuttleInfo.time }}</p>
       </div>
       <div class="details-right">
-        <div class="rating-badge">
-          <ion-icon name="star"></ion-icon>
-          <span>{{ shuttleInfo.rating }}</span>
-        </div>
         <span class="reviews-count">{{ shuttleInfo.type }}</span>
       </div>
     </div>
 
     <!-- Images -->
     <div class="shuttle-images-scroller">
-      <div class="image-card">
-        <div class="img-wrapper"></div>
-      </div>
-      <div class="image-card">
-        <div class="img-wrapper"></div>
+      <!-- Foto Unit Kendaraan Asli (dari Admin) -->
+      <ng-container *ngIf="shuttleInfo.photos && shuttleInfo.photos.length > 0">
+        <div class="image-card" *ngFor="let photoUrl of shuttleInfo.photos">
+          <div class="img-wrapper">
+            <img [src]="photoUrl" alt="Foto Unit Kendaraan" class="vehicle-img">
+          </div>
+        </div>
+      </ng-container>
+      
+      <!-- Fallback Premium Placeholder (jika tidak ada foto khusus) -->
+      <div class="image-card" *ngIf="!shuttleInfo.photos || shuttleInfo.photos.length === 0">
+        <div class="img-wrapper fallback-wrapper" [ngClass]="vehicleCategory">
+          <div class="fallback-content">
+            <ion-icon [name]="vehicleCategory === 'family_car' ? 'car-sport-outline' : 'bus-outline'"></ion-icon>
+            <span class="fallback-text">
+              {{ vehicleCategory === 'family_car' ? 'Mobil Keluarga Premium' : (vehicleCategory === 'bus' ? 'Bus Wisata Eksekutif' : 'Mini Bus Commuter') }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

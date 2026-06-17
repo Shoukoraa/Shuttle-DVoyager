@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ToastController, Platform } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 import { Geolocation } from '@capacitor/geolocation';
+import { Subscription } from 'rxjs';
 
 declare var mapboxgl: any;
 
@@ -11,7 +12,7 @@ declare var mapboxgl: any;
   styleUrls: ['./driver-home.page.scss'],
   standalone: false
 })
-export class DriverHomePage implements OnInit {
+export class DriverHomePage implements OnInit, OnDestroy {
   public driverName: string = 'Driver';
   public vehiclePlate: string = '';
   public profilePhotoUrl: string | null = null;
@@ -29,6 +30,7 @@ export class DriverHomePage implements OnInit {
   public nextTrip: any = null;
   public isLoadingSchedule = true;
   public nextTripDate: string | null = null;
+  public slideDistance = '0px';
 
   private lastProfileRefreshAt: number = 0;
   private isRefreshingProfile: boolean = false;
@@ -37,15 +39,49 @@ export class DriverHomePage implements OnInit {
   manifestData: any[] = [];
   isLoadingManifest = false;
 
-  constructor(private apiService: ApiService, private toastController: ToastController) { }
+  private backButtonSubscription: Subscription | null = null;
+
+  constructor(
+    private apiService: ApiService,
+    private toastController: ToastController,
+    private platform: Platform
+  ) { }
 
   ngOnInit() {
     this.loadCachedUserData();
   }
 
   ionViewWillEnter() {
+    this.initTabSlideAnimation(0);
     this.refreshUserData();
     this.loadSchedule();
+  }
+
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('driver_active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('driver_active_tab_index', currentTabIndex.toString());
+  }
+
+  ionViewWillLeave() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+      this.backButtonSubscription = null;
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+      this.backButtonSubscription = null;
+    }
+    this.stopTracking();
   }
 
   loadSchedule() {
@@ -199,9 +235,10 @@ export class DriverHomePage implements OnInit {
         console.error('Gagal memulai perjalanan', err);
         const toast = await this.toastController.create({
           message: 'Gagal memulai perjalanan: ' + (err.error?.message || 'Kesalahan Server'),
-          duration: 3000,
-          color: 'danger',
-          position: 'top'
+          duration: 1100,
+          cssClass: 'premium-toast toast-danger',
+          position: 'top',
+          icon: 'close-circle'
         });
         await toast.present();
       }
@@ -227,9 +264,10 @@ export class DriverHomePage implements OnInit {
         console.error('Gagal menyelesaikan perjalanan', err);
         const toast = await this.toastController.create({
           message: 'Gagal menyelesaikan perjalanan: ' + (err.error?.message || 'Kesalahan Server'),
-          duration: 3000,
-          color: 'danger',
-          position: 'top'
+          duration: 1100,
+          cssClass: 'premium-toast toast-danger',
+          position: 'top',
+          icon: 'close-circle'
         });
         await toast.present();
       }
@@ -241,34 +279,52 @@ export class DriverHomePage implements OnInit {
   async startTracking() {
     try {
       // 1. Minta izin secara eksplisit (Sangat Penting untuk Android 6+)
-      const permissions = await Geolocation.requestPermissions();
-      if (permissions.location !== 'granted') {
+      let permissionState = 'granted';
+      try {
+        const permissions = await Geolocation.requestPermissions();
+        permissionState = permissions.location;
+      } catch (err) {
+        console.warn('Geolocation.requestPermissions not supported or failed, checking permissions:', err);
+        try {
+          const check = await Geolocation.checkPermissions();
+          permissionState = check.location;
+        } catch (checkErr) {
+          console.warn('Geolocation.checkPermissions also failed:', checkErr);
+        }
+      }
+
+      if (permissionState === 'denied') {
         console.error('Izin lokasi ditolak oleh pengguna');
         const toast = await this.toastController.create({
           message: 'Izin lokasi (GPS) ditolak. Live Tracking tidak akan berfungsi.',
-          duration: 3000,
-          color: 'warning'
+          duration: 1100,
+          cssClass: 'premium-toast toast-warning',
+          icon: 'warning'
         });
-        toast.present();
+        await toast.present();
         return;
       }
 
       // 2. Dapatkan posisi saat ini secara instan dan kirim ke backend
-      const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      
-      this.setDriverMarker(lat, lng);
+      try {
+        const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        this.setDriverMarker(lat, lng);
 
-      if (this.currentTrip && this.currentTrip.id) {
-        this.apiService.updateLocation({
-          schedule_id: this.currentTrip.id,
-          latitude: lat,
-          longitude: lng
-        }).subscribe({
-          next: (loc) => console.log('Lokasi GPS awal berhasil dikirim:', loc),
-          error: (err) => console.error('Gagal mengirim lokasi GPS awal:', err)
-        });
+        if (this.currentTrip && this.currentTrip.id) {
+          this.apiService.updateLocation({
+            schedule_id: this.currentTrip.id,
+            latitude: lat,
+            longitude: lng
+          }).subscribe({
+            next: (loc) => console.log('Lokasi GPS awal berhasil dikirim:', loc),
+            error: (err) => console.error('Gagal mengirim lokasi GPS awal:', err)
+          });
+        }
+      } catch (posErr) {
+        console.warn('Gagal mendapatkan lokasi GPS awal:', posErr);
       }
 
       // 3. Bersihkan watch lama jika ada agar tidak duplikat
@@ -277,7 +333,7 @@ export class DriverHomePage implements OnInit {
       }
 
       // 4. Mulai watch posisi secara background/terus-menerus
-      this.watchId = await Geolocation.watchPosition({ enableHighAccuracy: true }, (pos, err) => {
+      this.watchId = await Geolocation.watchPosition({ enableHighAccuracy: true }, (pos: any, err: any) => {
         if (err || !pos) {
           console.error('GPS tracking error', err);
           return;
@@ -367,6 +423,18 @@ export class DriverHomePage implements OnInit {
 
   toggleMapFullscreen() {
     this.isMapFullscreen = !this.isMapFullscreen;
+
+    if (this.isMapFullscreen) {
+      this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(9999, () => {
+        this.toggleMapFullscreen();
+      });
+    } else {
+      if (this.backButtonSubscription) {
+        this.backButtonSubscription.unsubscribe();
+        this.backButtonSubscription = null;
+      }
+    }
+
     setTimeout(() => {
       if (this.map) {
         this.map.resize();

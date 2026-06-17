@@ -26,7 +26,9 @@ export class SelectSeatPage implements OnInit {
     date: '',
     type: '',
     rating: 5.0,
-    price: 0
+    price: 0,
+    photo: '',
+    photos: [] as string[]
   };
 
   seatMap: Seat[][] = [];
@@ -67,6 +69,35 @@ export class SelectSeatPage implements OnInit {
           : 'Belum diatur';
         this.shuttleInfo.date = deptTime.toLocaleDateString();
         this.shuttleInfo.type = schedule.vehicle?.vehicle_type || 'Shuttle';
+        
+        const rawPhoto = schedule.vehicle?.photo;
+        if (Array.isArray(rawPhoto)) {
+          this.shuttleInfo.photos = rawPhoto;
+          this.shuttleInfo.photo = rawPhoto[0] || '';
+        } else if (typeof rawPhoto === 'string' && rawPhoto.trim() !== '') {
+          if (rawPhoto.trim().startsWith('[')) {
+            try {
+              const parsed = JSON.parse(rawPhoto);
+              if (Array.isArray(parsed)) {
+                this.shuttleInfo.photos = parsed;
+                this.shuttleInfo.photo = parsed[0] || '';
+              } else {
+                this.shuttleInfo.photos = [rawPhoto];
+                this.shuttleInfo.photo = rawPhoto;
+              }
+            } catch (e) {
+              this.shuttleInfo.photos = [rawPhoto];
+              this.shuttleInfo.photo = rawPhoto;
+            }
+          } else {
+            this.shuttleInfo.photos = [rawPhoto];
+            this.shuttleInfo.photo = rawPhoto;
+          }
+        } else {
+          this.shuttleInfo.photos = [];
+          this.shuttleInfo.photo = '';
+        }
+
         this.shuttleInfo.price = schedule.price || schedule.route?.price || 0;
         this.vehicleCategory = schedule.vehicle?.vehicle_category || this.inferCategoryByCapacity(schedule.capacity);
 

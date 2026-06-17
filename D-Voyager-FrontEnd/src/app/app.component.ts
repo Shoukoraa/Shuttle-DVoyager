@@ -1,9 +1,9 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { Platform, ToastController } from '@ionic/angular';
+import { ModalController, Platform, ToastController } from '@ionic/angular';
 import { App } from '@capacitor/app';
-import { SplashScreen } from '@capacitor/splash-screen';
+
 
 @Component({
   selector: 'app-root',
@@ -22,7 +22,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private platform: Platform,
     private toastController: ToastController,
-    private zone: NgZone
+    private zone: NgZone,
+    private modalController: ModalController
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
@@ -74,6 +75,7 @@ export class AppComponent implements OnInit {
     this.platform.ready().then(() => {
       this.setupBackButtonBehavior();
       this.setupDeepLinks();
+      this.setupStatusBar();
     });
   }
 
@@ -109,33 +111,34 @@ export class AppComponent implements OnInit {
   }
 
   setupBackButtonBehavior() {
-    this.platform.backButton.subscribeWithPriority(10, async () => {
+    this.platform.backButton.subscribeWithPriority(9999, async () => {
+      const topModal = await this.modalController.getTop();
+      if (topModal) {
+        await topModal.dismiss();
+        return;
+      }
+
       const currentUrl = this.router.url.split('?')[0];
+      
+      // Halaman yang dianggap "Root" atau halaman awal di mana tombol back harus memicu konfirmasi keluar
       const rootUrls = [
         '/home',
-        '/tickets',
-        '/promos',
-        '/profile',
         '/driver-home',
-        '/driver-history',
-        '/driver-chat',
-        '/driver-profile',
-        '/login'
+        '/login',
+        '/'
       ];
 
+      // Jika berada di salah satu halaman utama/root
       if (rootUrls.includes(currentUrl)) {
         const now = Date.now();
         if (now - this.lastBackPress < this.timePeriodToExit) {
-          try {
-            await App.exitApp();
-          } catch (err) {
-            console.error('Error exiting app:', err);
-          }
+          App.exitApp();
         } else {
           this.lastBackPress = now;
           await this.showExitToast();
         }
       } else {
+        // Jika sedang di sub-halaman (seperti edit-profil), jangan keluar aplikasi, tapi balik ke halaman sebelumnya
         window.history.back();
       }
     });
@@ -143,11 +146,26 @@ export class AppComponent implements OnInit {
 
   private async showExitToast() {
     const toast = await this.toastController.create({
-      message: 'Tekan tombol kembali sekali lagi untuk keluar aplikasi.',
+      message: 'Tekan sekali lagi untuk keluar aplikasi',
       duration: 2000,
-      position: 'bottom',
-      color: 'dark'
+      position: 'top',
+      cssClass: 'premium-toast toast-warning',
+      icon: 'warning'
     });
     await toast.present();
+  }
+
+  private async setupStatusBar() {
+    if (this.platform.is('cordova') || this.platform.is('capacitor')) {
+      try {
+        // Set overlay to true for a more modern immersive look
+        // This requires safe-area-inset-top padding in CSS (already added)
+        await StatusBar.setOverlaysWebView({ overlay: true });
+        await StatusBar.setBackgroundColor({ color: 'transparent' });
+        await StatusBar.setStyle({ style: Style.Light });
+      } catch (err) {
+        console.warn('Failed to configure StatusBar:', err);
+      }
+    }
   }
 }

@@ -147,8 +147,13 @@
   .actions-wrapper {
     display: flex;
     width: 100%;
-    gap: 16px;
+    gap: 0px;
     height: 56px;
+    transition: gap 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+
+    &.has-prev {
+      gap: 16px;
+    }
 
     button {
       border: none;
@@ -157,25 +162,47 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.45s cubic-bezier(0.25, 1, 0.5, 1);
       font-family: 'Outfit', sans-serif;
 
       &:active {
         transform: scale(0.97);
+        transition: transform 0.1s ease;
       }
     }
 
     .btn-prev {
-      width: 56px;
+      width: 0px;
       height: 56px;
       border-radius: 18px;
       background: #F3F4F6;
       color: var(--dark-gray);
       font-size: 22px;
+      opacity: 0;
+      pointer-events: none;
+      overflow: hidden;
+      transition: width 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+                  opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                  background-color 0.2s ease,
+                  transform 0.1s ease;
 
       &:active {
         background: #E5E7EB;
       }
+
+      &.animating {
+        animation: clickBounce 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        ion-icon {
+          animation: arrowPushLeft 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+      }
+    }
+
+    &.has-prev .btn-prev {
+      width: 56px;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .btn-next {
@@ -185,10 +212,10 @@
       background: var(--dark-gray);
       color: #FFFFFF;
       gap: 8px;
-
-      &.full-width {
-        flex: 1;
-      }
+      transition: background-color 0.2s ease, 
+                  color 0.2s ease, 
+                  box-shadow 0.3s ease,
+                  transform 0.1s ease;
 
       .btn-text {
         font-size: 15px;
@@ -198,6 +225,7 @@
 
       ion-icon {
         font-size: 18px;
+        transition: transform 0.2s ease;
       }
 
       &:active {
@@ -211,6 +239,20 @@
         
         &:active {
           background: var(--primary-dark) !important;
+        }
+      }
+
+      &.animating {
+        animation: clickBounce 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        ion-icon {
+          animation: arrowPush 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        &.finish-button {
+          ion-icon {
+            animation: checkPop 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+          }
         }
       }
     }
@@ -242,5 +284,70 @@
   100% {
     transform: scale(1.6);
     opacity: 0;
+  }
+}
+
+@keyframes clickBounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes arrowPush {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translateX(12px);
+    opacity: 0;
+  }
+  31% {
+    transform: translateX(-12px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.4) rotate(-10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes arrowPushLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translateX(-12px);
+    opacity: 0;
+  }
+  31% {
+    transform: translateX(12px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
   }
 }

@@ -1,0 +1,132 @@
+:host {
+  --primary-color: #FFC107; 
+  --accent-color: #FFC107; 
+  --dark-gray: #1E1E1E;
+  --light-gray: #E5E7EB; 
+  --bg-color: #F8F9FA; 
+  --card-bg: #FFFFFF;
+  --text-main: #1E1E1E;
+  --text-sub: #6B7280;
+}
+
+.driver-bg {
+  --background: var(--bg-color);
+}
+
+.reviews-container {
+  padding: 20px;
+}
+
+.rating-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 25px;
+
+  .rating-circle {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 8px 24px rgba(255, 193, 7, 0.4);
+    margin-bottom: 10px;
+
+    h2 {
+      margin: 0;
+      color: var(--dark-gray);
+      font-size: 28px;
+      font-weight: 800;
+    }
+    
+    ion-icon {
+      color: var(--dark-gray);
+      font-size: 24px;
+    }
+  }
+
+  p {
+    color: var(--text-sub);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.reviews-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+  .loading-reviews,
+  .empty-reviews {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text-sub);
+    font-size: 14px;
+    padding: 20px 0;
+  }
+
+  .review-item {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--light-gray);
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .review-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+
+      strong {
+        display: block;
+        color: var(--text-main);
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      span {
+        display: block;
+        color: var(--text-sub);
+        font-size: 12px;
+        margin-top: 4px;
+      }
+    }
+
+    .review-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #d97706;
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+
+    p {
+      margin: 12px 0 8px;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    small {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+  }
+}

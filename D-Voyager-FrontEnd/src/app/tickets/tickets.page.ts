@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController, AlertController } from '@ionic/angular';
+import { ToastController, AlertController, Platform } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 import { EchoService } from '../services/echo.service';
+import { Subscription } from 'rxjs';
 
 declare var mapboxgl: any;
 
@@ -19,10 +20,15 @@ export class TicketsPage implements OnInit, OnDestroy {
   trackingTicket: any = null;
   private trackingMap: any = null;
   private driverTrackingMarker: any = null;
+  private backButtonSubscription: Subscription | null = null;
 
   hasTickets: boolean = false;
   tickets: any[] = [];
   isLoading: boolean = false;
+  showPaymentSuccessMascot = false;
+  isPaymentSuccessLeaving = false;
+  private paymentSuccessHideTimer: any = null;
+  private paymentSuccessRemoveTimer: any = null;
   selectedTab: 'aktif' | 'riwayat' = 'aktif';
   isRatingOpen = false;
   ratingTicket: any = null;
@@ -36,7 +42,8 @@ export class TicketsPage implements OnInit, OnDestroy {
     private router: Router,
     private toastController: ToastController,
     private alertController: AlertController,
-    private echoService: EchoService
+    private echoService: EchoService,
+    private platform: Platform
   ) { }
 
   ngOnInit() {
@@ -46,13 +53,40 @@ export class TicketsPage implements OnInit, OnDestroy {
     }
   }
 
+  public slideDistance = '0px';
+
   ionViewWillEnter() {
+    this.initTabSlideAnimation(1);
+
     const role = localStorage.getItem('user_role');
     if (role === 'driver') {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
       return;
     }
+    const shouldShowPaymentSuccess = sessionStorage.getItem('showPaymentSuccessMascot') === '1';
+    if (shouldShowPaymentSuccess) {
+      this.selectedTab = 'aktif';
+      sessionStorage.removeItem('showPaymentSuccessMascot');
+      this.presentPaymentSuccessMascot();
+    }
     this.fetchMyBookings();
+  }
+
+  ionViewWillLeave() {
+    this.clearBackButtonHandler();
+    this.clearPaymentSuccessTimers();
+  }
+
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('active_tab_index', currentTabIndex.toString());
   }
 
   fetchMyBookings() {
@@ -147,6 +181,53 @@ export class TicketsPage implements OnInit, OnDestroy {
         totalPrice: ticket.total_price
       }
     });
+  }
+
+  private presentPaymentSuccessMascot() {
+    this.clearPaymentSuccessTimers(false);
+    this.isPaymentSuccessLeaving = false;
+    this.showPaymentSuccessMascot = true;
+
+    this.paymentSuccessHideTimer = setTimeout(() => {
+      this.dismissPaymentSuccessMascot();
+    }, 3000);
+  }
+
+  dismissPaymentSuccessMascot() {
+    if (!this.showPaymentSuccessMascot || this.isPaymentSuccessLeaving) {
+      return;
+    }
+
+    if (this.paymentSuccessHideTimer) {
+      clearTimeout(this.paymentSuccessHideTimer);
+      this.paymentSuccessHideTimer = null;
+    }
+
+    this.isPaymentSuccessLeaving = true;
+    this.paymentSuccessRemoveTimer = setTimeout(() => {
+      this.showPaymentSuccessMascot = false;
+      this.isPaymentSuccessLeaving = false;
+      this.paymentSuccessRemoveTimer = null;
+    }, 360);
+  }
+
+  private clearPaymentSuccessTimers(resetState: boolean = true) {
+    if (this.paymentSuccessHideTimer) {
+      clearTimeout(this.paymentSuccessHideTimer);
+      this.paymentSuccessHideTimer = null;
+    }
+
+    if (this.paymentSuccessRemoveTimer) {
+      clearTimeout(this.paymentSuccessRemoveTimer);
+      this.paymentSuccessRemoveTimer = null;
+    }
+
+    if (!resetState) {
+      return;
+    }
+
+    this.showPaymentSuccessMascot = false;
+    this.isPaymentSuccessLeaving = false;
   }
 
   isCancelModalOpen = false;
@@ -257,11 +338,16 @@ export class TicketsPage implements OnInit, OnDestroy {
   }
 
   private async presentToast(message: string, color: string = 'medium') {
+    const icon = color === 'success' ? 'checkmark-circle' :
+                 color === 'danger' ? 'close-circle' :
+                 color === 'warning' ? 'warning' : 'information-circle';
+
     const toast = await this.toastController.create({
       message,
-      duration: 2200,
-      color,
-      position: 'top'
+      duration: 1100,
+      cssClass: `premium-toast toast-${color}`,
+      position: 'top',
+      icon
     });
 
     await toast.present();
@@ -278,6 +364,22 @@ export class TicketsPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.unsubscribeFromChat();
+    this.clearBackButtonHandler();
+    this.clearPaymentSuccessTimers();
+  }
+
+  private registerBackButtonHandler(handler: () => void) {
+    this.clearBackButtonHandler();
+    this.backButtonSubscription = this.platform.backButton.subscribeWithPriority(10001, () => {
+      handler();
+    });
+  }
+
+  private clearBackButtonHandler() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+      this.backButtonSubscription = null;
+    }
   }
 
   openChat(ticket: any) {
@@ -285,6 +387,7 @@ export class TicketsPage implements OnInit, OnDestroy {
     this.isChatOpen = true;
     this.loadChatHistory();
     this.subscribeToChat();
+    this.registerBackButtonHandler(() => this.closeChat());
   }
 
   closeChat() {
@@ -295,6 +398,7 @@ export class TicketsPage implements OnInit, OnDestroy {
     if (this.typingTimeout) {
       clearTimeout(this.typingTimeout);
     }
+    this.clearBackButtonHandler();
   }
 
   loadChatHistory() {
@@ -399,6 +503,7 @@ export class TicketsPage implements OnInit, OnDestroy {
   openTracking(ticket: any) {
     this.trackingTicket = ticket;
     this.isTrackingOpen = true;
+    this.registerBackButtonHandler(() => this.closeTracking());
 
     // Mulai inisialisasi peta
     setTimeout(() => this.initTrackingMap(), 500);
@@ -414,6 +519,8 @@ export class TicketsPage implements OnInit, OnDestroy {
   }
 
   closeTracking() {
+    this.clearBackButtonHandler();
+
     if (this.trackingTicket) {
       const scheduleId = this.trackingTicket.schedule_id;
       this.echoService.getEcho().leave(`schedules.${scheduleId}`);
@@ -428,6 +535,7 @@ export class TicketsPage implements OnInit, OnDestroy {
     this.driverTrackingMarker = null;
     this.isTrackingOpen = false;
     this.trackingTicket = null;
+    this.isMapFullscreen = false;
   }
 
   public currentStyle: string = 'dark';
@@ -511,6 +619,17 @@ export class TicketsPage implements OnInit, OnDestroy {
 
   toggleMapFullscreen() {
     this.isMapFullscreen = !this.isMapFullscreen;
+
+    if (this.isMapFullscreen) {
+      this.registerBackButtonHandler(() => this.toggleMapFullscreen());
+    } else {
+      if (this.isTrackingOpen) {
+        this.registerBackButtonHandler(() => this.closeTracking());
+      } else {
+        this.clearBackButtonHandler();
+      }
+    }
+
     setTimeout(() => {
       if (this.trackingMap) {
         this.trackingMap.resize();

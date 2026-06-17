@@ -35,9 +35,27 @@ export class EchoService {
   private initEcho(token: string | null) {
     (window as any).Pusher = Pusher;
 
+    // Konfigurasi menggunakan Reverb lokal
+    this.echoInstance = new Echo({
+      broadcaster: 'reverb',
+      key: 'k2n8z9p5q3r7s1t6u5v4', // Sesuai REVERB_APP_KEY di .env backend
+      wsHost: '127.0.0.1',
+      wsPort: 8080,
+      wssPort: 8080,
+      forceTLS: false,
+      enabledTransports: ['ws', 'wss'],
+      authEndpoint: `${environment.apiUrl}/broadcasting/auth`,
+      auth: {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : ''
+        }
+      }
+    });
+
+    /* Konfigurasi Pusher Cloud sebelumnya:
     this.echoInstance = new Echo({
       broadcaster: 'pusher',
-      key: '3d489e6e4b5731da6c86', // Key Pusher Anda
+      key: '3d489e6e4b5731da6c86', 
       cluster: 'ap1',
       forceTLS: true,
       authEndpoint: `${environment.apiUrl}/broadcasting/auth`,
@@ -47,6 +65,7 @@ export class EchoService {
         }
       }
     });
+    */
   }
 
   /**

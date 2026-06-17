@@ -1,20 +1,2 @@
 <ion-app>
-  <div *ngIf="showSplash" class="splash-overlay">
-    <div class="splash-content">
-      <video 
-        autoplay 
-        muted 
-        preload="auto"
-        playsinline 
-        class="splash-video" 
-        [class.video-ready]="videoReady"
-        (playing)="onVideoPlaying()"
-        (ended)="dismissSplash()"
-        poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
-        <source src="assets/splash_dvoyager.mp4" type="video/mp4">
-      </video>
-    </div>
-  </div>
-
-  <ion-router-outlet *ngIf="!showSplash"></ion-router-outlet>
 </ion-app>

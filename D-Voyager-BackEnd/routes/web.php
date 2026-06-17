@@ -1,0 +1,158 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Web\AdminWebController;
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::post('/contact', function (\Illuminate\Http\Request $request) {
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'subject' => 'required|string|max:255',
+        'message' => 'required|string',
+    ]);
+
+    try {
+        \Illuminate\Support\Facades\Mail::raw($data['message'], function ($message) use ($data) {
+            $message->to('domiini1c.id@gmail.com')
+                    ->subject($data['subject'] . ' - Dari: ' . $data['name'])
+                    ->from($data['email'], $data['name'])
+                    ->replyTo($data['email'], $data['name']);
+        });
+
+        return response()->json(['success' => true, 'message' => 'Pesan berhasil dikirim!']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Gagal mengirim email: ' . $e->getMessage()], 500);
+    }
+});
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN AUTH
+|--------------------------------------------------------------------------
+*/
+
+// login page (tidak bisa diakses kalau sudah login)
+Route::get('/admin/login', function () {
+    return view('admin.login');
+})->name('login')->middleware('guest');
+
+// proses login
+Route::post('/admin/login', [AuthController::class, 'loginAdmin'])->middleware('guest');
+
+// logout
+Route::post('/admin/logout', function () {
+    auth()->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/admin/login');
+})->name('logout')->middleware('auth');
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN PROTECTED (WEB VIEWS)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    
+    Route::get('/dashboard', [AdminWebController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/reports/export/excel', [AdminWebController::class, 'exportMonthlyReportExcel'])->name('admin.reports.export.excel');
+    Route::get('/reports/export/pdf', [AdminWebController::class, 'exportMonthlyReportPdf'])->name('admin.reports.export.pdf');
+
+    // LOCATIONS
+    Route::get('/locations', [AdminWebController::class, 'locations'])->name('admin.locations');
+    Route::post('/locations', [AdminWebController::class, 'storeLocation']);
+    Route::post('/locations/bulk-delete', [AdminWebController::class, 'bulkDeleteLocations'])->name('admin.locations.bulk-delete');
+    Route::post('/locations/delete-all', [AdminWebController::class, 'deleteAllLocations'])->name('admin.locations.delete-all');
+    Route::get('/locations/{location}/edit', [AdminWebController::class, 'editLocation']);
+    Route::put('/locations/{location}', [AdminWebController::class, 'updateLocation']);
+    Route::delete('/locations/{location}', [AdminWebController::class, 'deleteLocation']);
+
+    // VEHICLES
+    Route::get('/vehicles', [AdminWebController::class, 'vehicles'])->name('admin.vehicles');
+    Route::post('/vehicles', [AdminWebController::class, 'storeVehicle']);
+    Route::post('/vehicles/bulk-delete', [AdminWebController::class, 'bulkDeleteVehicles'])->name('admin.vehicles.bulk-delete');
+    Route::post('/vehicles/delete-all', [AdminWebController::class, 'deleteAllVehicles'])->name('admin.vehicles.delete-all');
+    Route::get('/vehicles/{vehicle}/edit', [AdminWebController::class, 'editVehicle']);
+    Route::put('/vehicles/{vehicle}', [AdminWebController::class, 'updateVehicle']);
+    Route::delete('/vehicles/{vehicle}', [AdminWebController::class, 'deleteVehicle']);
+
+    // ROUTES
+    Route::get('/routes', [AdminWebController::class, 'routes'])->name('admin.routes');
+    Route::post('/routes', [AdminWebController::class, 'storeRoute']);
+    Route::post('/routes/bulk-delete', [AdminWebController::class, 'bulkDeleteRoutes'])->name('admin.routes.bulk-delete');
+    Route::post('/routes/delete-all', [AdminWebController::class, 'deleteAllRoutes'])->name('admin.routes.delete-all');
+    Route::get('/routes/{route}/edit', [AdminWebController::class, 'editRoute']);
+    Route::put('/routes/{route}', [AdminWebController::class, 'updateRoute']);
+    Route::delete('/routes/{route}', [AdminWebController::class, 'deleteRoute']);
+
+    // SCHEDULES
+    Route::get('/schedules', [AdminWebController::class, 'schedules'])->name('admin.schedules');
+    Route::post('/schedules', [AdminWebController::class, 'storeSchedule']);
+    Route::post('/schedules/bulk-delete', [AdminWebController::class, 'bulkDeleteSchedules'])->name('admin.schedules.bulk-delete');
+    Route::post('/schedules/delete-all', [AdminWebController::class, 'deleteAllSchedules'])->name('admin.schedules.delete-all');
+    Route::get('/schedules/{schedule}/edit', [AdminWebController::class, 'editSchedule']);
+    Route::put('/schedules/{schedule}', [AdminWebController::class, 'updateSchedule']);
+    Route::delete('/schedules/{schedule}', [AdminWebController::class, 'deleteSchedule']);
+
+    // DRIVERS
+    Route::get('/drivers', [AdminWebController::class, 'drivers'])->name('admin.drivers');
+    Route::post('/drivers', [AdminWebController::class, 'storeDriver']);
+    Route::post('/drivers/bulk-delete', [AdminWebController::class, 'bulkDeleteDrivers'])->name('admin.drivers.bulk-delete');
+    Route::post('/drivers/delete-all', [AdminWebController::class, 'deleteAllDrivers'])->name('admin.drivers.delete-all');
+    Route::get('/drivers/{driver}/edit', [AdminWebController::class, 'editDriver']);
+    Route::put('/drivers/{driver}', [AdminWebController::class, 'updateDriver']);
+    Route::delete('/drivers/{driver}', [AdminWebController::class, 'deleteDriver']);
+
+    // CUSTOMERS
+    Route::get('/customers', [AdminWebController::class, 'customers'])->name('admin.customers');
+    Route::post('/customers/bulk-delete', [AdminWebController::class, 'bulkDeleteCustomers'])->name('admin.customers.bulk-delete');
+    Route::post('/customers/delete-all', [AdminWebController::class, 'deleteAllCustomers'])->name('admin.customers.delete-all');
+    Route::get('/customers/{customer}/edit', [AdminWebController::class, 'editCustomer']);
+    Route::put('/customers/{customer}', [AdminWebController::class, 'updateCustomer']);
+    Route::delete('/customers/{customer}', [AdminWebController::class, 'deleteCustomer']);
+
+    // BOOKINGS
+    Route::get('/bookings', [AdminWebController::class, 'bookings'])->name('admin.bookings');
+    Route::get('/bookings/{booking}/edit', [AdminWebController::class, 'editBooking']);
+    Route::put('/bookings/{booking}', [AdminWebController::class, 'updateBooking']);
+
+    // REVIEWS
+    Route::get('/reviews', [AdminWebController::class, 'reviews'])->name('admin.reviews');
+
+    // TRACKING MAPS
+    Route::get('/tracking', [AdminWebController::class, 'tracking'])->name('admin.tracking');
+
+    // CHAT CS
+    Route::get('/chat', [AdminWebController::class, 'chat'])->name('admin.chat');
+    Route::get('/chat/active-sessions', function () {
+        return \App\Models\ChatSession::with(['user', 'lastCategory'])
+            ->where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    });
+    Route::get('/chat/{sessionId}/history', [\App\Http\Controllers\Api\ChatbotController::class, 'getHistory']);
+    Route::post('/chat/{sessionId}/messages', [\App\Http\Controllers\Api\ChatbotController::class, 'sendMessage']);
+    Route::post('/chat/{sessionId}/resolve', [\App\Http\Controllers\Api\ChatbotController::class, 'resolve']);
+
+    // VOUCHERS & PROMOS
+    Route::get('/vouchers', [AdminWebController::class, 'vouchers'])->name('admin.vouchers');
+    Route::post('/vouchers', [AdminWebController::class, 'storeVoucher'])->name('admin.vouchers.store');
+    Route::get('/vouchers/{voucher}/edit', [AdminWebController::class, 'editVoucher'])->name('admin.vouchers.edit');
+    Route::put('/vouchers/{voucher}', [AdminWebController::class, 'updateVoucher'])->name('admin.vouchers.update');
+    Route::delete('/vouchers/{voucher}', [AdminWebController::class, 'deleteVoucher'])->name('admin.vouchers.delete');
+
+    Route::post('/broadcasting/auth', [\Illuminate\Broadcasting\BroadcastController::class, 'authenticate']);
+
+});

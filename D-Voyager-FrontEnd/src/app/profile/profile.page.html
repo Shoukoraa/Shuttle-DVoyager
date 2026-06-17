@@ -145,26 +145,26 @@
 
 <!-- Custom Bottom Navigation -->
 <ion-footer class="custom-footer ion-no-border">
-  <div class="nav-bar material-nav">
-    <div class="nav-item" routerLink="/home">
+  <div class="nav-bar material-nav" [style.--slide-distance]="slideDistance">
+    <div class="nav-item" routerLink="/home" routerDirection="root">
       <div class="icon-container">
         <ion-icon name="home-outline"></ion-icon>
       </div>
       <span>Beranda</span>
     </div>
-    <div class="nav-item" routerLink="/tickets">
+    <div class="nav-item" routerLink="/tickets" routerDirection="root">
       <div class="icon-container">
         <ion-icon name="ticket-outline"></ion-icon>
       </div>
       <span>Pesanan</span>
     </div>
-    <div class="nav-item" routerLink="/promos">
+    <div class="nav-item" routerLink="/promos" routerDirection="root">
       <div class="icon-container">
         <ion-icon name="pricetag-outline"></ion-icon>
       </div>
       <span>Promo</span>
     </div>
-    <div class="nav-item active" routerLink="/profile">
+    <div class="nav-item active" routerLink="/profile" routerDirection="root">
       <div class="icon-container">
         <ion-icon name="person"></ion-icon>
       </div>

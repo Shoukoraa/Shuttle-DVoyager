@@ -327,25 +327,52 @@
   background: var(--card-bg);
   border-top: 1px solid var(--light-gray);
 
-  .nav-bar {
+  .nav-bar.material-nav {
     display: flex;
     justify-content: space-around;
-    padding: 10px 0;
+    padding: 8px 12px 12px;
 
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      color: var(--text-sub);
+      color: #64748b;
       cursor: pointer;
+      flex: 1;
+      position: relative;
+      transition: all 0.2s ease;
 
-      ion-icon { font-size: 22px; }
-      span { font-size: 11px; font-weight: 600; }
+      .icon-container {
+        width: 64px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+        margin-bottom: 4px;
+        position: relative;
+        overflow: hidden;
+
+        ion-icon { font-size: 24px; }
+      }
+
+      span { font-size: 12px; font-weight: 600; }
 
       &.active {
-        color: var(--accent-color);
-        ion-icon { color: var(--accent-color); }
+        color: var(--dark-gray);
+
+        .icon-container {
+          background: var(--accent-color);
+          box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
+          color: var(--dark-gray);
+          animation: slidePill 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+          ion-icon {
+            animation: activeIconPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          }
+        }
+
+        span { color: var(--dark-gray); font-weight: 800; }
       }
     }
   }

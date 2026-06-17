@@ -1,0 +1,49 @@
+<ion-content class="custom-bg">
+  <div class="login-container">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="logo-box">
+        <img src="assets/Logo_Dvoyager_No_Bg.png" alt="D-Voyager Logo">
+      </div>
+      <h1>D-Voyager</h1>
+      <p>Driver Login</p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="form-section">
+      <div class="input-group">
+        <ion-label class="custom-label">Email</ion-label>
+        <ion-item class="custom-input-item" lines="none">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-input type="email" placeholder="Enter your email" required [(ngModel)]="email"></ion-input>
+        </ion-item>
+      </div>
+
+      <div class="input-group">
+        <ion-label class="custom-label">Password</ion-label>
+        <ion-item class="custom-input-item" lines="none">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Enter your password" required [(ngModel)]="password"></ion-input>
+          <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" slot="end" class="password-toggle" (click)="showPassword = !showPassword"></ion-icon>
+        </ion-item>
+      </div>
+
+      <div class="forgot-password">
+        <a routerLink="/forgot-password">Forgot Password?</a>
+      </div>
+
+      <ion-button expand="block" class="custom-btn" (click)="login()">
+        Login
+      </ion-button>
+
+      <div class="error-banner" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+    </div>
+    
+    <!-- Sign Up Link -->
+    <div class="signup-section">
+      <p style="margin-top: 10px;">Are you a customer? <a routerLink="/login">Login as Customer</a></p>
+    </div>
+  </div>
+</ion-content>

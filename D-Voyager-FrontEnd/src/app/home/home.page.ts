@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../services/api.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -15,19 +16,33 @@ export class HomePage implements OnInit {
   public locations: any[] = [];
   public asalId: number | null = null;
   public tujuanId: number | null = null;
-  public tanggal: string = new Date().toISOString();
+  public minTravelDate: string = this.getTodayDateValue();
+  public tanggal: string = this.minTravelDate;
   public isSwapping = false;
 
   public isAsalModalOpen = false;
   public isTujuanModalOpen = false;
   public asalSearch = '';
   public tujuanSearch = '';
+  public filteredAsalLocations: any[] = [];
+  public filteredTujuanLocations: any[] = [];
 
   public promos: any[] = [];
+  public isLoadingPromos = true;
+  public isLoadingLocations = true;
 
-  constructor(private router: Router, private apiService: ApiService) {}
+  public slideDistance = '0px';
+
+  constructor(
+    private router: Router, 
+    private apiService: ApiService,
+    private alertController: AlertController
+  ) {}
 
   ionViewWillEnter() {
+    this.refreshMinimumTravelDate();
+    this.initTabSlideAnimation(0);
+
     const role = localStorage.getItem('user_role');
     if (role === 'driver') {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
@@ -38,7 +53,21 @@ export class HomePage implements OnInit {
     this.refreshUserProfile();
   }
 
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('active_tab_index', currentTabIndex.toString());
+  }
+
   ngOnInit() {
+    this.refreshMinimumTravelDate();
+
     const role = localStorage.getItem('user_role');
     if (role === 'driver') {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
@@ -54,10 +83,13 @@ export class HomePage implements OnInit {
         console.log('Locations raw response:', res);
         const rawList = Array.isArray(res) ? res : Object.values(res || {});
         this.locations = rawList.filter(loc => loc && typeof loc === 'object' && typeof loc.name === 'string');
+        this.refreshFilteredLocations();
+        this.isLoadingLocations = false;
         console.log('Locations parsed list:', this.locations);
       },
       error: (err) => {
         console.error('Failed to load locations:', err);
+        this.isLoadingLocations = false;
       }
     });
 
@@ -131,57 +163,73 @@ export class HomePage implements OnInit {
   }
 
   setToday() {
-    this.tanggal = new Date().toISOString();
+    this.tanggal = this.minTravelDate;
   }
 
   setTomorrow() {
     const tmr = new Date();
     tmr.setDate(tmr.getDate() + 1);
-    this.tanggal = tmr.toISOString();
+    this.tanggal = this.formatDateValue(tmr);
   }
 
   isToday(): boolean {
     if (!this.tanggal) return false;
-    const today = new Date();
-    const current = new Date(this.tanggal);
-    return today.toDateString() === current.toDateString();
+    return this.minTravelDate === this.normalizeDateValue(this.tanggal);
   }
 
   isTomorrow(): boolean {
     if (!this.tanggal) return false;
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const current = new Date(this.tanggal);
-    return tomorrow.toDateString() === current.toDateString();
+    return this.formatDateValue(tomorrow) === this.normalizeDateValue(this.tanggal);
   }
 
   getFormattedDate(): string {
     if (!this.tanggal) return 'Pilih Tanggal';
-    const dateObj = new Date(this.tanggal);
+    const dateObj = this.parseDateValue(this.tanggal);
     const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     return dateObj.toLocaleDateString('id-ID', options);
   }
 
   getCalendarMonth(): string {
     if (!this.tanggal) return 'MEI';
-    const dateObj = new Date(this.tanggal);
+    const dateObj = this.parseDateValue(this.tanggal);
     return dateObj.toLocaleDateString('id-ID', { month: 'short' }).toUpperCase();
   }
 
   getCalendarDay(): string {
     if (!this.tanggal) return '27';
-    const dateObj = new Date(this.tanggal);
+    const dateObj = this.parseDateValue(this.tanggal);
     return dateObj.toLocaleDateString('id-ID', { day: '2-digit' });
+  }
+
+  onTanggalChange(value: string | null | undefined): void {
+    if (!value) {
+      this.tanggal = this.minTravelDate;
+      return;
+    }
+
+    this.tanggal = this.isPastTravelDate(value) ? this.minTravelDate : value;
   }
 
   openAsalModal() {
     this.asalSearch = '';
+    this.updateAsalFilter('');
     this.isAsalModalOpen = true;
+  }
+
+  closeAsalModal() {
+    this.isAsalModalOpen = false;
   }
 
   openTujuanModal() {
     this.tujuanSearch = '';
+    this.updateTujuanFilter('');
     this.isTujuanModalOpen = true;
+  }
+
+  closeTujuanModal() {
+    this.isTujuanModalOpen = false;
   }
 
   selectAsal(loc: any) {
@@ -204,23 +252,76 @@ export class HomePage implements OnInit {
     return loc ? loc.name : '';
   }
 
-  getFilteredLocations(query: string): any[] {
-    const validLocs = (this.locations || []).filter(loc => loc && typeof loc === 'object' && typeof loc.name === 'string');
-    if (!query) return validLocs;
-    return validLocs.filter(loc => 
-      loc.name.toLowerCase().includes(query.toLowerCase())
+  updateAsalFilter(query: string): void {
+    this.filteredAsalLocations = this.filterLocations(query);
+  }
+
+  updateTujuanFilter(query: string): void {
+    this.filteredTujuanLocations = this.filterLocations(query);
+  }
+
+  trackByLocationId(_: number, loc: any): number | string {
+    return loc?.id ?? loc?.name;
+  }
+
+  private refreshFilteredLocations(): void {
+    this.filteredAsalLocations = this.filterLocations(this.asalSearch);
+    this.filteredTujuanLocations = this.filterLocations(this.tujuanSearch);
+  }
+
+  private filterLocations(query: string): any[] {
+    const keyword = (query || '').trim().toLowerCase();
+    const validLocs = this.locations || [];
+
+    if (!keyword) {
+      return validLocs;
+    }
+
+    return validLocs.filter(loc =>
+      loc.name.toLowerCase().includes(keyword)
     );
   }
 
-  searchShuttle() {
+  async searchShuttle() {
     if (!this.asalId || !this.tujuanId) {
-      alert('Pilih kota asal dan tujuan');
+      const alert = await this.alertController.create({
+        message: `
+          <div class="location-alert-content">
+            <div class="location-alert-visual">
+              <img src="assets/bingung.png" alt="" class="location-alert-image" />
+            </div>
+            <p>Silakan pilih kota asal dan tujuan terlebih dahulu untuk mencari jadwal.</p>
+          </div>
+        `,
+        cssClass: 'premium-alert location-alert',
+        buttons: [{
+          text: 'Cari',
+          role: 'confirm',
+          cssClass: 'alert-button-confirm'
+        }]
+      });
+      await alert.present();
+      return;
+    }
+
+    if (!this.tanggal || this.isPastTravelDate(this.tanggal)) {
+      this.tanggal = this.minTravelDate;
+      const alert = await this.alertController.create({
+        header: 'Tanggal Tidak Valid',
+        message: 'Tanggal perjalanan tidak boleh sebelum hari ini.',
+        cssClass: 'premium-alert',
+        buttons: [{
+          text: 'Mengerti',
+          role: 'confirm',
+          cssClass: 'alert-button-confirm'
+        }]
+      });
+      await alert.present();
       return;
     }
 
     // Format date to YYYY-MM-DD
-    const dateObj = new Date(this.tanggal);
-    const formattedDate = dateObj.toISOString().split('T')[0];
+    const formattedDate = this.normalizeDateValue(this.tanggal);
 
     this.router.navigate(['/schedule'], {
       queryParams: {
@@ -229,6 +330,38 @@ export class HomePage implements OnInit {
         date: formattedDate
       }
     });
+  }
+
+  private refreshMinimumTravelDate(): void {
+    this.minTravelDate = this.getTodayDateValue();
+
+    if (!this.tanggal || this.isPastTravelDate(this.tanggal)) {
+      this.tanggal = this.minTravelDate;
+    }
+  }
+
+  private isPastTravelDate(value: string): boolean {
+    return this.normalizeDateValue(value) < this.minTravelDate;
+  }
+
+  private getTodayDateValue(): string {
+    return this.formatDateValue(new Date());
+  }
+
+  private normalizeDateValue(value: string): string {
+    return value.split('T')[0];
+  }
+
+  private parseDateValue(value: string): Date {
+    const [year, month, day] = this.normalizeDateValue(value).split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  private formatDateValue(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   loadHomePromos() {
@@ -249,9 +382,11 @@ export class HomePage implements OnInit {
             icon: v.icon || 'gift-outline'
           };
         });
+        this.isLoadingPromos = false;
       },
       error: (err) => {
         console.error('Failed to load home promos:', err);
+        this.isLoadingPromos = false;
       }
     });
   }

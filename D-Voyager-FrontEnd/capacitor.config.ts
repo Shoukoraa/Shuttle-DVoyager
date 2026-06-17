@@ -5,11 +5,7 @@ const config: CapacitorConfig = {
   appName: 'D-Voyager',
   webDir: 'www',
   plugins: {
-    SplashScreen: {
-      launchShowDuration: 500,
-      launchAutoHide: true,
-      backgroundColor: "#d5ab1f",
-      androidScaleType: "CENTER_CROP"
+
     }
   }
 };

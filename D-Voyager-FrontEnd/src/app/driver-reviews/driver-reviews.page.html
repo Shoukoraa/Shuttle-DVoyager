@@ -1,0 +1,46 @@
+<ion-header class="custom-header ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/driver-profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Ulasan Customer</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="driver-bg">
+  <div class="reviews-container">
+    <div class="rating-summary">
+      <div class="rating-circle">
+        <h2>{{ rating }}</h2>
+        <ion-icon name="star"></ion-icon>
+      </div>
+      <p>Berdasarkan {{ reviewCount }} Ulasan</p>
+    </div>
+
+    <div class="reviews-card">
+      <div class="loading-reviews" *ngIf="isLoadingReviews">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Memuat ulasan...</span>
+      </div>
+
+      <div class="empty-reviews" *ngIf="!isLoadingReviews && reviews.length === 0">
+        Belum ada ulasan dari customer.
+      </div>
+
+      <div class="review-item" *ngFor="let review of reviews">
+        <div class="review-top">
+          <div>
+            <strong>{{ review.customer?.user?.name || 'Customer' }}</strong>
+            <span>{{ getReviewRoute(review) }}</span>
+          </div>
+          <div class="review-rating">
+            <ion-icon name="star"></ion-icon>
+            {{ review.rating }}/5
+          </div>
+        </div>
+        <p *ngIf="review.comment">{{ review.comment }}</p>
+        <small>{{ review.created_at | date:'dd MMM yyyy, HH:mm' }}</small>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -59,15 +59,20 @@
   .material-nav {
     display: flex;
     justify-content: space-around;
-    padding: 8px 0 12px;
+    padding: 8px 12px 12px;
+    background: var(--white);
+    position: relative;
 
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: #6b7280;
+      color: #64748b;
       cursor: pointer;
       flex: 1;
+      position: relative;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
 
       .icon-container {
         width: 64px;
@@ -75,36 +80,174 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: 16px;
+        border-radius: 20px;
         margin-bottom: 4px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
 
         ion-icon {
           font-size: 24px;
+          transition: transform 0.3s ease;
         }
       }
 
       span {
         font-size: 12px;
         font-weight: 600;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.2px;
         transition: all 0.3s;
+        opacity: 1; /* Ensure text is not hidden */
+      }
+
+      &:active {
+        transform: scale(0.92);
+        opacity: 0.7;
       }
 
       &.active {
         color: var(--dark-gray);
 
         .icon-container {
-          background: rgba(255, 193, 7, 0.3); /* Primary pill shape */
+          background: rgba(255, 193, 7, 1); /* Solid primary for clearer state */
+          box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
           color: var(--dark-gray);
+          animation: slidePill 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          
+          ion-icon {
+            animation: activeIconPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          }
         }
 
         span {
           font-weight: 800;
+          opacity: 1;
+          color: var(--dark-gray);
         }
       }
     }
   }
+}
+
+/* Smooth Page Transitions & Stability */
+ion-router-outlet {
+  background: var(--bg-color);
+  /* Disable page transition animations */
+  --ion-transition-duration: 0ms;
+}
+
+.payment-success-hero {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 50%;
+  z-index: 10000;
+  width: min(364px, calc(100vw - 32px));
+  min-height: 106px;
+  margin: 0;
+  padding: 14px 86px 14px 16px;
+  overflow: hidden;
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 72%);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.16);
+  pointer-events: none;
+  animation: paymentSuccessSlideIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  &.leaving {
+    animation: paymentSuccessSlideOut 340ms cubic-bezier(0.7, 0, 0.84, 0) both;
+  }
+
+  .success-copy {
+    position: relative;
+    z-index: 1;
+    max-width: 218px;
+
+    span {
+      display: inline-flex;
+      margin-bottom: 7px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #10b981;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      color: var(--dark-gray);
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 11.5px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+  }
+
+  .success-mascot {
+    position: absolute;
+    right: -16px;
+    bottom: -18px;
+    z-index: 1;
+    width: 106px;
+    height: 106px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+}
+
+@keyframes paymentSuccessSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -120%);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, 6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes paymentSuccessSlideOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -120%);
+  }
+}
+
+/* Eliminate horizontal "shaking" during transitions */
+.ion-page {
+  background: var(--bg-color);
+  /* Eliminate horizontal "shaking" during transitions */
+  contain: size layout style;
+  transition: none !important;
+  will-change: auto;
+}
+
+.custom-footer {
+  position: relative;
+  z-index: 100;
+  background: var(--white);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.03);
+  /* Prevent footer jump */
+  contain: layout;
+  will-change: transform;
 }
 
 /* ==========================================================================
@@ -227,29 +370,59 @@
 }
 
 /* ==========================================================================
-   Premium Ionic Toasts
+   Premium Ionic Toasts (.premium-toast)
    ========================================================================== */
-ion-toast {
-  --border-radius: 16px !important;
-  --box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25) !important;
+ion-toast.premium-toast {
+  --background: rgba(255, 255, 255, 0.9) !important;
+  --color: #1E293B !important;
+  --border-radius: 60px !important;
+  --box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
   font-family: 'Outfit', sans-serif;
-  font-weight: 600;
   
-  &::part(button) {
-    font-weight: 800;
+  &::part(container) {
+    margin: 12px auto !important;
+    border-radius: 60px !important;
+    padding: 2px 18px 2px 4px !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: 90% !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   &::part(message) {
-    font-size: 14px;
-    line-height: 1.4;
-    padding: 16px 20px;
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    padding: 6px 0 6px 6px !important;
+    color: #0F172A !important;
+    text-align: center;
   }
   
-  &::part(container) {
-    margin: 20px !important;
-    border-radius: 16px !important;
-    width: calc(100% - 40px) !important;
-    min-width: 0 !important;
+  &::part(icon) {
+    color: var(--toast-accent, #10B981) !important;
+    font-size: 24px !important;
+    padding-inline-start: 8px !important;
+    padding-inline-end: 2px !important;
+  }
+
+  &::part(button) {
+    font-weight: 800;
+  }
+
+  /* Variations */
+  &.toast-success {
+    --toast-accent: #10B981;
+  }
+
+  &.toast-error {
+    --toast-accent: #EF4444;
+  }
+
+  &.toast-warning {
+    --toast-accent: #F59E0B;
   }
 }
 
@@ -383,4 +556,298 @@ ion-toast {
       }
     }
   }
-}
+}
+
+@keyframes slidePill {
+  0% {
+    transform: translateX(var(--slide-distance, 0px)) scaleX(1.45);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(0px) scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes activeIconPop {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Global Custom Header Styles */
+.custom-header {
+  ion-toolbar {
+    --background: var(--white);
+    --border-color: transparent;
+    padding-top: var(--ion-safe-area-top, 0);
+    padding-bottom: 10px;
+  }
+
+  ion-back-button {
+    color: var(--dark-gray);
+  }
+
+  ion-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--dark-gray);
+  }
+}
+
+/* ==========================================================================
+   Premium Global Alert (.premium-alert)
+   ========================================================================== */
+ion-alert.premium-alert {
+  --background: var(--white);
+  --backdrop-opacity: 0.65;
+  --border-radius: 28px;
+  
+  &::part(container) {
+    width: min(320px, calc(100vw - 48px));
+    border-radius: 28px !important;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.22);
+    padding: 28px 22px 24px;
+    overflow: hidden;
+    animation: premiumAlertIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .alert-wrapper {
+    background: var(--white);
+    border-radius: 28px !important;
+    overflow: hidden;
+  }
+
+  .alert-head {
+    padding: 0 0 10px;
+  }
+
+  .alert-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--dark-gray);
+    letter-spacing: -0.5px;
+    text-align: center;
+    line-height: 1.25;
+  }
+
+  .alert-message {
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    color: #6B7280;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .alert-button-group {
+    display: flex;
+    width: 100%;
+    gap: 12px;
+    padding: 24px 0 0;
+    justify-content: center;
+  }
+
+  .alert-button {
+    flex: 1;
+    height: 48px;
+    min-width: 0;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: none;
+    letter-spacing: 0;
+    margin: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+    &:active {
+      transform: scale(0.97);
+    }
+    
+    &.alert-button-confirm {
+      background: var(--primary-color);
+      color: var(--dark-gray);
+      box-shadow: 0 8px 20px rgba(255, 193, 7, 0.22);
+    }
+
+    &.alert-button-cancel {
+      background: #F3F4F6;
+      color: #64748b;
+    }
+
+    &.alert-button-danger {
+      background: #EF4444;
+      color: #FFFFFF;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.22);
+    }
+  }
+}
+
+ion-alert.location-alert {
+  &::part(container) {
+    padding: 28px 22px 18px;
+  }
+
+  .alert-head {
+    display: none;
+  }
+
+  .alert-message {
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+  }
+
+  .location-alert-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .location-alert-visual {
+    width: 136px;
+    height: 118px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    transform-origin: center bottom;
+    animation: premiumAlertIconIn 0.48s 0.08s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .location-alert-image {
+    width: 136px;
+    height: 118px;
+    object-fit: contain;
+    display: block;
+    transform-origin: center bottom;
+    animation: premiumAlertIconFloat 2.4s 0.7s ease-in-out infinite;
+  }
+
+  .location-alert-content h2 {
+    margin: 0 0 10px;
+    color: var(--dark-gray);
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.5px;
+  }
+
+  .location-alert-content p {
+    max-width: 252px;
+    margin: 0 auto;
+    color: #6B7280;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .alert-button-group {
+    width: 100%;
+    padding: 24px 0 10px;
+    justify-content: center;
+  }
+
+  .alert-button {
+    flex: 0 0 132px;
+    width: 132px;
+    min-width: 132px;
+    max-width: 132px;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .alert-button-inner {
+    justify-content: center;
+  }
+}
+
+@keyframes premiumAlertIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes premiumAlertIconIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.78);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes premiumAlertIconFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.02);
+  }
+}
+
+
+/* ==========================================================================
+   Skeleton Shimmer Animation
+   ========================================================================== */
+.shimmer {
+  background: #f6f7f8;
+  background-image: linear-gradient(
+    to right,
+    #f6f7f8 0%,
+    #edeef1 20%,
+    #f6f7f8 40%,
+    #f6f7f8 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 800px 100%; 
+  display: inline-block;
+  position: relative; 
+  animation: shimmerAnim 1.5s infinite linear;
+  border-radius: 8px;
+}
+
+@keyframes shimmerAnim {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+/* Shimmer Helpers */
+.shimmer-text {
+  height: 14px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.shimmer-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 12px;
+}
+
+.shimmer-avatar {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}

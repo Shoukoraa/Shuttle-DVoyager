@@ -42,13 +42,29 @@ export class ProfilePage implements OnInit {
     this.loadCachedUserData();
   }
 
+  public slideDistance = '0px';
+
   ionViewWillEnter() {
+    this.initTabSlideAnimation(3);
+
     const role = localStorage.getItem('user_role');
     if (role === 'driver') {
       this.router.navigate(['/driver-profile'], { replaceUrl: true });
       return;
     }
     this.refreshUserData();
+  }
+
+  private initTabSlideAnimation(currentTabIndex: number) {
+    const prev = localStorage.getItem('active_tab_index');
+    if (prev !== null) {
+      const prevIndex = parseInt(prev, 10);
+      if (prevIndex !== currentTabIndex) {
+        const diff = prevIndex - currentTabIndex;
+        this.slideDistance = `${diff * 25}vw`;
+      }
+    }
+    localStorage.setItem('active_tab_index', currentTabIndex.toString());
   }
 
   loadCachedUserData() {
@@ -122,6 +138,8 @@ export class ProfilePage implements OnInit {
     this.performLogout();
   }
 
+
+
   private async performLogout() {
     this.isLoggingOut = true;
 
@@ -148,9 +166,10 @@ export class ProfilePage implements OnInit {
 
     const toast = await this.toastController.create({
       message: 'Kamu sudah keluar dari akun.',
-      duration: 1400,
+      duration: 1100,
       position: 'top',
-      color: 'success',
+      cssClass: 'premium-toast toast-success',
+      icon: 'checkmark-circle',
     });
     await toast.present();
 

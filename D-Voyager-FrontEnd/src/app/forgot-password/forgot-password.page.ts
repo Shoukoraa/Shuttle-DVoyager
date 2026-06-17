@@ -85,9 +85,10 @@ export class ForgotPasswordPage implements OnInit {
         this.isLoading = false;
         const toast = await this.toastController.create({
           message: response?.message || 'Password berhasil direset. Silakan login.',
-          duration: 1800,
-          color: 'success',
+          duration: 1100,
+          cssClass: 'premium-toast toast-success',
           position: 'top',
+          icon: 'checkmark-circle'
         });
         await toast.present();
         this.router.navigate(['/login']);

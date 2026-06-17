@@ -23,9 +23,18 @@
     </div>
 
     <!-- Loading State -->
-    <div class="loading-state" *ngIf="isLoadingSchedule" style="text-align: center; padding: 30px;">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Memuat jadwal...</p>
+    <!-- Skeleton Loader -->
+    <div class="skeleton-loader" *ngIf="isLoadingSchedule">
+      <div class="booking-card trip-card skeleton-card">
+        <div class="shimmer-title shimmer" style="width: 40%;"></div>
+        <div class="shimmer-text shimmer" style="height: 30px; margin: 15px 0;"></div>
+        <div class="shimmer-text shimmer" style="width: 100%;"></div>
+        <div class="shimmer-text shimmer" style="width: 80%;"></div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+           <div class="shimmer" style="flex: 1; height: 48px; border-radius: 12px;"></div>
+           <div class="shimmer" style="flex: 1; height: 48px; border-radius: 12px;"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Active Trip Card -->
@@ -208,21 +217,29 @@
 
 <!-- Custom Bottom Navigation for Driver -->
 <ion-footer class="custom-footer driver-footer">
-  <div class="nav-bar">
+  <div class="nav-bar material-nav" [style.--slide-distance]="slideDistance">
     <div class="nav-item active" routerLink="/driver-home" routerDirection="root">
-      <ion-icon name="car-outline"></ion-icon>
+      <div class="icon-container">
+        <ion-icon name="car"></ion-icon>
+      </div>
       <span>Tugas</span>
     </div>
     <div class="nav-item" routerLink="/driver-history" routerDirection="root">
-      <ion-icon name="time-outline"></ion-icon>
+      <div class="icon-container">
+        <ion-icon name="time-outline"></ion-icon>
+      </div>
       <span>Riwayat</span>
     </div>
     <div class="nav-item" routerLink="/driver-chat" routerDirection="root">
-      <ion-icon name="chatbubbles-outline"></ion-icon>
+      <div class="icon-container">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+      </div>
       <span>Pesan</span>
     </div>
     <div class="nav-item" routerLink="/driver-profile" routerDirection="root">
-      <ion-icon name="person-outline"></ion-icon>
+      <div class="icon-container">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
       <span>Akun</span>
     </div>
   </div>

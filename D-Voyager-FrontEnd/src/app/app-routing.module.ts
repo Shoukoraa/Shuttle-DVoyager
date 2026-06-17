@@ -116,7 +116,18 @@ const routes: Routes = [
   {
     path: 'chatbot',
     loadChildren: () => import('./chatbot/chatbot.module').then( m => m.ChatbotPageModule)
+  },
+  {
+    path: 'driver-login',
+    loadChildren: () => import('./driver-login/driver-login.module').then( m => m.DriverLoginPageModule),
+    canActivate: [WelcomeGuard]
+  },  {
+    path: 'driver-reviews',
+    loadChildren: () => import('./driver-reviews/driver-reviews.module').then( m => m.DriverReviewsPageModule),
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'driver' }
   }
+
 ];
 
 @NgModule({

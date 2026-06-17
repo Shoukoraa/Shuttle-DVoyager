@@ -7,8 +7,8 @@
   ion-toolbar {
     --background: var(--bg-color);
     --border-color: transparent;
-    --padding-top: 10px;
-    --padding-bottom: 5px;
+    padding-top: var(--ion-safe-area-top, 0);
+    padding-bottom: 10px;
   }
 
   ion-back-button {
@@ -372,10 +372,60 @@
         height: 100%;
         background: var(--light-gray);
 
-        ion-img {
+        img, ion-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+        }
+      }
+
+      .fallback-wrapper {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        color: #6b7280;
+        border-radius: 16px;
+
+        &.family_car {
+          background: linear-gradient(135deg, rgba(255, 193, 7, 0.08) 0%, rgba(255, 193, 7, 0.15) 100%);
+          color: var(--primary-dark);
+          border-color: rgba(255, 193, 7, 0.2);
+        }
+
+        &.mini_bus {
+          background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.15) 100%);
+          color: #10B981;
+          border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        &.bus {
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.15) 100%);
+          color: #3B82F6;
+          border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .fallback-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          text-align: center;
+          padding: 12px;
+
+          ion-icon {
+            font-size: 36px;
+          }
+
+          .fallback-text {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
         }
       }
     }
