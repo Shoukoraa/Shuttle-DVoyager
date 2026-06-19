@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Mail\TicketMail;
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Support\DompetXPaymentMethods;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -51,9 +52,17 @@ class PaymentStatusService
             ?? 'pending'
         );
 
+        $gatewayResponse = $payment->gateway_response;
+        if (!is_array($gatewayResponse)) {
+            $gatewayResponse = is_string($gatewayResponse) ? json_decode($gatewayResponse, true) : [];
+        }
+        if (!is_array($gatewayResponse)) {
+            $gatewayResponse = [];
+        }
+
         $payment->update([
             'status' => $status,
-            'gateway_response' => array_merge($payment->gateway_response ?? [], [
+            'gateway_response' => array_merge($gatewayResponse, [
                 'status_check' => $response,
             ]),
             'payment_time' => $status === 'success'
@@ -79,7 +88,7 @@ class PaymentStatusService
             ['booking_id' => $booking->id],
             [
                 'amount' => $payload['amount'] ?? data_get($payload, 'data.amount') ?? $booking->total_price,
-                'payment_method' => $payload['method'] ?? data_get($payload, 'data.method') ?? optional($booking->payment)->payment_method ?? 'dompetx',
+                'payment_method' => $this->paymentMethodFromPayload($payload, optional($booking->payment)->payment_method),
                 'gateway' => 'dompetx',
                 'gateway_transaction_id' => $payload['id'] ?? data_get($payload, 'data.id') ?? optional($booking->payment)->gateway_transaction_id,
                 'payment_url' => optional($booking->payment)->payment_url,
@@ -136,5 +145,20 @@ class PaymentStatusService
                 'booking_id' => $booking->id,
             ]);
         }
+    }
+
+    private function paymentMethodFromPayload(array $payload, ?string $currentMethod): string
+    {
+        $method = $payload['method']
+            ?? data_get($payload, 'data.method')
+            ?? $payload['payment_method']
+            ?? data_get($payload, 'data.payment_method')
+            ?? data_get($payload, 'metadata.payment_method_requested')
+            ?? data_get($payload, 'data.metadata.payment_method_requested')
+            ?? data_get($payload, 'metadata.gateway_method_requested')
+            ?? data_get($payload, 'data.metadata.gateway_method_requested')
+            ?? $currentMethod;
+
+        return DompetXPaymentMethods::normalizeAppMethod($method) ?? $currentMethod ?? 'dompetx';
     }
 }

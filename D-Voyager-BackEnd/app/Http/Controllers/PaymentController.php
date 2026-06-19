@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Payment;
 use App\Services\DompetXService;
 use App\Services\PaymentStatusService;
+use App\Support\DompetXPaymentMethods;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -18,6 +19,16 @@ class PaymentController extends Controller
             'amount' => 'required|numeric',
             'payment_method' => 'required|string'
         ]);
+
+        $selectedMethod = DompetXPaymentMethods::normalizeAppMethod((string) $request->payment_method);
+        if (!$selectedMethod) {
+            return response()->json([
+                'message' => 'Metode pembayaran tidak didukung.',
+                'allowed_methods' => DompetXPaymentMethods::allowedAppMethods(),
+            ], 422);
+        }
+
+        $gatewayMethod = DompetXPaymentMethods::gatewayMethodFor($selectedMethod);
 
         $booking = Booking::where('id', $id)->where('customer_id', auth()->user()->customer->id ?? 0)->firstOrFail();
 
@@ -32,42 +43,41 @@ class PaymentController extends Controller
             ], 422);
         }
 
-
-
         if ($booking->payment && $booking->payment->status === 'pending' && $booking->payment->payment_url) {
-            return response()->json([
-                'message' => 'Payment checkout already created.',
-                'payment' => $booking->payment,
-                'payment_url' => $booking->payment->payment_url,
-                'status' => $booking->payment->status,
-            ]);
+            if ($this->isCheckoutLockedToMethod($booking->payment, $selectedMethod)) {
+                return response()->json([
+                    'message' => 'Payment checkout already created.',
+                    'payment' => $booking->payment,
+                    'payment_url' => $booking->payment->payment_url,
+                    'status' => $booking->payment->status,
+                ]);
+            }
         }
 
         if ($booking->payment && $booking->payment->status !== 'pending') {
             $booking->payment()->delete();
         }
 
-        try {
-            $checkout = $dompetX->createCheckout([
-                'amount' => (float) $booking->total_price,
-                'currency' => 'IDR',
-                'reference' => $this->referenceFor($booking),
-                'method' => strtolower((string) $request->payment_method),
-                'metadata' => [
-                    'booking_id' => (string) $booking->id,
-                    'customer_id' => (string) $booking->customer_id,
-                    'payment_method_requested' => (string) $request->payment_method,
-                ],
-            ], DompetXService::idempotencyKey($booking->id));
-        } catch (RequestException $e) {
-            \Log::error('DompetX checkout failed: ' . $e->getMessage(), [
-                'response' => optional($e->response)->json(),
-            ]);
+        $reference = $this->referenceFor($booking);
 
-            return response()->json([
-                'message' => 'Gagal membuat checkout DompetX.',
-                'detail' => optional($e->response)->json('message'),
-            ], 502);
+        try {
+            $checkout = $dompetX->createCheckout(
+                $this->checkoutPayload($booking, $reference, $selectedMethod, $gatewayMethod),
+                DompetXService::idempotencyKey($booking->id)
+            );
+        } catch (RequestException $e) {
+            if ($this->shouldRetryWithoutPaymentMethodAlias($e)) {
+                try {
+                    $checkout = $dompetX->createCheckout(
+                        $this->checkoutPayload($booking, $reference, $selectedMethod, $gatewayMethod, false),
+                        DompetXService::idempotencyKey($booking->id)
+                    );
+                } catch (RequestException $retryException) {
+                    return $this->dompetXCheckoutFailure($retryException);
+                }
+            } else {
+                return $this->dompetXCheckoutFailure($e);
+            }
         } catch (\Throwable $e) {
             \Log::error('DompetX checkout error: ' . $e->getMessage());
 
@@ -80,11 +90,14 @@ class PaymentController extends Controller
             ['booking_id' => $booking->id],
             [
                 'amount' => $booking->total_price,
-                'payment_method' => $request->payment_method,
+                'payment_method' => $selectedMethod,
                 'gateway' => 'dompetx',
                 'gateway_transaction_id' => $checkout['id'] ?? null,
-                'payment_url' => $this->paymentUrlFrom($checkout),
-                'gateway_response' => $checkout,
+                'payment_url' => $this->paymentUrlFrom($checkout, $selectedMethod, $gatewayMethod),
+                'gateway_response' => array_merge($checkout, [
+                    'locked_payment_method' => $selectedMethod,
+                    'locked_gateway_method' => $gatewayMethod,
+                ]),
                 'status' => $this->normalizeGatewayStatus($checkout['status'] ?? 'pending'),
                 'payment_time' => null,
             ]
@@ -96,6 +109,54 @@ class PaymentController extends Controller
             'payment_url' => $payment->payment_url,
             'status' => $payment->status,
         ], 201);
+    }
+
+    private function checkoutPayload(
+        Booking $booking,
+        string $reference,
+        string $selectedMethod,
+        string $gatewayMethod,
+        bool $includePaymentMethodAlias = true
+    ): array {
+        $payload = [
+            'amount' => (float) $booking->total_price,
+            'currency' => 'IDR',
+            'reference' => $reference,
+            'method' => $gatewayMethod,
+            'metadata' => [
+                'booking_id' => (string) $booking->id,
+                'customer_id' => (string) $booking->customer_id,
+                'payment_method_requested' => $selectedMethod,
+                'gateway_method_requested' => $gatewayMethod,
+            ],
+        ];
+
+        if ($includePaymentMethodAlias) {
+            $payload['payment_method'] = $gatewayMethod;
+        }
+
+        return $payload;
+    }
+
+    private function shouldRetryWithoutPaymentMethodAlias(RequestException $e): bool
+    {
+        $status = optional($e->response)->status();
+        $detail = strtolower((string) json_encode(optional($e->response)->json() ?? []));
+
+        return in_array($status, [400, 422], true)
+            && str_contains($detail, 'payment_method');
+    }
+
+    private function dompetXCheckoutFailure(RequestException $e)
+    {
+        \Log::error('DompetX checkout failed: ' . $e->getMessage(), [
+            'response' => optional($e->response)->json(),
+        ]);
+
+        return response()->json([
+            'message' => 'Gagal membuat checkout DompetX.',
+            'detail' => optional($e->response)->json('message'),
+        ], 502);
     }
 
     public function webhook(Request $request, DompetXService $dompetX, PaymentStatusService $paymentStatus)
@@ -157,12 +218,112 @@ class PaymentController extends Controller
         return (int) $matches[1];
     }
 
-    private function paymentUrlFrom(array $checkout): ?string
+    private function paymentUrlFrom(array $checkout, ?string $selectedMethod = null, ?string $gatewayMethod = null): ?string
     {
-        return $checkout['payment_url']
-            ?? $checkout['payment_link']
-            ?? $checkout['checkout_url']
-            ?? $checkout['url']
+        if ($selectedMethod || $gatewayMethod) {
+            $methodUrl = $this->methodSpecificPaymentUrlFrom($checkout, $selectedMethod, $gatewayMethod);
+            if ($methodUrl) {
+                return $methodUrl;
+            }
+        }
+
+        return $this->firstUrlFrom($checkout, [
+            'payment_url',
+            'payment_link',
+            'checkout_url',
+            'redirect_url',
+            'invoice_url',
+            'url',
+        ]);
+    }
+
+    private function methodSpecificPaymentUrlFrom(array $payload, ?string $selectedMethod, ?string $gatewayMethod): ?string
+    {
+        $acceptedMethods = array_filter([
+            $selectedMethod,
+            $gatewayMethod,
+            strtolower((string) $selectedMethod),
+            strtolower((string) $gatewayMethod),
+        ]);
+
+        foreach ($payload as $key => $value) {
+            if (!is_array($value)) {
+                continue;
+            }
+
+            if (in_array((string) $key, $acceptedMethods, true)) {
+                $url = $this->firstUrlFrom($value);
+                if ($url) {
+                    return $url;
+                }
+            }
+
+            $method = $value['method']
+                ?? $value['payment_method']
+                ?? $value['channel']
+                ?? $value['code']
+                ?? $value['type']
+                ?? null;
+
+            if ($method && (
+                DompetXPaymentMethods::isSameMethod((string) $method, (string) $selectedMethod)
+                || strtoupper((string) $method) === strtoupper((string) $gatewayMethod)
+            )) {
+                $url = $this->firstUrlFrom($value);
+                if ($url) {
+                    return $url;
+                }
+            }
+
+            $url = $this->methodSpecificPaymentUrlFrom($value, $selectedMethod, $gatewayMethod);
+            if ($url) {
+                return $url;
+            }
+        }
+
+        return null;
+    }
+
+    private function firstUrlFrom(array $payload, ?array $preferredKeys = null): ?string
+    {
+        $urlKeys = $preferredKeys ?? [
+            'payment_url',
+            'payment_link',
+            'checkout_url',
+            'redirect_url',
+            'invoice_url',
+            'url',
+            'qris_url',
+            'va_url',
+        ];
+
+        foreach ($urlKeys as $key) {
+            if (!empty($payload[$key]) && is_string($payload[$key])) {
+                return $payload[$key];
+            }
+        }
+
+        return null;
+    }
+
+    private function isCheckoutLockedToMethod(Payment $payment, string $selectedMethod): bool
+    {
+        if (!DompetXPaymentMethods::isSameMethod($payment->payment_method, $selectedMethod)) {
+            return false;
+        }
+
+        $gatewayResponse = is_array($payment->gateway_response) ? $payment->gateway_response : [];
+        $lockedMethod = $gatewayResponse['locked_payment_method']
+            ?? data_get($gatewayResponse, 'metadata.payment_method_requested')
+            ?? data_get($gatewayResponse, 'metadata.gateway_method_requested')
+            ?? $gatewayResponse['method']
+            ?? $gatewayResponse['payment_method']
             ?? null;
+
+        return $lockedMethod !== null
+            && (
+                DompetXPaymentMethods::isSameMethod((string) $lockedMethod, $selectedMethod)
+                || strtoupper((string) $lockedMethod) === strtoupper(DompetXPaymentMethods::gatewayMethodFor($selectedMethod))
+            );
     }
 }

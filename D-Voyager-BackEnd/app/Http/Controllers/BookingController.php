@@ -39,7 +39,7 @@ class BookingController extends Controller
             if ($booking->status === 'booked' && optional($booking->payment)->status === 'pending') {
                 try {
                     $paymentStatus->syncBookingPayment($booking);
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     \Illuminate\Support\Facades\Log::warning('Auto-sync payment failed in myBookings: ' . $e->getMessage());
                 }
             }

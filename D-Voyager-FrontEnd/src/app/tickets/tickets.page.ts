@@ -21,6 +21,7 @@ export class TicketsPage implements OnInit, OnDestroy {
   private trackingMap: any = null;
   private driverTrackingMarker: any = null;
   private backButtonSubscription: Subscription | null = null;
+  private resumeSubscription: Subscription | null = null;
 
   hasTickets: boolean = false;
   tickets: any[] = [];
@@ -70,6 +71,13 @@ export class TicketsPage implements OnInit, OnDestroy {
       this.router.navigate(['/driver-home'], { replaceUrl: true });
       return;
     }
+
+    this.resumeSubscription = this.platform.resume.subscribe(() => {
+      if (sessionStorage.getItem('pendingPaymentBookingId')) {
+        this.fetchMyBookings();
+      }
+    });
+
     const shouldShowPaymentSuccess = sessionStorage.getItem('showPaymentSuccessMascot') === '1';
     if (shouldShowPaymentSuccess) {
       this.selectedTab = 'aktif';
@@ -82,6 +90,10 @@ export class TicketsPage implements OnInit, OnDestroy {
   ionViewWillLeave() {
     this.clearBackButtonHandler();
     this.clearPaymentSuccessTimers();
+    if (this.resumeSubscription) {
+      this.resumeSubscription.unsubscribe();
+      this.resumeSubscription = null;
+    }
   }
 
   private initTabSlideAnimation(currentTabIndex: number) {
