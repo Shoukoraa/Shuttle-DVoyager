@@ -52,6 +52,7 @@ class PaymentController extends Controller
                 'amount' => (float) $booking->total_price,
                 'currency' => 'IDR',
                 'reference' => $this->referenceFor($booking),
+                'method' => strtolower((string) $request->payment_method),
                 'metadata' => [
                     'booking_id' => (string) $booking->id,
                     'customer_id' => (string) $booking->customer_id,

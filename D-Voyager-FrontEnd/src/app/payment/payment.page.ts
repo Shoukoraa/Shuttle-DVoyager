@@ -187,6 +187,7 @@ export class PaymentPage implements OnInit, OnDestroy {
     // Scenario B: Resume Payment for existing booking
     if (this.pendingBookingId) {
       this.isProcessing = true;
+      sessionStorage.setItem('pendingPaymentBookingId', this.pendingBookingId.toString());
       this.apiService.payTicket(this.pendingBookingId, {
         amount: this.totalFare,
         payment_method: this.selectedMethodId
@@ -241,6 +242,7 @@ export class PaymentPage implements OnInit, OnDestroy {
           next: async (payRes) => {
             this.isProcessing = false;
             sessionStorage.removeItem('bookingSummaryState');
+            sessionStorage.setItem('pendingPaymentBookingId', bookingRes.booking_id.toString());
             await this.handlePaymentResponse(payRes);
           },
           error: (err) => {
@@ -273,12 +275,11 @@ export class PaymentPage implements OnInit, OnDestroy {
 
   private async openPaymentCheckout(paymentUrl: string) {
     if (Capacitor.isNativePlatform()) {
-      // Dengarkan event ketika in-app browser ditutup (user tekan "Continue Now" di DompetX)
+      // Dengarkan event ketika in-app browser ditutup
       this.removeBrowserListener();
       this.browserFinishedListener = await Browser.addListener('browserFinished', () => {
         this.removeBrowserListener();
         this.zone.run(() => {
-          sessionStorage.setItem('showPaymentSuccessMascot', '1');
           this.router.navigate(['/tickets']);
         });
       });
@@ -292,7 +293,6 @@ export class PaymentPage implements OnInit, OnDestroy {
     }
 
     window.open(paymentUrl, '_blank', 'noopener,noreferrer');
-    sessionStorage.setItem('showPaymentSuccessMascot', '1');
     this.router.navigate(['/tickets']);
   }
 

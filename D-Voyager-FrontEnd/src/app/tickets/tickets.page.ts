@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController, AlertController, Platform } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
@@ -36,6 +36,13 @@ export class TicketsPage implements OnInit, OnDestroy {
   ratingComment = '';
   isSubmittingRating = false;
   readonly ratingOptions = [1, 2, 3, 4, 5];
+
+  @HostListener('window:focus')
+  onWindowFocus() {
+    if (sessionStorage.getItem('pendingPaymentBookingId')) {
+      this.fetchMyBookings();
+    }
+  }
 
   constructor(
     private apiService: ApiService,
@@ -116,6 +123,24 @@ export class TicketsPage implements OnInit, OnDestroy {
         
         // Save the fresh bookings to cache
         localStorage.setItem('cached_bookings', JSON.stringify(bookingsArray));
+
+        // Check for pending payment status
+        const pendingBookingId = sessionStorage.getItem('pendingPaymentBookingId');
+        if (pendingBookingId) {
+          const targetTicket = this.tickets.find(t => t.id === Number(pendingBookingId));
+          if (targetTicket) {
+            const ticketStatus = (targetTicket.status || '').toLowerCase();
+            if (ticketStatus === 'paid') {
+              this.selectedTab = 'aktif';
+              this.presentPaymentSuccessMascot();
+              sessionStorage.removeItem('pendingPaymentBookingId');
+            } else if (['cancelled', 'canceled', 'completed'].includes(ticketStatus)) {
+              sessionStorage.removeItem('pendingPaymentBookingId');
+            }
+          } else {
+            sessionStorage.removeItem('pendingPaymentBookingId');
+          }
+        }
       },
       error: (err) => {
         console.error('Failed to fetch bookings', err);
