@@ -74,43 +74,7 @@
   }
 }
 
-/* Filter Section */
-.filter-section {
-  background: var(--white);
-  padding: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-  margin-bottom: 20px;
 
-  .filter-scroller {
-    display: flex;
-    overflow-x: auto;
-    gap: 12px;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    .filter-pill {
-      padding: 8px 16px;
-      background: var(--bg-color);
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #6b7280;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid transparent;
-
-      &.active {
-        background: rgba(255, 193, 7, 0.1);
-        color: var(--primary-dark);
-        border-color: var(--primary-color);
-      }
-    }
-  }
-}
 
 /* Ticket Style List */
 .schedule-list {

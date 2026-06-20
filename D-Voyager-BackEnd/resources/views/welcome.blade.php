@@ -726,7 +726,7 @@
                 </h2>
                 <div class="h-1.5 w-24 bg-brand-500 mx-auto rounded-full mb-6"></div>
                 <p class="text-dark-700">
-                    Aplikasi Shuttle D-Voyager dikembangkan dan dikelola secara profesional oleh talenta-talenta berdedikasi dari **Kelompok 18**.
+                    Aplikasi Shuttle D-Voyager dikembangkan dan dikelola secara profesional oleh talenta-talenta berdedikasi dari (Kelompok 18).
                 </p>
             </div>
 
@@ -945,9 +945,8 @@
                         <span class="font-outfit font-extrabold text-xl tracking-tight text-white">D-VOYAGER</span>
                     </div>
                     <p class="text-sm text-dark-300 leading-relaxed mb-4">
-                        PT D-Voyager Shuttle Indonesia adalah penyedia jasa transportasi shuttle modern berbasis teknologi aplikasi yang didesain untuk kenyamanan, ketepatan waktu, dan kemudahan pelanggan di Indonesia.
+                        D-Voyager Shuttle Indonesia adalah penyedia jasa transportasi shuttle modern berbasis teknologi aplikasi yang didesain untuk kenyamanan, ketepatan waktu, dan kemudahan pelanggan di Indonesia.
                     </p>
-                    <span class="text-xs text-dark-400 block">Kemenhub Izin Operasional Shuttle: No. 1826/PHB/2026</span>
                 </div>
 
                 <!-- Quick links -->
@@ -984,7 +983,7 @@
                 
                 <!-- Secret Admin portal route as requested! Subtle and professional in yellow border -->
                 <div class="flex items-center gap-4">
-                    <span>Didukung oleh: <strong class="text-brand-500">DompetX PG</strong></span>
+                    <span>Didukung oleh: <strong class="text-brand-500">DompetX</strong></span>
                     <a href="{{ url('/admin/login') }}" class="text-brand-500 hover:text-white transition-colors border border-brand-500/40 hover:bg-brand-500 hover:text-dark-900 rounded px-2.5 py-1">Akses Portal Karyawan</a>
                 </div>
             </div>
