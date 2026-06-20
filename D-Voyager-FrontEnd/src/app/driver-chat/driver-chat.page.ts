@@ -157,12 +157,12 @@ export class DriverChatPage implements OnInit, OnDestroy {
       if (!this.csSessionId) return;
       this.echoService.getEcho()
         .private(`chat.${this.csSessionId}`)
-        .listen('MessageSent', (e: any) => {
+        .listen('.App\\Events\\MessageSent', (e: any) => {
           if (e.sender_type !== 'user') {
             this.chatMessages.push(e);
           }
         })
-        .listen('SessionStatusChanged', (e: any) => {
+        .listen('.App\\Events\\SessionStatusChanged', (e: any) => {
           if (e.status === 'resolved') {
             this.chatMessages.push({
               sender_type: 'system',
@@ -180,7 +180,7 @@ export class DriverChatPage implements OnInit, OnDestroy {
     
     this.echoService.getEcho()
       .private(`chat.${this.currentScheduleId}.${this.activeChatCustomer.customer_id}`)
-      .listen('DriverCustomerMessageSent', (e: any) => {
+      .listen('.App\\Events\\DriverCustomerMessageSent', (e: any) => {
         const isDuplicate = this.chatMessages.some(m => 
           m.id === e.id || 
           (!m.id && m.message === e.message && m.sender_type === e.sender_type)

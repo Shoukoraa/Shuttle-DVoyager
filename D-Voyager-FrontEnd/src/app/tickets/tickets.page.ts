@@ -454,7 +454,7 @@ export class TicketsPage implements OnInit, OnDestroy {
 
     this.echoService.getEcho()
       .private(`chat.${scheduleId}.${customerId}`)
-      .listen('DriverCustomerMessageSent', (e: any) => {
+      .listen('.App\\Events\\DriverCustomerMessageSent', (e: any) => {
         const isDuplicate = this.chatMessages.some(m => 
           m.id === e.id || 
           (!m.id && m.message === e.message && m.sender_type === e.sender_type)
@@ -549,7 +549,7 @@ export class TicketsPage implements OnInit, OnDestroy {
     const scheduleId = ticket.schedule_id;
     this.echoService.getEcho()
       .private(`schedules.${scheduleId}`)
-      .listen('DriverLocationUpdated', (e: any) => {
+      .listen('.App\\Events\\DriverLocationUpdated', (e: any) => {
         console.log('Update lokasi supir real-time diterima:', e);
         this.updateDriverTrackingPosition(e.latitude, e.longitude);
       });

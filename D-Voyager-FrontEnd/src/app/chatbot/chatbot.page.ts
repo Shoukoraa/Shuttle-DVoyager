@@ -564,7 +564,7 @@ export class ChatbotPage implements OnInit {
     const echo = this.echoService.getEcho();
     
     echo.private(`chat.${this.sessionId}`)
-      .listen('MessageSent', (e: any) => {
+      .listen('.App\\Events\\MessageSent', (e: any) => {
         if (e.sender_type !== 'user') {
           this.messages.push({
             sender_type: e.sender_type,
@@ -574,7 +574,7 @@ export class ChatbotPage implements OnInit {
           this.scrollToBottom();
         }
       })
-      .listen('SessionStatusChanged', (e: any) => {
+      .listen('.App\\Events\\SessionStatusChanged', (e: any) => {
         if (e.status === 'resolved') {
           this.appendSystemMsg('Sesi chat ini telah diselesaikan oleh Admin.');
           this.sessionId = null;
