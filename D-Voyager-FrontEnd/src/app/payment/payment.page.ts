@@ -189,8 +189,8 @@ export class PaymentPage implements OnInit, OnDestroy {
       this.isProcessing = true;
       sessionStorage.setItem('pendingPaymentBookingId', this.pendingBookingId.toString());
       this.apiService.payTicket(this.pendingBookingId, {
-        amount: this.totalFare,
-        payment_method: this.selectedMethodId
+          amount: this.totalFare,
+          payment_method: this.selectedMethodId
       }).subscribe({
         next: async (payRes) => {
           this.isProcessing = false;

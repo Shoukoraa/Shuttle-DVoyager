@@ -4,11 +4,180 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #ffd214; // Warna dasar kuning D-Voyager
+  background: radial-gradient(circle, #ffe65d 0%, #ffd214 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999; // Lapisan teratas
+  opacity: 1;
+  overflow: hidden;
+  transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+
+  &.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Background Clouds for Travel feel */
+.clouds-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: 100px;
+  will-change: transform;
+
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 50%;
+  }
+}
+
+.cloud-1 {
+  width: 120px;
+  height: 40px;
+  top: 15%;
+  left: -150px;
+  animation: floatCloud1 25s linear infinite;
+
+  &::before {
+    width: 50px;
+    height: 50px;
+    top: -20px;
+    left: 15px;
+  }
+
+  &::after {
+    width: 70px;
+    height: 70px;
+    top: -35px;
+    right: 15px;
+  }
+}
+
+.cloud-2 {
+  width: 80px;
+  height: 28px;
+  top: 32%;
+  left: -100px;
+  animation: floatCloud2 38s linear infinite;
+  opacity: 0.7;
+
+  &::before {
+    width: 35px;
+    height: 35px;
+    top: -15px;
+    left: 10px;
+  }
+
+  &::after {
+    width: 45px;
+    height: 45px;
+    top: -22px;
+    right: 10px;
+  }
+}
+
+.cloud-3 {
+  width: 140px;
+  height: 46px;
+  top: 68%;
+  left: -200px;
+  animation: floatCloud3 30s linear infinite;
+  opacity: 0.6;
+
+  &::before {
+    width: 60px;
+    height: 60px;
+    top: -25px;
+    left: 20px;
+  }
+
+  &::after {
+    width: 80px;
+    height: 80px;
+    top: -40px;
+    right: 20px;
+  }
+}
+
+/* Scrolling Road Scenery */
+.road-scenery {
+  position: absolute;
+  width: 100%;
+  height: 40px;
+  bottom: 12%;
+  left: 0;
+  z-index: 1;
+  overflow: visible; // Allow mini bus and wheels to sit nicely on the top boundary
+  opacity: 0.8;
+  will-change: transform;
+}
+
+.road-line {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: #162a3b;
+  top: 0;
+}
+
+.road-dashes {
+  position: absolute;
+  width: 200%;
+  height: 3px;
+  top: 16px;
+  background: repeating-linear-gradient(
+    90deg,
+    #162a3b,
+    #162a3b 24px,
+    transparent 24px,
+    transparent 48px
+  );
+  animation: scrollRoad 1s linear infinite;
+}
+
+/* Mini Animated Driving Bus */
+.mini-bus {
+  position: absolute;
+  width: 70px;
+  height: 30px;
+  top: -26px; // Sits right on the road-line
+  left: 15%; // Drive from left to right area
+  z-index: 2;
+  will-change: transform;
+  animation: busBounce 0.35s ease-in-out infinite alternate;
+}
+
+.bus-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.wheel {
+  will-change: transform;
+  animation: spinWheel 0.5s linear infinite;
+}
+
+.wheel-left {
+  transform-origin: 15px 22px;
+}
+
+.wheel-right {
+  transform-origin: 51px 22px;
 }
 
 .splash-content {
@@ -17,17 +186,182 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  z-index: 2;
 }
 
-.splash-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  outline: none;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+.logo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  will-change: transform;
+}
 
-  &.video-ready {
+.splash-logo {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  opacity: 0;
+  transform: translateY(-200px) scale(0.6);
+  will-change: transform, opacity;
+  animation: logoDropIn 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
+             logoFloat 3s ease-in-out infinite 1.1s;
+}
+
+.logo-shadow {
+  width: 70px;
+  height: 7px;
+  background: rgba(22, 42, 59, 0.16);
+  border-radius: 50%;
+  margin-top: -12px;
+  margin-bottom: 20px;
+  filter: blur(2px);
+  opacity: 0;
+  transform: scale(0.3);
+  will-change: transform, opacity;
+  animation: shadowScaleIn 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+             shadowPulse 3s ease-in-out infinite 1.1s;
+}
+
+.splash-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #162a3b; // Warna navy gelap sesuai logo
+  margin: 0;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  transform: translateY(20px);
+  will-change: transform, opacity, letter-spacing;
+  animation: textSlideUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.5s;
+}
+
+.splash-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #2b4459;
+  margin: 8px 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0;
+  transform: translateY(15px);
+  will-change: transform, opacity, letter-spacing;
+  animation: textSlideUpSub 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.8s;
+}
+
+@keyframes logoDropIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-200px) scale(0.6);
+  }
+  50% {
     opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+}
+
+@keyframes shadowScaleIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shadowPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+    filter: blur(2px);
+  }
+  50% {
+    transform: scale(0.7);
+    opacity: 0.4;
+    filter: blur(3.5px);
+  }
+}
+
+@keyframes scrollRoad {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes textSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 0.22em;
+  }
+}
+
+@keyframes textSlideUpSub {
+  to {
+    opacity: 0.75;
+    transform: translateY(0);
+    letter-spacing: 0.22em;
+  }
+}
+
+@keyframes floatCloud1 {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100vw + 250px));
+  }
+}
+
+@keyframes floatCloud2 {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100vw + 200px));
+  }
+}
+
+@keyframes floatCloud3 {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100vw + 300px));
+  }
+}
+
+@keyframes spinWheel {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes busBounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-1.5px);
   }
 }

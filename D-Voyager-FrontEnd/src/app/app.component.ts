@@ -3,7 +3,6 @@ import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ModalController, Platform, ToastController } from '@ionic/angular';
 import { App } from '@capacitor/app';
-import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
 
@@ -15,7 +14,7 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 })
 export class AppComponent implements OnInit {
   showSplash = true;
-  videoReady = false;
+  splashDismissing = false;
   private lastBackPress = 0;
   private timePeriodToExit = 2000;
   private splashTimeout: any;
@@ -44,32 +43,23 @@ export class AppComponent implements OnInit {
   }
 
   async initializeSplashScreen() {
-    // Safety fallback: dismiss splash after 10 seconds in case video fails to play/end
+    // Dismiss custom HTML splash screen after animation completes (2.8 seconds)
     this.splashTimeout = setTimeout(() => {
       this.dismissSplash();
-    }, 10000);
+    }, 2800);
   }
 
   async dismissSplash() {
     if (this.showSplash) {
-      this.showSplash = false;
+      this.splashDismissing = true;
       if (this.splashTimeout) {
         clearTimeout(this.splashTimeout);
       }
-      try {
-        await SplashScreen.hide();
-      } catch (err) {
-        // Ignore native splash hide errors
-      }
-    }
-  }
-
-  async onVideoPlaying() {
-    this.videoReady = true;
-    try {
-      await SplashScreen.hide();
-    } catch (err) {
-      console.warn('Native SplashScreen plugin failed to hide on playing:', err);
+      
+      // Wait for the 500ms CSS fade-out transition to finish before removing from DOM
+      setTimeout(() => {
+        this.showSplash = false;
+      }, 500);
     }
   }
 

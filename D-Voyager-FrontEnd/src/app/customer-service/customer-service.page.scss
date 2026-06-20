@@ -42,10 +42,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-shrink: 0;
+      overflow: hidden;
 
-      ion-icon {
-        font-size: 32px;
-        color: var(--dark-gray);
+      .hero-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
     }
 

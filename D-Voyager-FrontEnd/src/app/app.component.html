@@ -1,18 +1,84 @@
 <ion-app>
-  <!-- Custom Video Splash Screen -->
-  <div class="splash-overlay" *ngIf="showSplash">
+  <!-- Custom HTML/CSS Splash Screen (Traveling Theme) -->
+  <div class="splash-overlay" *ngIf="showSplash" [class.fade-out]="splashDismissing">
+    <!-- Background Clouds for Travel Scenery -->
+    <div class="clouds-container">
+      <div class="cloud cloud-1"></div>
+      <div class="cloud cloud-2"></div>
+      <div class="cloud cloud-3"></div>
+    </div>
+
+    <!-- Scrolling Road Scenery for Vehicle Motion -->
+    <div class="road-scenery">
+      <div class="road-line"></div>
+      <div class="road-dashes"></div>
+      
+      <!-- Mini Animated Driving Bus (High Fidelity SVG) -->
+      <div class="mini-bus">
+        <svg viewBox="0 0 70 30" width="70" height="30" class="bus-svg">
+          <!-- Bus Ground Shadow -->
+          <ellipse cx="35" cy="25.5" rx="28" ry="1.2" fill="#162a3b" opacity="0.25" />
+          
+          <!-- Bus Body -->
+          <path d="M 8 22 
+                   L 10 22 
+                   A 6 6 0 0 1 20 22 
+                   L 46 22 
+                   A 6 6 0 0 1 56 22 
+                   L 62 22 
+                   C 64 22, 65 21, 65 19 
+                   L 65 13 
+                   C 65 10, 63 7, 59 7 
+                   L 8 7 
+                   C 6 7, 5 8, 5 10 
+                   L 5 19 
+                   C 5 21, 6 22, 8 22 Z" 
+                fill="#162a3b" />
+                
+          <!-- Windshield -->
+          <path d="M 52 9.5 L 59 9.5 C 61 9.5, 62.5 10.5, 62.5 12.5 L 62.5 14.5 L 52 14.5 Z" fill="#ffe65d" />
+          
+          <!-- Windows -->
+          <path d="M 9 9.5 L 21 9.5 L 21 14.5 L 9 14.5 Z" fill="#ffe65d" opacity="0.95" />
+          <path d="M 24 9.5 L 36 9.5 L 36 14.5 L 24 14.5 Z" fill="#ffe65d" opacity="0.95" />
+          <path d="M 39 9.5 L 49 9.5 L 49 14.5 L 39 14.5 Z" fill="#ffe65d" opacity="0.95" />
+          
+          <!-- Wheel arch trim lines -->
+          <path d="M 10 21.8 A 5.8 5.8 0 0 1 20 21.8" fill="none" stroke="#ffd214" stroke-width="0.8" />
+          <path d="M 46 21.8 A 5.8 5.8 0 0 1 56 21.8" fill="none" stroke="#ffd214" stroke-width="0.8" />
+          
+          <!-- Front Headlight -->
+          <ellipse cx="64" cy="17" rx="1" ry="1.5" fill="#ffe65d" />
+          <!-- Rear Taillight -->
+          <rect x="5" y="16" width="1" height="3" rx="0.5" fill="#ff4d4d" />
+          
+          <!-- Rotating Left Wheel -->
+          <g class="wheel wheel-left">
+            <circle cx="15" cy="22" r="4.5" fill="#162a3b" stroke="#ffd214" stroke-width="1.2" />
+            <circle cx="15" cy="22" r="1.8" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-dasharray="0.8 0.8" />
+            <line x1="15" y1="18.5" x2="15" y2="25.5" stroke="#ffffff" stroke-width="0.8" />
+            <line x1="11.5" y1="22" x2="18.5" y2="22" stroke="#ffffff" stroke-width="0.8" />
+          </g>
+          
+          <!-- Rotating Right Wheel -->
+          <g class="wheel wheel-right">
+            <circle cx="51" cy="22" r="4.5" fill="#162a3b" stroke="#ffd214" stroke-width="1.2" />
+            <circle cx="51" cy="22" r="1.8" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-dasharray="0.8 0.8" />
+            <line x1="51" y1="18.5" x2="51" y2="25.5" stroke="#ffffff" stroke-width="0.8" />
+            <line x1="47.5" y1="22" x2="54.5" y2="22" stroke="#ffffff" stroke-width="0.8" />
+          </g>
+        </svg>
+      </div>
+    </div>
+
     <div class="splash-content">
-      <video 
-        #splashVideo
-        class="splash-video" 
-        [class.video-ready]="videoReady"
-        autoplay 
-        muted 
-        playsinline
-        (playing)="onVideoPlaying()"
-        (ended)="dismissSplash()">
-        <source src="assets/splashscreen.mp4" type="video/mp4">
-      </video>
+      <div class="logo-wrapper">
+        <img src="assets/D-Voyager-noBG-Transparent.png" alt="D-Voyager Logo" class="splash-logo">
+        <!-- 3D Shadow simulating floating vehicle -->
+        <div class="logo-shadow"></div>
+        <h1 class="splash-title">D-Voyager</h1>
+        <p class="splash-subtitle">Solusi perjalanan kamu!</p>
+      </div>
     </div>
   </div>
 
