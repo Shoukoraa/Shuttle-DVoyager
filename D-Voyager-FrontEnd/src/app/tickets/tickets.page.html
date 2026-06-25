@@ -107,7 +107,7 @@
         </div>
 
         <div class="ticket-actions" *ngIf="ticket.status === 'paid' || ticket.status === 'on_the_way'" style="padding: 0 15px 15px; display: flex; gap: 10px;">
-          <ion-button fill="outline" color="primary" (click)="openChat(ticket)" style="flex: 1; margin: 0; --border-radius: 8px;">
+          <ion-button fill="outline" class="chat-btn" (click)="openChat(ticket)" style="flex: 1; margin: 0; --border-radius: 8px;">
             <ion-icon name="chatbubbles" slot="start"></ion-icon>
             Chat
           </ion-button>

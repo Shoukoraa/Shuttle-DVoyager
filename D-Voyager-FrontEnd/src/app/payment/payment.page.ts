@@ -48,7 +48,7 @@ export class PaymentPage implements OnInit, OnDestroy {
         { id: 'VA_CIMB', name: 'CIMB Virtual Account', icon: 'business-outline', type: 'va' },
         { id: 'VA_BSI', name: 'BSI Virtual Account', icon: 'business-outline', type: 'va' },
         { id: 'VA_BRI', name: 'BRI Virtual Account', icon: 'business-outline', type: 'va' },
-        { id: 'VA_BNI', name: 'BNI Virtual Account', icon: 'business-outline', type: 'va' }
+        { id: 'VA_BNI', name: 'BRI Virtual Account', icon: 'business-outline', type: 'va' }
       ]
     },
     {

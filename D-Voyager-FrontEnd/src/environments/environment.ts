@@ -5,7 +5,11 @@
 export const environment = {
   production: false,
   apiUrl: 'http://127.0.0.1:8000/api',
-  serviceFee: 0
+  serviceFee: 0,
+  reverbKey: 'k2n8z9p5q3r7s1t6u5v4',
+  reverbHost: '127.0.0.1',
+  reverbPort: 8080,
+  reverbForceTLS: false
 };
 
 /*

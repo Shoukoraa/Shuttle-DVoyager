@@ -38,6 +38,7 @@ export class DriverHomePage implements OnInit, OnDestroy {
   isManifestModalOpen = false;
   manifestData: any[] = [];
   isLoadingManifest = false;
+  isFinishTripModalOpen = false;
 
   private backButtonSubscription: Subscription | null = null;
 
@@ -247,7 +248,11 @@ export class DriverHomePage implements OnInit, OnDestroy {
 
   finishTrip() {
     if (!this.currentTrip || !this.currentTrip.id) return;
+    this.isFinishTripModalOpen = true;
+  }
 
+  executeFinishTrip() {
+    this.isFinishTripModalOpen = false;
     this.apiService.finishSchedule(this.currentTrip.id).subscribe({
       next: () => {
         this.tripStatus = 'completed';

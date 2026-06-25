@@ -167,10 +167,10 @@
               <span class="label">Rute Perjalanan</span>
               <strong class="route">{{ currentTrip?.route }}</strong>
             </div>
-            <div class="navigation-badge">
-              <span class="pulse-dot"></span>
-              <span>Navigasi Driver</span>
-            </div>
+            <button class="fullscreen-finish-btn" (click)="finishTrip()">
+              <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+              <span>Selesai</span>
+            </button>
           </div>
         </div>
       </div>
@@ -178,38 +178,72 @@
 
   </div>
 
-  <ion-modal [isOpen]="isManifestModalOpen" (didDismiss)="closeManifest()">
+  <!-- Premium Manifest Modal -->
+  <ion-modal [isOpen]="isManifestModalOpen" (didDismiss)="closeManifest()" class="premium-manifest-modal">
     <ng-template>
-      <ion-header class="ion-no-border">
-        <ion-toolbar>
-          <ion-title>Manifest Penumpang</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeManifest()">Tutup</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <div class="loading-state" *ngIf="isLoadingManifest" style="text-align: center; padding: 30px;">
-          <ion-spinner name="crescent"></ion-spinner>
-          <p>Memuat manifest...</p>
+      <div class="manifest-modal-wrapper">
+        <!-- Modal Header -->
+        <div class="manifest-header">
+          <h3>Manifest Penumpang</h3>
+          <button class="btn-close-header" (click)="closeManifest()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
         </div>
 
-        <div class="empty-state" *ngIf="!isLoadingManifest && manifestData.length === 0" style="text-align: center; padding: 30px; color: #888;">
-          <ion-icon name="people-circle-outline" style="font-size: 48px; color: #ccc;"></ion-icon>
-          <p>Belum ada penumpang yang membayar.</p>
-        </div>
+        <!-- Modal Content -->
+        <div class="manifest-content">
+          <!-- Loading State -->
+          <div class="loading-state" *ngIf="isLoadingManifest">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Memuat data penumpang...</p>
+          </div>
 
-        <ion-list *ngIf="!isLoadingManifest && manifestData.length > 0">
-          <ion-item *ngFor="let passenger of manifestData" lines="full">
-            <ion-icon name="person-circle" slot="start" color="primary"></ion-icon>
-            <ion-label>
-              <h2>{{ passenger.passenger_name }}</h2>
-              <p>No. HP: {{ passenger.phone }}</p>
-            </ion-label>
-            <ion-badge slot="end" color="success">Kursi: {{ passenger.seats.join(', ') }}</ion-badge>
-          </ion-item>
-        </ion-list>
-      </ion-content>
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="!isLoadingManifest && manifestData.length === 0">
+            <div class="empty-icon-box">
+              <ion-icon name="people-outline"></ion-icon>
+            </div>
+            <p>Belum ada penumpang untuk jadwal ini.</p>
+          </div>
+
+          <!-- Passenger List -->
+          <div class="passenger-list" *ngIf="!isLoadingManifest && manifestData.length > 0">
+            <div class="passenger-card" *ngFor="let passenger of manifestData">
+              <div class="passenger-avatar">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+              <div class="passenger-details">
+                <h4>{{ passenger.passenger_name }}</h4>
+                <p>
+                  <ion-icon name="call-outline"></ion-icon>
+                  <span>{{ passenger.phone }}</span>
+                </p>
+              </div>
+              <div class="passenger-seats-badge">
+                <span class="seat-label">Kursi</span>
+                <strong class="seat-numbers">{{ passenger.seats.join(', ') }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Premium Finish Trip Confirmation Modal -->
+  <ion-modal [isOpen]="isFinishTripModalOpen" (didDismiss)="isFinishTripModalOpen = false" class="premium-logout-modal">
+    <ng-template>
+      <div class="logout-modal-wrapper">
+        <div class="alert-icon-wrapper">
+          <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+        </div>
+        <h2>Selesaikan Perjalanan?</h2>
+        <p>Apakah Anda yakin ingin menyelesaikan perjalanan ini?</p>
+        <div class="modal-action-buttons">
+          <button class="btn-cancel" (click)="isFinishTripModalOpen = false">Batal</button>
+          <button class="btn-confirm" (click)="executeFinishTrip()">Ya, Selesai</button>
+        </div>
+      </div>
     </ng-template>
   </ion-modal>
 

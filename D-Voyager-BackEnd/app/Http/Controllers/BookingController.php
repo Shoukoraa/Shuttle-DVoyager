@@ -25,6 +25,7 @@ class BookingController extends Controller
                 'schedule.route.destination', 
                 'schedule.driver.user', 
                 'schedule.driver.vehicle', 
+                'schedule.vehicle', 
                 'seats', 
                 'review', 
                 'payment', 

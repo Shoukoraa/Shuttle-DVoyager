@@ -933,4 +933,13 @@ ion-modal ion-toolbar {
   }
 }
 
+.chat-btn {
+  --border-color: #1E1E1E;
+  --border-width: 2px;
+  --color: #1E1E1E;
+  font-weight: 800;
 
+  &:active {
+    --background: rgba(0, 0, 0, 0.05);
+  }
+}
